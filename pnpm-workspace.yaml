@@ -1,0 +1,28 @@
+packages:
+  - apps/*
+  - packages/*
+  - tools/*
+
+catalog:
+  "@types/node": ^24
+  "@vitepress-demo-preview/component": ^2.6.2
+  "@vitepress-demo-preview/plugin": ^1.4.1
+  "@whyframe/core": ^0.1.14
+  "@whyframe/vue": ^0.1.9
+  typescript: ^5
+  vite: npm:@voidzero-dev/vite-plus-core@latest
+  vite-plus: latest
+  vitepress: ^1.6.4
+  vitest: npm:@voidzero-dev/vite-plus-test@latest
+
+catalogMode: prefer
+overrides:
+  vite: "catalog:"
+  vitest: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"
