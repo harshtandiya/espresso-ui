@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Skills (agent-specific dirs — only .claude/skills is tracked)
+.agents/
+.kiro/
+skills-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

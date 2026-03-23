@@ -240,6 +240,20 @@ Built with **VitePress**. Do not introduce Next.js or any server-side runtime.
 
 ---
 
+## Available Skills
+
+This project uses the [skills](https://skills.sh) system for AI agent tooling. Skills are installed at `.agents/skills/` and symlinked to `.claude/skills/`.
+
+### raphaelsalaja/userinterface-wiki
+
+152 UI/UX best-practice rules across 12 categories (animations, easing, springs, CSS pseudo-elements, typography, prefetching, icon morphing, audio feedback, accessibility, and more).
+
+- **Invoke with:** `/userinterface-wiki`
+- **Use when:** implementing or reviewing animations, transitions, easing curves, AnimatePresence, container animations, typography, prefetching, morphing icons, or any UI/UX pattern that benefits from best-practice guidance.
+- **Re-install:** `npx skills add raphaelsalaja/userinterface-wiki --yes`
+
+---
+
 ## What NOT to do
 
 - **Do not publish component code to npm.** The entire model is code-copying into the user's project. The only things published to npm are the `espresso-ui` CLI binary and the `@espresso-ui/tokens` CSS package.
