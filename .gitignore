@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# VitePress build and cache output
+apps/docs/.vitepress/cache/
+apps/docs/.vitepress/dist/
+
 # Test app — local only, not tracked in git
 test-app/
 test-app-vue/

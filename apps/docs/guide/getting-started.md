@@ -1,0 +1,90 @@
+# Getting Started
+
+espresso-ui is a component library where you own the code. Components are copied directly into your project as editable source files — no black-box npm package to fight with.
+
+## Prerequisites
+
+- Node.js 18+
+- A React or Vue project with Tailwind CSS v4
+
+## 1. Initialise
+
+Run `init` once per project to create `espresso.config.json` and install shared dependencies.
+
+```sh
+npx espresso-ui init
+```
+
+You will be prompted for:
+
+- **Framework** — React or Vue
+- **TypeScript** — yes or no
+- **Theme** — choose a bundled theme or point to a custom CSS file
+- **Aliases** — where components and utils live (e.g. `@/components`, `@/lib/utils`)
+
+This writes `espresso.config.json` at your project root and installs `clsx`, `tailwind-merge`, and `class-variance-authority`.
+
+## 2. Import design tokens
+
+Add the token stylesheet to your global CSS **before** Tailwind utilities:
+
+```css
+@import "@espresso-ui/tokens/tokens.css";
+@import "@espresso-ui/tokens/tailwind.css";
+@import "tailwindcss";
+```
+
+## 3. Add components
+
+```sh
+npx espresso-ui add button
+```
+
+The CLI reads `espresso.config.json`, renders the correct template for your framework, and writes the component file into your components directory. That file is yours — edit it freely.
+
+## 4. Use the component
+
+::: code-group
+
+```tsx [React]
+import { Button } from "@/components/Button";
+
+export default function App() {
+  return <Button variant="solid">Hello</Button>;
+}
+```
+
+```vue [Vue]
+<script setup>
+import Button from "@/components/Button.vue";
+</script>
+
+<template>
+  <Button variant="solid">Hello</Button>
+</template>
+```
+
+:::
+
+## Dark mode
+
+espresso-ui uses the `[data-theme="dark"]` attribute for dark mode by default.
+
+```ts
+// Toggle dark mode
+document.documentElement.setAttribute("data-theme", "dark");
+document.documentElement.removeAttribute("data-theme");
+```
+
+You can change the dark mode strategy to `"class"` or `"media-query"` in `espresso.config.json`.
+
+## Theming
+
+Each component exposes CSS custom properties scoped with a component prefix (e.g. `--btn-*`). Override them anywhere in your CSS to customise without touching the component source.
+
+Use the `theme` command to browse or add bundled themes:
+
+```sh
+npx espresso-ui theme list
+npx espresso-ui theme add <name>
+```
