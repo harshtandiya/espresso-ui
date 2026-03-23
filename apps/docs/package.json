@@ -1,19 +1,25 @@
 {
   "name": "docs",
   "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "license": "ISC",
-  "author": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "dependencies": {
+    "@espresso-ui/tokens": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.4",
     "@vitepress-demo-preview/component": "catalog:",
     "@vitepress-demo-preview/plugin": "catalog:",
     "@whyframe/core": "catalog:",
     "@whyframe/vue": "catalog:",
+    "tailwindcss": "^4.1.4",
     "vitepress": "catalog:"
   },
   "packageManager": "pnpm@10.32.1"
