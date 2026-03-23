@@ -4,5 +4,11 @@ export default defineConfig({
   staged: {
     "*": "vp check --fix",
   },
-  lint: { options: { typeAware: true, typeCheck: true } },
+  lint: {
+    ignorePatterns: ["test-app/**"],
+    options: { typeAware: true, typeCheck: true },
+  },
+  fmt: {
+    ignorePatterns: ["test-app/**"],
+  },
 });

@@ -4,7 +4,7 @@ import * as p from "@clack/prompts";
 import { Eta } from "eta";
 import type { Command } from "commander";
 import { loadConfig } from "../utils/config";
-import { loadDefinition, templatePath } from "../utils/registry";
+import { cssPath, loadDefinition, templatePath } from "../utils/registry";
 import { detectPackageManager, installDeps } from "../utils/deps";
 
 /** Convert kebab-case or lowercase to PascalCase. */
@@ -56,7 +56,9 @@ export function registerAdd(program: Command): void {
         rendered = await eta.renderAsync(`./${path.basename(tmplPath)}`, {
           typescript: config.typescript,
           darkMode: config.theme.darkMode,
-          utilsAlias: config.aliases.utils,
+          // config.aliases.utils is the full module path (e.g. "@/lib/utils").
+          // Templates append "/utils" themselves, so pass the parent directory.
+          utilsAlias: path.posix.dirname(config.aliases.utils),
           componentName: toPascalCase(component),
         });
       } catch (err) {
@@ -89,11 +91,21 @@ export function registerAdd(program: Command): void {
         }
       }
 
-      // 6. Write file
+      // 6. Write file + copy component CSS tokens
       const s = p.spinner();
       s.start(`Writing ${outFile}`);
       await fs.mkdir(path.dirname(outFile), { recursive: true });
       await fs.writeFile(outFile, rendered, "utf-8");
+
+      // Copy <component>.css to the same output directory so tokens are co-located
+      const srcCss = cssPath(component);
+      const destCss = path.join(path.dirname(outFile), `${component}.css`);
+      try {
+        await fs.copyFile(srcCss, destCss);
+      } catch {
+        // CSS file is optional — skip silently if not found
+      }
+
       s.message("Installing peer dependencies");
 
       // 7. Install peer deps

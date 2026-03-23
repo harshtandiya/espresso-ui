@@ -61,3 +61,8 @@ export async function loadDefinition(componentName: string): Promise<ComponentDe
 export function templatePath(componentName: string, framework: "react" | "vue"): string {
   return path.join(registryRoot(), componentName, `${componentName}.${framework}.eta`);
 }
+
+/** Resolve the component CSS token file path in the registry. */
+export function cssPath(componentName: string): string {
+  return path.join(registryRoot(), componentName, `${componentName}.css`);
+}

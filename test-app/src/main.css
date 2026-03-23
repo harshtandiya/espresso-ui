@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@espresso-ui/tokens/tailwind.css"; /* @theme block — feeds Tailwind utility classes */
+@import "@espresso-ui/tokens/tokens.css"; /* --color-* semantic vars on :root and [data-theme="dark"] */
+
+/* Button component tokens — co-located with the generated component */
+@import "./components/button.css";

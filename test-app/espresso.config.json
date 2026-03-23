@@ -1,0 +1,14 @@
+{
+  "framework": "react",
+  "typescript": true,
+  "styleEngine": "tailwind",
+  "theme": {
+    "default": "espresso",
+    "customThemePath": null,
+    "darkMode": "data-attribute"
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  }
+}
