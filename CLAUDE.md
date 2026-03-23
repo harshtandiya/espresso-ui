@@ -267,6 +267,20 @@ The `@theme inline` (not `@theme`) directive is critical: it tells Tailwind to u
 - Each new component gets its own PR with definition, both templates, CSS tokens, and a docs page.
 - Run `vp check` and `vp test` before pushing. CI will block merges on failures.
 
+#### `CREATING_COMPONENTS.md` retrospect rule
+
+Before finalising every commit, review the diff and ask: does this change affect anything a component author needs to know? This includes — but is not limited to — changes to:
+
+- ETA template patterns or conventions
+- CSS / Tailwind utility rules (e.g. token syntax, font-size pitfalls)
+- `definition.ts` shape or CLI behaviour (`add`, `init`)
+- Token pipeline or theming system
+- Snapshot test setup or toolchain imports
+
+If yes, update `CREATING_COMPONENTS.md` to reflect the new reality **before** pushing — as a **separate commit** that immediately follows the one that introduced the change.
+
+Do not bundle `CREATING_COMPONENTS.md` edits into the same commit as the code change.
+
 ---
 
 ## Available Skills
