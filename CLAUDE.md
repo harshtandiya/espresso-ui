@@ -88,7 +88,10 @@ Always run `vp check` before committing. CI will fail if it does not pass.
 4. Render the correct ETA template (`button.react.eta` or `button.vue.eta`)
 5. Resolve output path from config aliases
 6. Write the generated file to the user's project
-7. Install any peer deps declared in `definition.ts`
+7. Copy the component's `.css` file alongside the generated component file
+8. Install any peer deps declared in `definition.ts`
+
+**`utilsAlias` note:** `espresso.config.json` stores `aliases.utils` as a full path including the filename (e.g. `"@/lib/utils"`). When passing `utilsAlias` to templates, strip the filename with `path.posix.dirname(config.aliases.utils)` so the template can append `/utils` itself without producing `@/lib/utils/utils`.
 
 ### `espresso.config.json` shape
 
@@ -142,6 +145,7 @@ export const buttonDef = {
 - Vue templates output `.vue` SFCs using `defineProps`, `computed`, and a `<style scoped>` block that reads component CSS tokens.
 - Templates must never hardcode color values. All visual tokens must go through CSS custom properties.
 - Template filenames: `<component>.react.eta` and `<component>.vue.eta`.
+- When referencing templates in `eta.renderAsync()`, always use the full filename including `.eta` extension (e.g. `"./button.react.eta"`). ETA v3 does not auto-append `.eta` if the path already has an extension like `.react`.
 
 ### Adding a new component
 
@@ -232,6 +236,31 @@ Built with **VitePress**. Do not introduce Next.js or any server-side runtime.
 - Use `cva` for variant logic. Variant definitions live inside the generated file, not in the registry definition.
 - Component tokens must always alias semantic tokens, never primitives directly.
 
+#### Tailwind v4 CSS variable syntax
+
+**Always use `(--var)` not `[--var]` for CSS custom property references in Tailwind utilities.**
+
+In Tailwind v4, `bg-[--color-primary]` generates an empty rule `{ }`. The correct form is `bg-(--color-primary)`, which correctly emits `background-color: var(--color-primary)` at runtime. This applies to all utility prefixes: `bg-`, `text-`, `border-`, `ring-`, `opacity-`, `rounded-`, `h-`, `px-`, etc.
+
+**Use `[font-size:var(--var)]` for font-size tokens, not `text-(--var)`.**
+
+`text-(--var)` is always interpreted as a color utility by both Tailwind and tailwind-merge. Using it for font-size tokens causes two bugs:
+
+1. Tailwind generates `color: var(--var)` (wrong property).
+2. `tailwind-merge` treats it as conflicting with actual text-color utilities and silently drops one.
+
+For font sizes stored as CSS custom properties, use the explicit arbitrary property form: `[font-size:var(--btn-sm-font-size)]`.
+
+#### Token pipeline (`packages/tokens`)
+
+`sd.config.ts` builds three files into `packages/tokens/dist/`:
+
+- `primitives.css` — raw scale vars (`--espresso-color-gray-50`, etc.) on `:root`
+- `tokens.css` — semantic vars on `:root` (light) and `[data-theme="dark"]`
+- `tailwind.css` — `@theme inline { --color-X: var(--color-X); }` block
+
+The `@theme inline` (not `@theme`) directive is critical: it tells Tailwind to use `var(--X)` in utility CSS without writing its own `:root` block, which would create self-referential var cycles that override the real values from `tokens.css`.
+
 ### Git
 
 - Commit messages: conventional commits format (`feat:`, `fix:`, `chore:`, `docs:`)
@@ -251,6 +280,24 @@ This project uses the [skills](https://skills.sh) system for AI agent tooling. S
 - **Invoke with:** `/userinterface-wiki`
 - **Use when:** implementing or reviewing animations, transitions, easing curves, AnimatePresence, container animations, typography, prefetching, morphing icons, or any UI/UX pattern that benefits from best-practice guidance.
 - **Re-install:** `npx skills add raphaelsalaja/userinterface-wiki --yes`
+
+### vercel-labs/agent-browser
+
+Chrome/Chromium browser automation CLI (via CDP) for visually testing and debugging the live dev server. Used to catch rendering issues that aren't visible from source code alone — CSS variable resolution, Tailwind utility output, dark mode switching, layout, etc.
+
+- **Invoke with:** `/agent-browser` (or run `agent-browser <cmd>` directly in Bash)
+- **Use when:** debugging visual styling issues in `test-app/`, verifying that CSS custom properties resolve correctly at runtime, testing dark mode toggling, or taking screenshots to confirm component appearance.
+- **Key commands:**
+  ```bash
+  agent-browser open http://localhost:5173
+  agent-browser wait --load networkidle
+  agent-browser screenshot
+  agent-browser eval 'getComputedStyle(document.documentElement).getPropertyValue("--color-primary")'
+  agent-browser click "text=Toggle dark mode"
+  agent-browser reload
+  ```
+- **Requires Playwright Chromium:** Run `npx playwright install chromium` once after install.
+- **Re-install:** `npx skills add vercel-labs/agent-browser --skill agent-browser --yes`
 
 ---
 
