@@ -117,7 +117,10 @@ function build(): void {
     ...Object.keys(lightShadow).map((k) => `shadow-${k}`),
     ...Object.keys(radius).map((k) => `radius-${k}`),
   ];
-  const tailwindCss = `@theme {\n${allSemanticVars.map((v) => `  --${v}: var(--${v});`).join("\n")}\n}\n`;
+  // @theme inline — utilities use var(--X) at runtime, but Tailwind does NOT
+  // write its own :root block, so the actual OKLCH values from tokens.css are
+  // never overridden by self-referential var() cycles.
+  const tailwindCss = `@theme inline {\n${allSemanticVars.map((v) => `  --${v}: var(--${v});`).join("\n")}\n}\n`;
   fs.writeFileSync(path.join(distDir, "tailwind.css"), tailwindCss, "utf-8");
   console.log("  ✔  dist/tailwind.css");
 
