@@ -2,7 +2,7 @@ import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-v
 import { cn } from "<%= it.utilsAlias %>/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--btn-ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-(--btn-disabled-opacity) [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--btn-ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-(--btn-disabled-opacity) [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -16,9 +16,9 @@ const buttonVariants = cva(
           "text-(--btn-link-fg) underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-(--btn-sm-height) px-(--btn-sm-px) text-(--btn-sm-font-size) rounded-(--btn-radius)",
-        md: "h-(--btn-md-height) px-(--btn-md-px) text-(--btn-md-font-size) rounded-(--btn-radius)",
-        lg: "h-(--btn-lg-height) px-(--btn-lg-px) text-(--btn-lg-font-size) rounded-(--btn-radius)",
+        sm: "h-(--btn-sm-height) px-(--btn-sm-px) [font-size:var(--btn-sm-font-size)] rounded-(--btn-radius)",
+        md: "h-(--btn-md-height) px-(--btn-md-px) [font-size:var(--btn-md-font-size)] rounded-(--btn-radius)",
+        lg: "h-(--btn-lg-height) px-(--btn-lg-px) [font-size:var(--btn-lg-font-size)] rounded-(--btn-radius)",
       },
     },
     defaultVariants: {
