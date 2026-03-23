@@ -53,7 +53,7 @@ export function registerAdd(program: Command): void {
 
       let rendered: string;
       try {
-        rendered = await eta.renderAsync(`./${path.basename(tmplPath, ".eta")}`, {
+        rendered = await eta.renderAsync(`./${path.basename(tmplPath)}`, {
           typescript: config.typescript,
           darkMode: config.theme.darkMode,
           utilsAlias: config.aliases.utils,

@@ -39,6 +39,9 @@ importers:
 
   .:
     devDependencies:
+      eta:
+        specifier: ^3.5.0
+        version: 3.5.0
       vite-plus:
         specifier: 'catalog:'
         version: 0.1.13(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(vite@8.0.1(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(yaml@2.8.3)

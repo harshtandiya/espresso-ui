@@ -13,6 +13,7 @@
     "prepare": "vp config"
   },
   "devDependencies": {
+    "eta": "^3.5.0",
     "vite-plus": "catalog:"
   },
   "engines": {
