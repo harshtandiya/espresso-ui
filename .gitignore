@@ -12,9 +12,8 @@ dist
 dist-ssr
 *.local
 
-# Test app build artifacts (source is committed)
-test-app/node_modules/
-test-app/dist/
+# Test app — local only, not tracked in git
+test-app/
 
 # Skills (agent-specific dirs — only .claude/skills is tracked)
 .agents/
