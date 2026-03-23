@@ -4,6 +4,11 @@
   --btn-solid-bg: var(--color-primary);
   --btn-solid-fg: var(--color-primary-foreground);
   --btn-solid-bg-hover: oklch(from var(--color-primary) calc(l - 0.06) c h);
+  /* visual-button-shadow-anatomy: six-layer shadow for depth and polish */
+  --btn-solid-shadow:
+    0 0 0 0.5px oklch(0 0 0 / 0.2), inset 0 0 0 1px oklch(1 1 1 / 0.04),
+    inset 0 1px 0 oklch(1 1 1 / 0.07), 0 1px 2px oklch(0 0 0 / 0.1), 0 2px 4px oklch(0 0 0 / 0.06),
+    0 4px 8px oklch(0 0 0 / 0.03);
 
   /* Outline variant */
   --btn-outline-border: var(--color-border);

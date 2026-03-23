@@ -7,7 +7,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         solid:
-          "bg-(--btn-solid-bg) text-(--btn-solid-fg) hover:bg-(--btn-solid-bg-hover)",
+          "bg-(--btn-solid-bg) text-(--btn-solid-fg) hover:bg-(--btn-solid-bg-hover) [box-shadow:var(--btn-solid-shadow)]",
         outline:
           "border border-(--btn-outline-border) text-(--btn-outline-fg) hover:bg-(--btn-outline-bg-hover)",
         ghost:
