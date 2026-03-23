@@ -9,6 +9,8 @@ catalog:
   "@vitepress-demo-preview/plugin": ^1.4.1
   "@whyframe/core": ^0.1.14
   "@whyframe/vue": ^0.1.9
+  style-dictionary: ^5.4.0
+  tsx: ^4.21.0
   typescript: ^5
   vite: npm:@voidzero-dev/vite-plus-core@latest
   vite-plus: latest
