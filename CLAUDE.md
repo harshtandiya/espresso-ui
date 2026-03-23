@@ -265,7 +265,25 @@ The `@theme inline` (not `@theme`) directive is critical: it tells Tailwind to u
 
 - Commit messages: conventional commits format (`feat:`, `fix:`, `chore:`, `docs:`)
 - Each new component gets its own PR with definition, both templates, CSS tokens, and a docs page.
-- Run `vp check` and `vp test` before pushing. CI will block merges on failures.
+
+#### Pre-commit hook
+
+The pre-commit hook (`.vite-hooks/pre-commit`) runs two things automatically on every commit:
+
+1. `vp staged` — auto-fixes format and lint errors on staged files
+2. `vp test` — runs the full test suite; the commit is blocked if any test fails
+
+If the commit is blocked by a failing test, fix the root cause — do not skip the hook.
+
+#### Updating snapshots
+
+Snapshot tests (`*.test.ts` files with `toMatchSnapshot()`) lock in the rendered output of ETA templates. Whenever a template changes, the snapshots will be stale and `vp test` will fail with a diff. Update them with:
+
+```bash
+pnpm vp test -u
+```
+
+Review the diff before committing — updated snapshots should be committed alongside the template change, in the same commit.
 
 #### `CREATING_COMPONENTS.md` retrospect rule
 
