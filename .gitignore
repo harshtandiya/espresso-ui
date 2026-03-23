@@ -14,6 +14,7 @@ dist-ssr
 
 # Test app — local only, not tracked in git
 test-app/
+test-app-vue/
 
 # Skills (agent-specific dirs — only .claude/skills is tracked)
 .agents/
