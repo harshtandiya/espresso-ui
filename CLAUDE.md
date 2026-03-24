@@ -43,6 +43,9 @@ espresso-ui/
 │       ├── semantic.json            # intent layer: --color-primary, --color-bg, etc.
 │       └── sd.config.ts             # Style Dictionary config → CSS + Tailwind v4 output
 ├── registry/                        # component definitions and code templates
+│   ├── shadcn-schema.ts             # TypeScript types for the shadcn registry.json format
+│   ├── build.ts                     # generates apps/docs/public/r/ from ETA templates
+│   ├── registry.test.ts             # smoke tests for the generated registry output
 │   └── button/
 │       ├── definition.ts            # props, variants, slots, emits, peer deps
 │       ├── button.react.eta         # ETA template → Button.tsx
@@ -59,13 +62,14 @@ espresso-ui/
 
 This project uses **Vite+** (`vp`) as the unified toolchain. Do not add separate ESLint, Prettier, or tsup configs — they are all handled by `vp`.
 
-| Command           | What it does                                                            |
-| ----------------- | ----------------------------------------------------------------------- |
-| `vp check`        | Format (Oxfmt) + lint (Oxlint) + type-check (tsgo) in one pass          |
-| `vp check --fix`  | Auto-fix formatting and lint errors                                     |
-| `vp test`         | Run all tests via Vitest (Browser Mode for component tests)             |
-| `vp pack`         | Bundle `packages/cli` and `packages/tokens` for npm via Rolldown/tsdown |
-| `vp run <script>` | Run workspace scripts with dependency-aware caching                     |
+| Command               | What it does                                                            |
+| --------------------- | ----------------------------------------------------------------------- |
+| `vp check`            | Format (Oxfmt) + lint (Oxlint) + type-check (tsgo) in one pass          |
+| `vp check --fix`      | Auto-fix formatting and lint errors                                     |
+| `vp test`             | Run all tests via Vitest (Browser Mode for component tests)             |
+| `vp pack`             | Bundle `packages/cli` and `packages/tokens` for npm via Rolldown/tsdown |
+| `vp run <script>`     | Run workspace scripts with dependency-aware caching                     |
+| `pnpm build:registry` | Regenerate `apps/docs/public/r/` from ETA templates (shadcn export)     |
 
 Always run `vp check` before committing. CI will fail if it does not pass.
 
@@ -154,6 +158,7 @@ export const buttonDef = {
 3. Write `<name>.react.eta` and `<name>.vue.eta`
 4. Write `<name>.css` with component-scoped token overrides (e.g. `--btn-bg`, `--btn-radius`)
 5. Add a Vitest snapshot test in `registry/<name>/<name>.test.ts` that renders both templates and asserts output
+6. Run `pnpm build:registry` and commit the updated `apps/docs/public/r/` output alongside the component files
 
 ---
 
@@ -191,6 +196,29 @@ The `--preset` flag encodes the full theme config as a base62 string using bit-p
 - **The field order and bit offsets in `schema.ts` are frozen forever.** Adding new fields appends to the end. Never reorder or remove existing fields — this would break all existing preset strings.
 - Encode: config object → BigInt via bit shifts → base62 string
 - Decode: base62 string → BigInt → extract each field by mask and offset
+
+### shadcn registry export
+
+`registry/build.ts` generates a shadcn-compatible static registry under `apps/docs/public/r/` by rendering each component's ETA templates with canonical defaults (`typescript: true`, `utilsAlias: "@/lib"`, `darkMode: "data-attribute"`). The output is split into two framework namespaces:
+
+```
+apps/docs/public/r/
+├── registry.json          ← React registry root
+├── <name>.json            ← React item  (shadcn add <host>/r/<name>)
+└── vue/
+    ├── registry.json      ← Vue registry root
+    └── <name>.json        ← Vue item    (shadcn add <host>/r/vue/<name>)
+```
+
+**Key rules:**
+
+- React items contain only `.tsx` + `.css` files; Vue items contain only `.vue` + `.css` files.
+- The build script cleans `apps/docs/public/r/` before writing, so stale files never linger.
+- The docs build (`pnpm docs:build`) runs `build:registry` automatically — no manual step needed in CI.
+- The generated output **is committed to the repo** so the static host serves it without a build step.
+- `registry/registry.test.ts` smoke-tests the generated files (run as part of `vp test`).
+
+**Import extension note:** Scripts that live directly in `registry/` (e.g. `build.ts`, `registry.test.ts`) must use `.js` extensions on relative imports — e.g. `from "./shadcn-schema.js"` — because `moduleResolution` is `node16`/`nodenext`. The pre-commit hook will catch this if you forget.
 
 ---
 
