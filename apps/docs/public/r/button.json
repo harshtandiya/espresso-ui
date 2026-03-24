@@ -1,0 +1,20 @@
+{
+  "name": "button",
+  "type": "registry:ui",
+  "title": "Button",
+  "description": "espresso-ui Button component (React)",
+  "dependencies": ["clsx", "tailwind-merge", "class-variance-authority"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Button.tsx",
+      "content": "import { cva, type VariantProps } from \"class-variance-authority\";\nimport { cn } from \"@/lib/utils\";\n\nconst buttonVariants = cva(\n  \"inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--btn-ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-(--btn-disabled-opacity) [&_svg]:pointer-events-none [&_svg]:shrink-0\",\n  {\n    variants: {\n      variant: {\n        solid:\n          \"bg-(--btn-solid-bg) text-(--btn-solid-fg) hover:bg-(--btn-solid-bg-hover) [box-shadow:var(--btn-solid-shadow)]\",\n        outline:\n          \"border border-(--btn-outline-border) text-(--btn-outline-fg) hover:bg-(--btn-outline-bg-hover)\",\n        ghost:\n          \"text-(--btn-ghost-fg) hover:bg-(--btn-ghost-bg-hover)\",\n        link:\n          \"text-(--btn-link-fg) underline-offset-4 hover:underline\",\n      },\n      size: {\n        sm: \"h-(--btn-sm-height) px-(--btn-sm-px) [font-size:var(--btn-sm-font-size)] rounded-(--btn-radius)\",\n        md: \"h-(--btn-md-height) px-(--btn-md-px) [font-size:var(--btn-md-font-size)] rounded-(--btn-radius)\",\n        lg: \"h-(--btn-lg-height) px-(--btn-lg-px) [font-size:var(--btn-lg-font-size)] rounded-(--btn-radius)\",\n      },\n    },\n    defaultVariants: {\n      variant: \"solid\",\n      size: \"md\",\n    },\n  },\n);\nexport type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &\n  VariantProps<typeof buttonVariants> & {\n    asChild?: boolean;\n  };\nexport function Button({\n  className,\n  variant,\n  size,\n  asChild = false,\n  ...props\n}: ButtonProps) {\n  return (\n    <button\n      className={cn(buttonVariants({ variant, size }), className)}\n      {...props}\n    />\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/button.css",
+      "content": "/* Button component tokens — override these to customise the button. */\n:root {\n  /* Solid variant */\n  --btn-solid-bg: var(--color-primary);\n  --btn-solid-fg: var(--color-primary-foreground);\n  --btn-solid-bg-hover: oklch(from var(--color-primary) calc(l - 0.06) c h);\n  /* visual-button-shadow-anatomy: six-layer shadow for depth and polish */\n  --btn-solid-shadow:\n    0 0 0 0.5px oklch(0 0 0 / 0.2), inset 0 0 0 1px oklch(1 1 1 / 0.04),\n    inset 0 1px 0 oklch(1 1 1 / 0.07), 0 1px 2px oklch(0 0 0 / 0.1), 0 2px 4px oklch(0 0 0 / 0.06),\n    0 4px 8px oklch(0 0 0 / 0.03);\n\n  /* Outline variant */\n  --btn-outline-border: var(--color-border);\n  --btn-outline-fg: var(--color-foreground);\n  --btn-outline-bg-hover: var(--color-accent);\n\n  /* Ghost variant */\n  --btn-ghost-fg: var(--color-foreground);\n  --btn-ghost-bg-hover: var(--color-accent);\n\n  /* Link variant */\n  --btn-link-fg: var(--color-primary);\n\n  /* Shared */\n  --btn-radius: var(--radius-md);\n  --btn-ring: var(--color-ring);\n  --btn-disabled-opacity: 0.5;\n\n  /* Size: sm */\n  --btn-sm-height: 32px;\n  --btn-sm-px: 12px;\n  --btn-sm-font-size: 13px;\n\n  /* Size: md */\n  --btn-md-height: 36px;\n  --btn-md-px: 16px;\n  --btn-md-font-size: 14px;\n\n  /* Size: lg */\n  --btn-lg-height: 40px;\n  --btn-lg-px: 20px;\n  --btn-lg-font-size: 15px;\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}
