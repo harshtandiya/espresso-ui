@@ -10,10 +10,12 @@
     "test": "vp test",
     "docs:dev": "vp run --filter apps/docs dev",
     "docs:build": "vp run --filter apps/docs build",
+    "build:registry": "tsx registry/build.ts",
     "prepare": "vp config"
   },
   "devDependencies": {
     "eta": "^3.5.0",
+    "tsx": "catalog:",
     "vite-plus": "catalog:"
   },
   "engines": {

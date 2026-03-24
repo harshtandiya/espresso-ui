@@ -16,6 +16,7 @@ catalog:
   vite-plus: latest
   vitepress: ^1.6.4
   vitest: npm:@voidzero-dev/vite-plus-test@latest
+  vue: ^3.5.30
 
 catalogMode: prefer
 overrides:

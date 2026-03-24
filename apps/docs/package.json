@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vitepress dev",
-    "build": "vitepress build",
+    "build": "pnpm -w build:registry && vitepress build",
     "preview": "vitepress preview"
   },
   "dependencies": {
