@@ -1,7 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`button templates > renders React template 1`] = `
-"import { cva, type VariantProps } from "class-variance-authority";
+"import { ark } from "@ark-ui/react/factory";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -30,7 +31,7 @@ const buttonVariants = cva(
     },
   },
 );
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+export type ButtonProps = React.ComponentPropsWithoutRef<typeof ark.button> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   };
@@ -42,7 +43,8 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
+    <ark.button
+      asChild={asChild}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
@@ -52,7 +54,8 @@ export function Button({
 `;
 
 exports[`button templates > renders React template without TypeScript 1`] = `
-"import { cva } from "class-variance-authority";
+"import { ark } from "@ark-ui/react/factory";
+import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -89,7 +92,8 @@ export function Button({
   ...props
 }) {
   return (
-    <button
+    <ark.button
+      asChild={asChild}
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
@@ -101,6 +105,7 @@ export function Button({
 exports[`button templates > renders Vue template 1`] = `
 "<script setup lang="ts">
 import { computed } from "vue";
+import { ark } from "@ark-ui/vue/factory";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -134,12 +139,14 @@ const props = withDefaults(
     variant?: ButtonVariants["variant"];
     size?: ButtonVariants["size"];
     disabled?: boolean;
+    asChild?: boolean;
     class?: string;
   }>(),
   {
     variant: "solid",
     size: "md",
     disabled: false,
+    asChild: false,
   },
 );
 
@@ -149,9 +156,15 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <button :class="classes" :disabled="disabled" v-bind="$attrs">
+  <component
+    :is="ark.button"
+    :as-child="props.asChild"
+    :class="classes"
+    :disabled="props.disabled"
+    v-bind="$attrs"
+  >
     <slot />
-  </button>
+  </component>
 </template>
 "
 `;

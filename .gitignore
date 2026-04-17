@@ -20,6 +20,10 @@ apps/docs/.vitepress/dist/
 test-app/
 test-app-vue/
 
+# Plan files — local only
+plans/
+PLAN.md
+
 # Skills (agent-specific dirs — only .claude/skills is tracked)
 .agents/
 .kiro/
