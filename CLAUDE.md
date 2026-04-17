@@ -376,6 +376,20 @@ Chrome/Chromium browser automation CLI (via CDP) for visually testing and debugg
 - **Requires Playwright Chromium:** Run `npx playwright install chromium` once after install.
 - **Re-install:** `npx skills add vercel-labs/agent-browser --skill agent-browser --yes`
 
+### creating-component (project skill)
+
+Step-by-step reference for adding a new component to the registry. Covers the 5 required files, Tailwind v4 pitfalls, React/Vue template patterns, snapshot test setup, and test app integration.
+
+- **Invoke with:** `/creating-component`
+- **Use when:** building any new component — before touching code, load this skill for the complete checklist and pattern reference.
+
+### testing-component (project skill)
+
+Browser verification guide using the Playwright MCP. Covers starting both dev servers, taking screenshots, toggling dark mode, and component-specific interaction tests (focus, disabled state, toggle behaviour).
+
+- **Invoke with:** `/testing-component`
+- **Use when:** after building or modifying a component, to verify it renders correctly in both React and Vue test apps.
+
 ---
 
 ## What NOT to do
