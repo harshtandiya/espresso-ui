@@ -40,3 +40,5 @@ skills-lock.json
 *.sln
 *.sw?
 test-app/tsconfig.tsbuildinfo
+
+.playwright-mcp
