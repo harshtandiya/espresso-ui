@@ -1,0 +1,7 @@
+/* Label component tokens */
+:root {
+  --label-font-size: 14px;
+  --label-font-weight: 500;
+  --label-color: var(--color-foreground);
+  --label-disabled-color: var(--color-muted-foreground);
+}

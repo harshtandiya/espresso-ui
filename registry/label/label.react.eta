@@ -1,0 +1,24 @@
+import * as React from "react";
+import { cn } from "<%= it.utilsAlias %>/utils";
+<% if (it.typescript) { %>
+export type LabelProps = React.ComponentPropsWithoutRef<"label"> & {
+  disabled?: boolean;
+};
+<% } %>
+export const <%= it.componentName %> = React.forwardRef<% if (it.typescript) { %><HTMLLabelElement, LabelProps><% } %>(
+  ({ className, disabled, ...props }, ref) => {
+    return (
+      <label
+        ref={ref}
+        data-disabled={disabled || undefined}
+        className={cn(
+          "[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";
