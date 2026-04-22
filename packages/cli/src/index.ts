@@ -11,7 +11,7 @@ program
   .description(
     "Framework-agnostic UI component CLI — copies components into your project as editable source code",
   )
-  .version("0.0.0");
+  .version("0.1.0");
 
 registerInit(program);
 registerAdd(program);

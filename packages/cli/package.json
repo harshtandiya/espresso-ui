@@ -1,16 +1,16 @@
 {
-  "name": "espresso-ui",
-  "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "name": "@espresso-ui/cli",
+  "version": "0.1.0",
+  "description": "Framework-agnostic UI component CLI — copies components into your project as editable source code",
+  "homepage": "https://github.com/harshtandiya/espresso-ui#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/harshtandiya/espresso-ui/issues"
   },
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
+  "author": "Harsh Tandiya <hi@harshtandiya.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/harshtandiya/espresso-ui.git"
   },
   "bin": {
     "espresso-ui": "./dist/index.mjs"
