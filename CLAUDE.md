@@ -133,20 +133,37 @@ export const buttonDef = {
     variant: { type: "string", values: ["solid", "outline", "ghost"], default: "solid" },
     size: { type: "string", values: ["sm", "md", "lg"], default: "md" },
     disabled: { type: "boolean", default: false },
+    asChild: { type: "boolean", default: false },
   },
   slots: ["default"],
   emits: ["click"],
   peerDeps: {
-    react: ["clsx", "tailwind-merge", "class-variance-authority"],
-    vue: ["clsx", "tailwind-merge", "class-variance-authority"],
+    react: ["@ark-ui/react", "clsx", "tailwind-merge", "class-variance-authority"],
+    vue: ["@ark-ui/vue", "clsx", "tailwind-merge", "class-variance-authority"],
   },
 };
 ```
 
+### Ark UI integration
+
+Components use Ark UI as the headless behavioral layer. Two patterns exist:
+
+**Pattern A — `ark` factory** (Button, Input, Label, Badge, and any styled HTML element needing `asChild`):
+
+- React: `import { ark } from "@ark-ui/react/factory"` → use `<ark.button>` instead of `<button>`
+- Vue: `import { ark } from "@ark-ui/vue/factory"` → use `<component :is="ark.button">` (dot notation is invalid in Vue templates)
+- `asChild={true}` renders the child element instead of the HTML element, forwarding all styles and props
+- React prop type: use `React.ComponentPropsWithoutRef<typeof ark.button>` not `ButtonHTMLAttributes<HTMLButtonElement>` — the latter incorrectly rejects props like `href` when asChild renders as `<a>`
+
+**Pattern B — Ark compound components** (Accordion, Dialog, Select, Tooltip, etc.):
+
+- Always import from sub-paths: `import { Accordion } from "@ark-ui/react/accordion"` — never from the barrel (`@ark-ui/react`) which pulls in all state machines
+- Style against Ark's data attributes: `data-[state=open]:`, `data-[highlighted]:`, `data-[disabled]:`
+
 ### ETA template conventions
 
 - React templates output `.tsx` using `cva` for variant logic and `cn()` (clsx + tailwind-merge) for className merging.
-- Vue templates output `.vue` SFCs using `defineProps`, `computed`, and a `<style scoped>` block that reads component CSS tokens.
+- Vue templates output `.vue` SFCs using `defineProps`, `computed`, and `withDefaults`.
 - Templates must never hardcode color values. All visual tokens must go through CSS custom properties.
 - Template filenames: `<component>.react.eta` and `<component>.vue.eta`.
 - When referencing templates in `eta.renderAsync()`, always use the full filename including `.eta` extension (e.g. `"./button.react.eta"`). ETA v3 does not auto-append `.eta` if the path already has an extension like `.react`.
@@ -358,6 +375,20 @@ Chrome/Chromium browser automation CLI (via CDP) for visually testing and debugg
   ```
 - **Requires Playwright Chromium:** Run `npx playwright install chromium` once after install.
 - **Re-install:** `npx skills add vercel-labs/agent-browser --skill agent-browser --yes`
+
+### creating-component (project skill)
+
+Step-by-step reference for adding a new component to the registry. Covers the 5 required files, Tailwind v4 pitfalls, React/Vue template patterns, snapshot test setup, and test app integration.
+
+- **Invoke with:** `/creating-component`
+- **Use when:** building any new component — before touching code, load this skill for the complete checklist and pattern reference.
+
+### testing-component (project skill)
+
+Browser verification guide using the Playwright MCP. Covers starting both dev servers, taking screenshots, toggling dark mode, and component-specific interaction tests (focus, disabled state, toggle behaviour).
+
+- **Invoke with:** `/testing-component`
+- **Use when:** after building or modifying a component, to verify it renders correctly in both React and Vue test apps.
 
 ---
 

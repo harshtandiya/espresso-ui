@@ -154,6 +154,82 @@ export function <%= it.componentName %>({
 
 ---
 
+## Two patterns for Ark UI
+
+Every component in espresso-ui uses one of two Ark UI patterns depending on its complexity.
+
+### Pattern A — `ark` factory (styled HTML elements)
+
+Use for: Button, Input, Label, Badge, and any component that is fundamentally a styled HTML element that needs polymorphic rendering (`asChild`).
+
+The `ark` factory creates enhanced HTML elements that support `asChild`. When `asChild={false}` (default), the element behaves identically to the native HTML element — zero overhead. When `asChild={true}`, it renders its single child element instead, merging all props and class names onto that child.
+
+```tsx
+// Renders as <a href="/dashboard"> with all button styles applied
+<Button asChild>
+  <a href="/dashboard">Go to dashboard</a>
+</Button>
+```
+
+**React:**
+
+```tsx
+import { ark } from "@ark-ui/react/factory"
+
+// Use ark.button instead of <button>
+<ark.button asChild={asChild} className={cn(variants({ ... }), className)} {...props} />
+```
+
+**Vue:**
+
+```vue
+<script setup>
+import { ark } from "@ark-ui/vue/factory";
+</script>
+<template>
+  <!-- <ark.button> is invalid Vue syntax — use component :is instead -->
+  <component :is="ark.button" :as-child="asChild" :class="classes" v-bind="$attrs">
+    <slot />
+  </component>
+</template>
+```
+
+**peerDeps for Pattern A components:**
+
+```ts
+peerDeps: {
+  react: ["@ark-ui/react", "clsx", "tailwind-merge", "class-variance-authority"],
+  vue: ["@ark-ui/vue", "clsx", "tailwind-merge", "class-variance-authority"],
+}
+```
+
+**TypeScript prop type for React (Pattern A):**
+
+```tsx
+// Use ComponentPropsWithoutRef<typeof ark.button>, NOT ButtonHTMLAttributes<HTMLButtonElement>
+// Reason: when asChild=true the element is no longer a <button>, so ButtonHTMLAttributes
+// would incorrectly reject props like href that are valid on the child element.
+export type ButtonProps = React.ComponentPropsWithoutRef<typeof ark.button> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  };
+```
+
+### Pattern B — Ark compound components (stateful UI)
+
+Use for: Accordion, Dialog, Select, Tooltip, Tabs, Popover, Toast.
+
+Import from the component sub-path (never the barrel):
+
+```ts
+import { Accordion } from "@ark-ui/react/accordion"; // correct
+import { Accordion } from "@ark-ui/react"; // never — pulls in all machines
+```
+
+This pattern is documented when the first compound component is built.
+
+---
+
 ## 4. `avatar.vue.eta`
 
 The Vue SFC equivalent. Uses `defineProps`, `computed`, and `withDefaults`.

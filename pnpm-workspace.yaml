@@ -4,6 +4,8 @@ packages:
   - tools/*
 
 catalog:
+  "@ark-ui/react": ^5.36.1
+  "@ark-ui/vue": ^5.36.1
   "@types/node": ^24
   "@vitepress-demo-preview/component": ^2.6.2
   "@vitepress-demo-preview/plugin": ^1.4.1

@@ -18,13 +18,14 @@ export const buttonDef = {
     asChild: {
       type: "boolean",
       default: false,
-      description: "Render as a child element (React only — uses a plain <a> or <span>)",
+      description:
+        "Render the button's child element instead, forwarding all styles and props (uses Ark's slot mechanism)",
     },
   },
   slots: ["default"],
   emits: ["click"],
   peerDeps: {
-    react: ["clsx", "tailwind-merge", "class-variance-authority"],
-    vue: ["clsx", "tailwind-merge", "class-variance-authority"],
+    react: ["@ark-ui/react", "clsx", "tailwind-merge", "class-variance-authority"],
+    vue: ["@ark-ui/vue", "clsx", "tailwind-merge", "class-variance-authority"],
   },
 } as const;

@@ -1,0 +1,25 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean;
+    class?: string;
+  }>(),
+  {
+    disabled: false,
+  },
+);
+
+const classes = computed(() =>
+  cn(
+    "[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed",
+    props.class,
+  ),
+);
+</script>
+
+<template>
+  <label :data-disabled="disabled || undefined" :class="classes" v-bind="$attrs"><slot /></label>
+</template>

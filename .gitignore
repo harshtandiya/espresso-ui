@@ -20,10 +20,14 @@ apps/docs/.vitepress/dist/
 test-app/
 test-app-vue/
 
+# Plan files — local only
+plans/
+PLAN.md
+
 # Skills (agent-specific dirs — only .claude/skills is tracked)
-.agents/
+# .agents/
 .kiro/
-skills-lock.json
+# skills-lock.json
 
 # Editor directories and files
 .vscode/*
@@ -36,3 +40,5 @@ skills-lock.json
 *.sln
 *.sw?
 test-app/tsconfig.tsbuildinfo
+
+.playwright-mcp
