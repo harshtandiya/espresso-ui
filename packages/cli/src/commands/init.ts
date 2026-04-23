@@ -1,18 +1,20 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import * as p from "@clack/prompts";
 import type { Command } from "commander";
-import { configExists, detectFramework, writeConfig } from "../utils/config";
-import { detectPackageManager, installDevDeps } from "../utils/deps";
+import { configExists, detectFramework, writeConfig } from "../utils/config.js";
+import { detectPackageManager, installDevDeps } from "../utils/deps.js";
+import { generateGlobalCss } from "../themes/default.js";
 
 export function registerInit(program: Command): void {
   program
     .command("init")
-    .description("Scaffold espresso.config.json and install token dependency")
+    .description("Scaffold espresso.config.json, generate global CSS, and install dependencies")
     .action(async () => {
       const cwd = process.cwd();
 
       p.intro("espresso-ui init");
 
-      // Check for existing config
       if (await configExists(cwd)) {
         const overwrite = await p.confirm({
           message: "espresso.config.json already exists. Overwrite?",
@@ -24,7 +26,6 @@ export function registerInit(program: Command): void {
         }
       }
 
-      // Auto-detect framework
       const detected = await detectFramework(cwd);
 
       const framework = await p.select({
@@ -66,6 +67,16 @@ export function registerInit(program: Command): void {
         process.exit(0);
       }
 
+      const cssPath = await p.text({
+        message: "Where should we create your global CSS file?",
+        placeholder: "src/styles/espresso.css",
+        defaultValue: "src/styles/espresso.css",
+      });
+      if (p.isCancel(cssPath)) {
+        p.cancel("Init cancelled.");
+        process.exit(0);
+      }
+
       const componentsAlias = await p.text({
         message: "Components alias?",
         placeholder: "@/components",
@@ -87,12 +98,20 @@ export function registerInit(program: Command): void {
       }
 
       const s = p.spinner();
-      s.start("Writing espresso.config.json");
 
+      s.start("Generating global CSS file");
+      const cssFullPath = path.join(cwd, cssPath as string);
+      await fs.mkdir(path.dirname(cssFullPath), { recursive: true });
+
+      const cssContent = generateGlobalCss(darkMode as "data-attribute" | "class" | "media-query");
+      await fs.writeFile(cssFullPath, cssContent, "utf-8");
+
+      s.message("Writing espresso.config.json");
       await writeConfig(cwd, {
         framework: framework as "react" | "vue",
         typescript: typescript as boolean,
         styleEngine: "tailwind",
+        cssPath: cssPath as string,
         theme: {
           default: "espresso",
           customThemePath: null,
@@ -104,17 +123,21 @@ export function registerInit(program: Command): void {
         },
       });
 
-      s.message("Installing @espresso-ui/tokens");
+      s.message("Installing dependencies");
       const pm = await detectPackageManager(cwd);
       try {
-        installDevDeps(cwd, pm, ["@espresso-ui/tokens"]);
+        installDevDeps(cwd, pm, ["tailwindcss"]);
       } catch {
-        // Non-fatal — the user may not have a package.json yet or it's an expected skip in monorepos
-        s.stop("Could not install @espresso-ui/tokens automatically — install it manually.");
+        s.stop("Could not auto-install dependencies — install tailwindcss manually.");
       }
 
       s.stop("Done!");
 
-      p.outro(`espresso.config.json created. Next: run "espresso-ui add <component>"`);
+      p.outro(`Created ${cssPath} and espresso.config.json
+
+Next steps:
+  1. Import the CSS file in your app entry point:
+     @import "${cssPath}";
+  2. Run "espresso-ui add <component>" to add components`);
     });
 }

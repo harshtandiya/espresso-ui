@@ -3,11 +3,11 @@ import path from "node:path";
 import * as p from "@clack/prompts";
 import { Eta } from "eta";
 import type { Command } from "commander";
-import { loadConfig } from "../utils/config";
-import { cssPath, loadDefinition, templatePath } from "../utils/registry";
-import { detectPackageManager, installDeps } from "../utils/deps";
+import { loadConfig } from "../utils/config.js";
+import { cssPath, loadDefinition, templatePath } from "../utils/registry.js";
+import { detectPackageManager, installDeps } from "../utils/deps.js";
+import { appendComponentTokens } from "../utils/css.js";
 
-/** Convert kebab-case or lowercase to PascalCase. */
 function toPascalCase(name: string): string {
   return name
     .split(/[-_]/)
@@ -15,7 +15,6 @@ function toPascalCase(name: string): string {
     .join("");
 }
 
-/** Map "@/components" → "./src/components" */
 function resolveAlias(alias: string): string {
   return alias.replace(/^@\//, "./src/");
 }
@@ -29,7 +28,6 @@ export function registerAdd(program: Command): void {
 
       p.intro(`espresso-ui add ${component}`);
 
-      // 1. Load config
       let config;
       try {
         config = await loadConfig(cwd);
@@ -38,7 +36,6 @@ export function registerAdd(program: Command): void {
         process.exit(1);
       }
 
-      // 2. Load definition
       let definition;
       try {
         definition = await loadDefinition(component);
@@ -47,7 +44,6 @@ export function registerAdd(program: Command): void {
         process.exit(1);
       }
 
-      // 3. Render template
       const tmplPath = templatePath(component, config.framework);
       const eta = new Eta({ views: path.dirname(tmplPath) });
 
@@ -56,8 +52,6 @@ export function registerAdd(program: Command): void {
         rendered = await eta.renderAsync(`./${path.basename(tmplPath)}`, {
           typescript: config.typescript,
           darkMode: config.theme.darkMode,
-          // config.aliases.utils is the full module path (e.g. "@/lib/utils").
-          // Templates append "/utils" themselves, so pass the parent directory.
           utilsAlias: path.posix.dirname(config.aliases.utils),
           componentName: toPascalCase(component),
         });
@@ -66,18 +60,16 @@ export function registerAdd(program: Command): void {
         process.exit(1);
       }
 
-      // 4. Resolve output path
       const outDir = resolveAlias(config.aliases.components);
       const ext = config.framework === "react" ? (config.typescript ? ".tsx" : ".jsx") : ".vue";
       const outFile = path.join(cwd, outDir, `${toPascalCase(component)}${ext}`);
 
-      // 5. Check if file exists
       let exists = false;
       try {
         await fs.access(outFile);
         exists = true;
       } catch {
-        // doesn't exist — fine
+        // doesn't exist
       }
 
       if (exists) {
@@ -91,24 +83,25 @@ export function registerAdd(program: Command): void {
         }
       }
 
-      // 6. Write file + copy component CSS tokens
       const s = p.spinner();
       s.start(`Writing ${outFile}`);
       await fs.mkdir(path.dirname(outFile), { recursive: true });
       await fs.writeFile(outFile, rendered, "utf-8");
 
-      // Copy <component>.css to the same output directory so tokens are co-located
-      const srcCss = cssPath(component);
-      const destCss = path.join(path.dirname(outFile), `${component}.css`);
+      s.message("Adding component tokens to global CSS");
+      const componentCssPath = cssPath(component);
       try {
-        await fs.copyFile(srcCss, destCss);
-      } catch {
-        // CSS file is optional — skip silently if not found
+        const componentCss = await fs.readFile(componentCssPath, "utf-8");
+        const globalCssPath = path.join(cwd, config.cssPath);
+        const { appended } = await appendComponentTokens(globalCssPath, component, componentCss);
+        if (!appended) {
+          p.log.info(`Component tokens for "${component}" already present in ${config.cssPath}`);
+        }
+      } catch (err) {
+        p.log.warn(`Could not add component tokens: ${(err as Error).message}`);
       }
 
       s.message("Installing peer dependencies");
-
-      // 7. Install peer deps
       const peerDeps = definition.peerDeps[config.framework] ?? [];
       if (peerDeps.length > 0) {
         const pm = await detectPackageManager(cwd);
