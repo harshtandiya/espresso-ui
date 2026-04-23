@@ -31,9 +31,11 @@ espresso-ui/
 │   ├── cli/                         # the npx-able CLI (what users run)
 │   │   └── src/
 │   │       ├── commands/
-│   │       │   ├── init.ts          # scaffold espresso.config.json, install deps
-│   │       │   ├── add.ts           # detect framework, render template, write file
+│   │       │   ├── init.ts          # scaffold config, generate global CSS file
+│   │       │   ├── add.ts           # render template, append component tokens
 │   │       │   └── theme.ts         # list / add / init custom themes
+│   │       ├── themes/
+│   │       │   └── default.ts       # bundled CSS content for default theme
 │   │       └── preset/
 │   │           ├── schema.ts        # FROZEN — field order and bit offsets never change
 │   │           ├── encode.ts        # config object → base62 preset string
@@ -92,7 +94,7 @@ Always run `vp check` before committing. CI will fail if it does not pass.
 4. Render the correct ETA template (`button.react.eta` or `button.vue.eta`)
 5. Resolve output path from config aliases
 6. Write the generated file to the user's project
-7. Copy the component's `.css` file alongside the generated component file
+7. Append component tokens to the global CSS file (specified by `cssPath` in config)
 8. Install any peer deps declared in `definition.ts`
 
 **`utilsAlias` note:** `espresso.config.json` stores `aliases.utils` as a full path including the filename (e.g. `"@/lib/utils"`). When passing `utilsAlias` to templates, strip the filename with `path.posix.dirname(config.aliases.utils)` so the template can append `/utils` itself without producing `@/lib/utils/utils`.
@@ -104,6 +106,7 @@ Always run `vp check` before committing. CI will fail if it does not pass.
   "framework": "react",
   "typescript": true,
   "styleEngine": "tailwind",
+  "cssPath": "src/styles/espresso.css",
   "theme": {
     "default": "espresso",
     "customThemePath": null,
