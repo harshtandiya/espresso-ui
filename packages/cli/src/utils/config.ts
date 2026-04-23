@@ -6,6 +6,7 @@ export const EspressoConfig = z.object({
   framework: z.enum(["react", "vue"]),
   typescript: z.boolean().default(true),
   styleEngine: z.enum(["tailwind"]).default("tailwind"),
+  cssPath: z.string().default("src/styles/espresso.css"),
   theme: z.object({
     default: z.string().default("espresso"),
     customThemePath: z.string().nullable().default(null),
