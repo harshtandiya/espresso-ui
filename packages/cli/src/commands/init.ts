@@ -4,7 +4,13 @@ import * as p from "@clack/prompts";
 import type { Command } from "commander";
 import { configExists, detectFramework, writeConfig } from "../utils/config.js";
 import { detectTailwind } from "../utils/detect-tailwind.js";
+import { detectPackageManager, installDeps } from "../utils/deps.js";
 import { formatTailwindError } from "../utils/tailwind-error.js";
+import {
+  resolveUtilsFilePath,
+  scaffoldUtilsFile,
+  utilsFileExists,
+} from "../utils/scaffold-utils.js";
 import { generateGlobalCss } from "../themes/default.js";
 
 export function registerInit(program: Command): void {
@@ -105,6 +111,23 @@ export function registerInit(program: Command): void {
         process.exit(0);
       }
 
+      const utilsAliasStr = (utilsAlias as string) || "@/lib/utils";
+      const ts = typescript as boolean;
+
+      let writeUtils = true;
+      if (await utilsFileExists(cwd, utilsAliasStr, ts)) {
+        const utilsPathRel = path.relative(cwd, resolveUtilsFilePath(cwd, utilsAliasStr, ts));
+        const overwriteUtils = await p.confirm({
+          message: `${utilsPathRel} already exists. Overwrite?`,
+          initialValue: false,
+        });
+        if (p.isCancel(overwriteUtils)) {
+          p.cancel("Init cancelled.");
+          process.exit(0);
+        }
+        writeUtils = overwriteUtils;
+      }
+
       const s = p.spinner();
 
       s.start("Generating global CSS file");
@@ -127,13 +150,30 @@ export function registerInit(program: Command): void {
         },
         aliases: {
           components: (componentsAlias as string) || "@/components",
-          utils: (utilsAlias as string) || "@/lib/utils",
+          utils: utilsAliasStr,
         },
       });
 
+      let utilsWrittenPath: string | null = null;
+      if (writeUtils) {
+        s.message("Scaffolding cn() helper");
+        utilsWrittenPath = await scaffoldUtilsFile(cwd, utilsAliasStr, ts);
+
+        s.message("Installing clsx + tailwind-merge");
+        const pm = await detectPackageManager(cwd);
+        try {
+          installDeps(cwd, pm, ["clsx", "tailwind-merge"]);
+        } catch {
+          s.stop(`Wrote files — could not auto-install clsx + tailwind-merge. Install manually.`);
+          process.exit(0);
+        }
+      }
+
       s.stop("Done!");
 
-      p.outro(`Created ${cssPath} and espresso.config.json
+      const utilsLine = utilsWrittenPath ? `\n  - ${path.relative(cwd, utilsWrittenPath)}` : "";
+
+      p.outro(`Created ${cssPath} and espresso.config.json${utilsLine}
 
 Next steps:
   1. Import the CSS file in your app entry point:
