@@ -206,14 +206,21 @@ peerDeps: {
 **TypeScript prop type for React (Pattern A):**
 
 ```tsx
-// Use ComponentPropsWithoutRef<typeof ark.button>, NOT ButtonHTMLAttributes<HTMLButtonElement>
+// Import React types as named imports — never use the `React.*` namespace.
+// `verbatimModuleSyntax` rejects bare namespace references with `Cannot find namespace 'React'`.
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% } %>
+
+// Use ComponentPropsWithoutRef<typeof ark.button>, NOT ButtonHTMLAttributes<HTMLButtonElement>.
 // Reason: when asChild=true the element is no longer a <button>, so ButtonHTMLAttributes
 // would incorrectly reject props like href that are valid on the child element.
-export type ButtonProps = React.ComponentPropsWithoutRef<typeof ark.button> &
+export type ButtonProps = ComponentPropsWithoutRef<typeof ark.button> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   };
 ```
+
+**React import rule:** Templates must use named imports (`import { forwardRef } from "react"`, `import type { ComponentPropsWithoutRef } from "react"`) — never `import * as React` plus `React.foo`. The `registry/registry.test.ts` guard fails any rendered output containing a bare `React.` reference. Gate type-only imports on `it.typescript` so the JS render path stays clean.
 
 ### Pattern B — Ark compound components (stateful UI)
 
