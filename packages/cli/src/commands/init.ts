@@ -11,7 +11,13 @@ import {
   scaffoldUtilsFile,
   utilsFileExists,
 } from "../utils/scaffold-utils.js";
+import { patchTsconfigPaths } from "../utils/patch-tsconfig.js";
 import { generateGlobalCss } from "../themes/default.js";
+
+function extractAliasRoot(alias: string): string | null {
+  const match = /^([^/]+)\//.exec(alias);
+  return match?.[1] ?? null;
+}
 
 export function registerInit(program: Command): void {
   program
@@ -154,6 +160,23 @@ export function registerInit(program: Command): void {
         },
       });
 
+      const aliasRoot =
+        extractAliasRoot(utilsAliasStr) ??
+        extractAliasRoot((componentsAlias as string) || "@/components");
+      let tsconfigStatus: { file: string; patched: boolean } | null = null;
+      if (aliasRoot) {
+        s.message("Configuring tsconfig paths");
+        try {
+          const result = await patchTsconfigPaths(cwd, { aliasRoot });
+          if (result.file) {
+            tsconfigStatus = { file: path.relative(cwd, result.file), patched: result.patched };
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          s.message(`Skipped tsconfig patch: ${msg}`);
+        }
+      }
+
       let utilsWrittenPath: string | null = null;
       if (writeUtils) {
         s.message("Scaffolding cn() helper");
@@ -172,8 +195,11 @@ export function registerInit(program: Command): void {
       s.stop("Done!");
 
       const utilsLine = utilsWrittenPath ? `\n  - ${path.relative(cwd, utilsWrittenPath)}` : "";
+      const tsconfigLine = tsconfigStatus
+        ? `\n  - ${tsconfigStatus.file} ${tsconfigStatus.patched ? "(patched paths)" : "(paths already configured)"}`
+        : "";
 
-      p.outro(`Created ${cssPath} and espresso.config.json${utilsLine}
+      p.outro(`Created ${cssPath} and espresso.config.json${utilsLine}${tsconfigLine}
 
 Next steps:
   1. Import the CSS file in your app entry point:
