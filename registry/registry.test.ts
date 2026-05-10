@@ -114,14 +114,14 @@ describe("registry parity", () => {
   });
 });
 
-describe("React templates use named imports (no React.* namespace)", () => {
-  it("no rendered React file references the React.* namespace", async () => {
+describe("React templates use named imports", () => {
+  it("contains no React.* namespace references", async () => {
     const { items } = await loadRegistry(REACT_REGISTRY);
     const offenders: string[] = [];
     for (const item of items) {
       for (const file of item.files) {
         if (!file.path.endsWith(".tsx")) continue;
-        if (/\bReact\./.test(file.content)) {
+        if (/(^|[^a-zA-Z0-9_$])React\./.test(file.content)) {
           offenders.push(`${item.name}/${file.path}`);
         }
       }
