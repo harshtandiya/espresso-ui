@@ -6,6 +6,8 @@ import type { Command } from "commander";
 import { loadConfig } from "../utils/config.js";
 import { cssPath, loadDefinition, templatePath } from "../utils/registry.js";
 import { detectPackageManager, installDeps } from "../utils/deps.js";
+import { detectTailwind } from "../utils/detect-tailwind.js";
+import { formatTailwindError } from "../utils/tailwind-error.js";
 import { appendComponentTokens } from "../utils/css.js";
 
 function toPascalCase(name: string): string {
@@ -33,6 +35,13 @@ export function registerAdd(program: Command): void {
         config = await loadConfig(cwd);
       } catch (err) {
         p.log.error((err as Error).message);
+        process.exit(1);
+      }
+
+      const tailwind = await detectTailwind(cwd, config.cssPath);
+      if (!tailwind.ok) {
+        p.log.error(formatTailwindError(tailwind));
+        p.cancel("Add aborted: Tailwind v4 is required.");
         process.exit(1);
       }
 
