@@ -3,7 +3,8 @@ import path from "node:path";
 import * as p from "@clack/prompts";
 import type { Command } from "commander";
 import { configExists, detectFramework, writeConfig } from "../utils/config.js";
-import { detectPackageManager, installDevDeps } from "../utils/deps.js";
+import { detectTailwind } from "../utils/detect-tailwind.js";
+import { formatTailwindError } from "../utils/tailwind-error.js";
 import { generateGlobalCss } from "../themes/default.js";
 
 export function registerInit(program: Command): void {
@@ -14,6 +15,13 @@ export function registerInit(program: Command): void {
       const cwd = process.cwd();
 
       p.intro("espresso-ui init");
+
+      const tailwind = await detectTailwind(cwd);
+      if (!tailwind.ok) {
+        p.log.error(formatTailwindError(tailwind));
+        p.cancel("Init aborted: Tailwind v4 is required.");
+        process.exit(1);
+      }
 
       if (await configExists(cwd)) {
         const overwrite = await p.confirm({
@@ -122,14 +130,6 @@ export function registerInit(program: Command): void {
           utils: (utilsAlias as string) || "@/lib/utils",
         },
       });
-
-      s.message("Installing dependencies");
-      const pm = await detectPackageManager(cwd);
-      try {
-        installDevDeps(cwd, pm, ["tailwindcss"]);
-      } catch {
-        s.stop("Could not auto-install dependencies — install tailwindcss manually.");
-      }
 
       s.stop("Done!");
 
