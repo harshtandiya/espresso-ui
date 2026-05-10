@@ -1,0 +1,20 @@
+{
+  "name": "label",
+  "type": "registry:ui",
+  "title": "Label",
+  "description": "espresso-ui Label component (React)",
+  "dependencies": ["clsx", "tailwind-merge"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Label.tsx",
+      "content": "import { forwardRef } from \"react\";\nimport type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\nexport type LabelProps = ComponentPropsWithoutRef<\"label\"> & {\n  disabled?: boolean;\n};\nexport const Label = forwardRef<HTMLLabelElement, LabelProps>(\n  ({ className, disabled, ...props }, ref) => {\n    return (\n      <label\n        ref={ref}\n        data-disabled={disabled || undefined}\n        className={cn(\n          \"[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed\",\n          className,\n        )}\n        {...props}\n      />\n    );\n  },\n);\n\nLabel.displayName = \"Label\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/label.css",
+      "content": "/* Label component tokens */\n:root {\n  --label-font-size: 14px;\n  --label-font-weight: 500;\n  --label-color: var(--color-foreground);\n  --label-disabled-color: var(--color-muted-foreground);\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

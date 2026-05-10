@@ -22,6 +22,26 @@
           "type": "registry:style"
         }
       ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "espresso-ui Label component (Vue)",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Label.vue",
+          "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { cn } from \"@/lib/utils\";\n\nconst props = withDefaults(\n  defineProps<{\n    disabled?: boolean;\n    class?: string;\n  }>(),\n  {\n    disabled: false,\n  },\n);\n\nconst classes = computed(() =>\n  cn(\n    \"[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed\",\n    props.class,\n  ),\n);\n</script>\n\n<template>\n  <label :data-disabled=\"disabled || undefined\" :class=\"classes\" v-bind=\"$attrs\"><slot /></label>\n</template>\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/label.css",
+          "content": "/* Label component tokens */\n:root {\n  --label-font-size: 14px;\n  --label-font-weight: 500;\n  --label-color: var(--color-foreground);\n  --label-disabled-color: var(--color-muted-foreground);\n}\n",
+          "type": "registry:style"
+        }
+      ]
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { ark } from "@ark-ui/react/factory";
 import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
-import { cn } from "<%= it.utilsAlias %>/utils";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 
 const buttonVariants = cva(
   "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--btn-ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-(--btn-disabled-opacity) [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -29,7 +30,7 @@ const buttonVariants = cva(
   },
 );
 <% if (it.typescript) { %>
-export type ButtonProps = React.ComponentPropsWithoutRef<typeof ark.button> &
+export type ButtonProps = ComponentPropsWithoutRef<typeof ark.button> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   };

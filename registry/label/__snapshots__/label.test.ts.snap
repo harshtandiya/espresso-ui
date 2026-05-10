@@ -1,12 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`label templates > renders React template 1`] = `
-"import * as React from "react";
+"import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
-export type LabelProps = React.ComponentPropsWithoutRef<"label"> & {
+export type LabelProps = ComponentPropsWithoutRef<"label"> & {
   disabled?: boolean;
 };
-export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
+export const Label = forwardRef<HTMLLabelElement, LabelProps>(
   ({ className, disabled, ...props }, ref) => {
     return (
       <label
@@ -27,9 +28,9 @@ Label.displayName = "Label";
 `;
 
 exports[`label templates > renders React template without TypeScript 1`] = `
-"import * as React from "react";
+"import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
-export const Label = React.forwardRef(
+export const Label = forwardRef(
   ({ className, disabled, ...props }, ref) => {
     return (
       <label
