@@ -1,11 +1,12 @@
-import * as React from "react";
-import { cn } from "<%= it.utilsAlias %>/utils";
+import { forwardRef } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 <% if (it.typescript) { %>
-export type LabelProps = React.ComponentPropsWithoutRef<"label"> & {
+export type LabelProps = ComponentPropsWithoutRef<"label"> & {
   disabled?: boolean;
 };
 <% } %>
-export const <%= it.componentName %> = React.forwardRef<% if (it.typescript) { %><HTMLLabelElement, LabelProps><% } %>(
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLLabelElement, LabelProps><% } %>(
   ({ className, disabled, ...props }, ref) => {
     return (
       <label

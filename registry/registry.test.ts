@@ -113,3 +113,23 @@ describe("registry parity", () => {
     expect(reactNames).toEqual(vueNames);
   });
 });
+
+describe("React templates use named imports (no React.* namespace)", () => {
+  it("no rendered React file references the React.* namespace", async () => {
+    const { items } = await loadRegistry(REACT_REGISTRY);
+    const offenders: string[] = [];
+    for (const item of items) {
+      for (const file of item.files) {
+        if (!file.path.endsWith(".tsx")) continue;
+        if (/\bReact\./.test(file.content)) {
+          offenders.push(`${item.name}/${file.path}`);
+        }
+      }
+    }
+    expect(
+      offenders,
+      `Files referencing React.* namespace: ${offenders.join(", ")}. ` +
+        `Use named imports (e.g. \`import type { ComponentPropsWithoutRef } from "react"\`) instead.`,
+    ).toEqual([]);
+  });
+});
