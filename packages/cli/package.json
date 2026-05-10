@@ -37,6 +37,7 @@
     "@clack/prompts": "^0.9.1",
     "commander": "^13.1.0",
     "eta": "^3.5.0",
+    "jsonc-parser": "catalog:",
     "zod": "^3.24.2"
   },
   "devDependencies": {
