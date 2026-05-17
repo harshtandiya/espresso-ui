@@ -7,6 +7,7 @@
     "dev": "pnpm -w build:registry && astro dev",
     "build": "pnpm -w build:registry && astro build",
     "preview": "astro preview",
+    "sync": "astro sync",
     "astro": "astro"
   },
   "dependencies": {
