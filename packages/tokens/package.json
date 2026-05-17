@@ -39,12 +39,12 @@
     "prepublishOnly": "vp run build"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "catalog:",
     "@typescript/native-preview": "7.0.0-dev.20260316.1",
     "bumpp": "^11.0.1",
     "style-dictionary": "catalog:",
     "tsx": "catalog:",
-    "typescript": "^5.9.3",
-    "vite-plus": "^0.1.11"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   }
 }
