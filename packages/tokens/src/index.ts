@@ -34,7 +34,17 @@ export type SemanticColorToken =
   | "color-warning-subtle"
   | "color-error"
   | "color-error-foreground"
-  | "color-error-subtle";
+  | "color-error-subtle"
+  | "color-ink-1"
+  | "color-ink-2"
+  | "color-ink-3"
+  | "color-ink-4"
+  | "color-ink-5"
+  | "color-line"
+  | "color-line-2"
+  | "color-surface"
+  | "color-surface-2"
+  | "color-surface-3";
 
 /** Semantic shadow token names. */
 export type SemanticShadowToken =
