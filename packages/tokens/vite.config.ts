@@ -6,12 +6,6 @@ export default defineConfig({
       tsgo: true,
     },
     exports: false,
+    format: ["esm"],
   },
-  lint: {
-    options: {
-      typeAware: true,
-      typeCheck: true,
-    },
-  },
-  fmt: {},
 });

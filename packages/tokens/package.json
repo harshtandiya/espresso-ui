@@ -1,16 +1,17 @@
 {
   "name": "@espresso-ui/tokens",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "Design tokens for espresso-ui: primitives, semantic CSS variables, and a Tailwind v4 theme.",
+  "homepage": "https://github.com/harshtandiya/espresso-ui#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/harshtandiya/espresso-ui/issues"
   },
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
+  "author": "Harsh Tandiya",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/harshtandiya/espresso-ui.git",
+    "directory": "packages/tokens"
   },
   "files": [
     "dist"
@@ -38,12 +39,12 @@
     "prepublishOnly": "vp run build"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "catalog:",
     "@typescript/native-preview": "7.0.0-dev.20260316.1",
     "bumpp": "^11.0.1",
     "style-dictionary": "catalog:",
     "tsx": "catalog:",
-    "typescript": "^5.9.3",
-    "vite-plus": "^0.1.11"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

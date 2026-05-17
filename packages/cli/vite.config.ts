@@ -5,13 +5,8 @@ export default defineConfig({
     dts: {
       tsgo: true,
     },
-    exports: true,
+    exports: false,
+    format: ["esm"],
+    sourcemap: true,
   },
-  lint: {
-    options: {
-      typeAware: true,
-      typeCheck: true,
-    },
-  },
-  fmt: {},
 });

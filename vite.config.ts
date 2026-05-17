@@ -2,7 +2,8 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   staged: {
-    "*": "vp check --fix",
+    "*.{ts,tsx,js,jsx,mjs,cjs,vue,astro}": "vp check --fix",
+    "*.{json,jsonc,md,mdx,yml,yaml,css}": "vp fmt",
   },
   lint: {
     ignorePatterns: ["test-app/**", "apps/docs/public/r/**"],
