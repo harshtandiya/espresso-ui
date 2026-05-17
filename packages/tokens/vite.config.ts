@@ -8,11 +8,4 @@ export default defineConfig({
     exports: false,
     format: ["esm"],
   },
-  lint: {
-    options: {
-      typeAware: true,
-      typeCheck: true,
-    },
-  },
-  fmt: {},
 });
