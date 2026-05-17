@@ -1,0 +1,40 @@
+---
+/**
+ * Side-by-stacked live preview: React island above, Vue island below.
+ *
+ * Usage in MDX:
+ *   import Preview from "@/components/Preview.astro";
+ *   import ButtonReact from "@/generated/react/Button.tsx";
+ *   import ButtonVue   from "@/generated/vue/Button.vue";
+ *
+ *   <Preview>
+ *     <ButtonReact slot="react" client:load>Click me</ButtonReact>
+ *     <ButtonVue   slot="vue"   client:load>Click me</ButtonVue>
+ *   </Preview>
+ */
+---
+
+<div
+  class="not-prose my-6 rounded-lg border border-(--color-border) overflow-hidden bg-(--color-bg)"
+>
+  <section>
+    <header
+      class="px-4 py-2 text-xs uppercase tracking-wide text-(--color-fg-muted) border-b border-(--color-border)"
+    >
+      React
+    </header>
+    <div class="p-6 flex flex-wrap items-center gap-3">
+      <slot name="react" />
+    </div>
+  </section>
+  <section class="border-t border-(--color-border)">
+    <header
+      class="px-4 py-2 text-xs uppercase tracking-wide text-(--color-fg-muted) border-b border-(--color-border)"
+    >
+      Vue
+    </header>
+    <div class="p-6 flex flex-wrap items-center gap-3">
+      <slot name="vue" />
+    </div>
+  </section>
+</div>

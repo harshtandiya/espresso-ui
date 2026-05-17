@@ -1,26 +1,27 @@
+---
+title: Button
+description: A flexible, accessible button component with multiple variants and sizes.
+---
+
+import Preview from "@/components/Preview.astro";
+import { Button as ButtonReact } from "@/generated/react/Button.tsx";
+import ButtonVue from "@/generated/vue/Button.vue";
+
 # Button
 
 A flexible, accessible button component with multiple variants and sizes.
 
 ## Installation
 
-::: code-group
-
-```sh [npm]
+```sh
 npx espresso-ui add button
 ```
 
-```sh [pnpm]
-pnpm dlx espresso-ui add button
-```
-
-:::
-
 ## Usage
 
-::: code-group
+**React**
 
-```tsx [React]
+```tsx
 import { Button } from "@/components/Button";
 
 export default function App() {
@@ -28,7 +29,9 @@ export default function App() {
 }
 ```
 
-```vue [Vue]
+**Vue**
+
+```vue
 <script setup>
 import Button from "@/components/Button.vue";
 </script>
@@ -38,19 +41,80 @@ import Button from "@/components/Button.vue";
 </template>
 ```
 
-:::
-
 ## Variants
 
-<preview path="./demos/ButtonVariants.vue" />
+<Preview>
+  <Fragment slot="react">
+    <ButtonReact client:load variant="solid">
+      Solid
+    </ButtonReact>
+    <ButtonReact client:load variant="outline">
+      Outline
+    </ButtonReact>
+    <ButtonReact client:load variant="ghost">
+      Ghost
+    </ButtonReact>
+    <ButtonReact client:load variant="link">
+      Link
+    </ButtonReact>
+  </Fragment>
+  <Fragment slot="vue">
+    <ButtonVue client:load variant="solid">
+      Solid
+    </ButtonVue>
+    <ButtonVue client:load variant="outline">
+      Outline
+    </ButtonVue>
+    <ButtonVue client:load variant="ghost">
+      Ghost
+    </ButtonVue>
+    <ButtonVue client:load variant="link">
+      Link
+    </ButtonVue>
+  </Fragment>
+</Preview>
 
 ## Sizes
 
-<preview path="./demos/ButtonSizes.vue" />
+<Preview>
+  <Fragment slot="react">
+    <ButtonReact client:load size="sm">
+      Small
+    </ButtonReact>
+    <ButtonReact client:load size="md">
+      Medium
+    </ButtonReact>
+    <ButtonReact client:load size="lg">
+      Large
+    </ButtonReact>
+  </Fragment>
+  <Fragment slot="vue">
+    <ButtonVue client:load size="sm">
+      Small
+    </ButtonVue>
+    <ButtonVue client:load size="md">
+      Medium
+    </ButtonVue>
+    <ButtonVue client:load size="lg">
+      Large
+    </ButtonVue>
+  </Fragment>
+</Preview>
 
 ## Disabled
 
-<preview path="./demos/ButtonDisabled.vue" />
+<Preview>
+  <Fragment slot="react">
+    <ButtonReact client:load disabled>
+      Disabled
+    </ButtonReact>
+  </Fragment>
+  <Fragment slot="vue">
+    <ButtonVue client:load disabled>
+      Disabled
+    </ButtonVue>
+  </Fragment>
+</Preview>
 
 ## Props
 
@@ -67,14 +131,12 @@ import Button from "@/components/Button.vue";
 Button appearance is controlled entirely through CSS custom properties. Override any token in your own CSS to customise the look without touching the component source.
 
 ```css
-/* In your global CSS or a scoped style block */
 :root {
   --btn-solid-bg: var(--color-primary);
   --btn-solid-fg: white;
   --btn-solid-bg-hover: color-mix(in oklch, var(--color-primary) 85%, black);
   --btn-radius: var(--radius-md);
 
-  /* Size dimensions */
   --btn-sm-height: 1.75rem;
   --btn-sm-px: 0.625rem;
   --btn-sm-font-size: 0.75rem;

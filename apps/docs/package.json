@@ -2,26 +2,33 @@
   "name": "docs",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "pnpm -w build:registry && vitepress build",
-    "preview": "vitepress preview"
+    "dev": "pnpm -w build:registry && astro dev",
+    "build": "pnpm -w build:registry && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
+    "@ark-ui/react": "catalog:",
+    "@ark-ui/vue": "catalog:",
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/vue": "^5.0.0",
     "@espresso-ui/tokens": "workspace:*",
+    "@tailwindcss/vite": "^4.1.4",
+    "astro": "^5.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.1.4",
     "vue": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.4",
-    "@vitepress-demo-preview/component": "catalog:",
-    "@vitepress-demo-preview/plugin": "catalog:",
-    "@whyframe/core": "catalog:",
-    "@whyframe/vue": "catalog:",
-    "tailwindcss": "^4.1.4",
-    "vitepress": "catalog:"
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
   },
   "packageManager": "pnpm@10.32.1"
 }
