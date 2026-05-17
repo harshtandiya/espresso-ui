@@ -1,0 +1,39 @@
+---
+interface Props {
+  num: string;
+  group?: string;
+  label: string;
+}
+
+const { num, group, label } = Astro.props;
+---
+
+<div class="crumb">
+  <span>{num}</span>
+  {
+    group && (
+      <>
+        <span>·</span>
+        <span>{group}</span>
+      </>
+    )
+  }
+  <span>·</span>
+  <b>{label}</b>
+</div>
+
+<style>
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+    margin-bottom: 18px;
+  }
+  .crumb b {
+    color: var(--color-ink-3);
+    font-weight: 500;
+  }
+</style>

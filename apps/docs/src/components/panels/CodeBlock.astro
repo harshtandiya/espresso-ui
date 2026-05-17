@@ -1,0 +1,68 @@
+---
+import { Code } from "astro:components";
+import type { BuiltinLanguage } from "shiki";
+
+interface Props {
+  file?: string;
+  lang?: BuiltinLanguage;
+  code: string;
+}
+
+const { file, lang = "tsx", code } = Astro.props;
+---
+
+<div class="code">
+  {
+    file && (
+      <div class="code-head">
+        <span class="file">{file}</span>
+      </div>
+    )
+  }
+  <Code
+    code={code}
+    lang={lang}
+    themes={{ light: "github-light", dark: "github-dark" }}
+    defaultColor={false}
+  />
+</div>
+
+<style>
+  .code {
+    margin-top: 28px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px 8px 14px;
+    border-bottom: 1px solid var(--color-line-2);
+    background: var(--color-surface-2);
+  }
+  .code-head .file {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .code :global(pre) {
+    margin: 0;
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    background: transparent !important;
+    color: var(--shiki-light);
+  }
+  .code :global(pre span) {
+    color: var(--shiki-light);
+  }
+  :global(html[data-theme="dark"]) .code :global(pre),
+  :global(html[data-theme="dark"]) .code :global(pre span) {
+    color: var(--shiki-dark);
+  }
+</style>

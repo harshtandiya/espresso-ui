@@ -1,5 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import HeroPanel from "@/components/foundations/HeroPanel.astro";
+import InstallPanel from "@/components/foundations/InstallPanel.astro";
+import ColorPanel from "@/components/foundations/ColorPanel.astro";
+import TypographyPanel from "@/components/foundations/TypographyPanel.astro";
+import SpacingPanel from "@/components/foundations/SpacingPanel.astro";
+import RadiusPanel from "@/components/foundations/RadiusPanel.astro";
+import Panel from "@/components/panels/Panel.astro";
+import Canvas from "@/components/panels/Canvas.astro";
 import { SECTIONS, sectionNumber } from "@/lib/sections";
 
 const groupLabel = (key: string): string => {
@@ -7,138 +15,32 @@ const groupLabel = (key: string): string => {
   if (key === "components") return "Components";
   return "";
 };
+
+const built = new Set(["overview", "install", "color", "type", "spacing", "radius"]);
+const placeholders = SECTIONS.filter((s) => !built.has(s.id));
 ---
 
 <Layout
   title="espresso-ui"
   description="A small, opinionated UI kit for internal tools."
 >
+  <HeroPanel />
+  <InstallPanel />
+  <ColorPanel />
+  <TypographyPanel />
+  <SpacingPanel />
+  <RadiusPanel />
   {
-    SECTIONS.map((s) => {
-      if (s.id === "overview") {
-        return (
-          <section id="overview" class="detail hero-panel">
-            <div class="eyebrow">
-              <span class="dot" /> v0.1 — early preview
-            </div>
-            <h2>A small, opinionated UI&nbsp;kit for <em>internal&nbsp;tools</em>.</h2>
-            <p class="desc">
-              Carefully-tuned React and Vue components, two themes, and a handful of tokens.
-              Designed for clarity, not flash. Drop into any project; everything ships as
-              copy-pasted source you can override token by token.
-            </p>
-          </section>
-        );
-      }
-      const crumbGroup = groupLabel(s.group);
-      return (
-        <section id={s.id} class="detail">
-          <div class="crumb">
-            <span>{sectionNumber(s.id)}</span>
-            {crumbGroup && (
-              <>
-                <span>·</span>
-                <span>{crumbGroup}</span>
-              </>
-            )}
-            <span>·</span>
-            <b>{s.label}</b>
-          </div>
-          <h2>{s.label}</h2>
-          <p class="desc">Coming soon.</p>
-          <div class="canvas placeholder" />
-        </section>
-      );
-    })
+    placeholders.map((s) => (
+      <Panel
+        id={s.id}
+        num={sectionNumber(s.id)}
+        group={groupLabel(s.group)}
+        label={s.label}
+        desc="Coming soon."
+      >
+        <Canvas />
+      </Panel>
+    ))
   }
 </Layout>
-
-<style>
-  .detail {
-    padding: 64px 64px 96px;
-    max-width: 880px;
-  }
-  .hero-panel {
-    padding-top: 84px;
-  }
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--color-ink-3);
-    background: var(--color-surface);
-    border: 1px solid var(--color-line);
-    padding: 5px 10px;
-    border-radius: 999px;
-    margin-bottom: 24px;
-  }
-  .eyebrow .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-ink-3);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ink-3) 18%, transparent);
-  }
-  .hero-panel h2 {
-    font-size: clamp(40px, 4.5vw, 64px);
-    line-height: 1.02;
-  }
-  .hero-panel h2 em {
-    font-style: normal;
-    font-family: var(--font-mono);
-    font-weight: 500;
-    font-size: 0.86em;
-    color: var(--color-ink-3);
-  }
-  .crumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--color-ink-5);
-    margin-bottom: 18px;
-  }
-  .crumb b {
-    color: var(--color-ink-3);
-    font-weight: 500;
-  }
-  .detail h2 {
-    font-size: 36px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0;
-    color: var(--color-ink-1);
-  }
-  .desc {
-    margin: 14px 0 0;
-    font-size: 16px;
-    line-height: 1.55;
-    color: var(--color-ink-3);
-    max-width: 600px;
-  }
-  .canvas {
-    border: 1px solid var(--color-line);
-    background: var(--color-surface);
-    border-radius: 14px;
-    padding: 56px 32px;
-    margin-top: 32px;
-    min-height: 220px;
-  }
-  .canvas.placeholder {
-    background-image:
-      linear-gradient(var(--color-line-2) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-line-2) 1px, transparent 1px);
-    background-size: 16px 16px;
-    background-position: -1px -1px;
-  }
-
-  @media (max-width: 880px) {
-    .detail {
-      padding: 32px 24px;
-    }
-  }
-</style>
