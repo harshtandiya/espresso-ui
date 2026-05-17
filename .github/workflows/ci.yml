@@ -21,6 +21,8 @@ jobs:
           node-version: "22"
           cache: true
       - run: vp install
+      - name: Generate Astro content + env types
+        run: pnpm --filter docs astro sync
       - run: vp check
       - run: vp test
       - run: vp run build
