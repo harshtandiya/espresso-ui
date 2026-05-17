@@ -6,6 +6,8 @@ export default defineConfig({
       tsgo: true,
     },
     exports: false,
+    format: ["esm"],
+    sourcemap: true,
   },
   lint: {
     options: {
