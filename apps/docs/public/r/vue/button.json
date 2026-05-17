@@ -3,7 +3,12 @@
   "type": "registry:ui",
   "title": "Button",
   "description": "espresso-ui Button component (Vue)",
-  "dependencies": ["@ark-ui/vue", "clsx", "tailwind-merge", "class-variance-authority"],
+  "dependencies": [
+    "@ark-ui/vue",
+    "clsx",
+    "tailwind-merge",
+    "class-variance-authority"
+  ],
   "registryDependencies": [],
   "files": [
     {

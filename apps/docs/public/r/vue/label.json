@@ -3,7 +3,10 @@
   "type": "registry:ui",
   "title": "Label",
   "description": "espresso-ui Label component (Vue)",
-  "dependencies": ["clsx", "tailwind-merge"],
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
   "registryDependencies": [],
   "files": [
     {
