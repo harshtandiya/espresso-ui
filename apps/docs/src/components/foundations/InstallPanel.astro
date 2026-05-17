@@ -1,0 +1,60 @@
+---
+import Panel from "@/components/panels/Panel.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import CodeBlock from "@/components/panels/CodeBlock.astro";
+import { sectionNumber } from "@/lib/sections";
+
+const usage = `// after \`npx espresso-ui init\`:
+import { Button } from "@/components/ui/Button";
+
+export default function App() {
+  return <Button>Hello</Button>;
+}
+`;
+---
+
+<Panel
+  id="install"
+  num={sectionNumber("install")}
+  label="Install"
+  desc="Run the init command in your project root. It scaffolds the config, drops a base stylesheet, and wires the @ alias. No build configuration needed."
+>
+  <Canvas grid={false} padded={false} class="install-canvas">
+    <div class="cmd-row">
+      <span class="dollar">$</span>
+      <code class="cmd">
+        <span class="dim">npx </span>espresso-ui<span class="dim"> init</span>
+      </code>
+    </div>
+  </Canvas>
+
+  <CodeBlock file="app.tsx" lang="tsx" code={usage} />
+</Panel>
+
+<style>
+  :global(.install-canvas) {
+    padding: 18px 20px !important;
+    justify-content: stretch !important;
+    display: block !important;
+    min-height: 0 !important;
+  }
+  .cmd-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dollar {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-ink-4);
+  }
+  .cmd {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-ink-1);
+  }
+  .cmd .dim {
+    color: var(--color-ink-3);
+  }
+</style>

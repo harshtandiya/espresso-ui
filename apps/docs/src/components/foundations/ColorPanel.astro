@@ -1,0 +1,84 @@
+---
+import Panel from "@/components/panels/Panel.astro";
+import { sectionNumber } from "@/lib/sections";
+import { primitives } from "@espresso-ui/tokens";
+
+const grayStops = Object.entries(primitives.color.gray);
+const semantic: { name: string; value: string }[] = [
+  { name: "red", value: primitives.color.red["500"] },
+  { name: "amber", value: primitives.color.amber["500"] },
+  { name: "green", value: primitives.color.green["500"] },
+  { name: "blue", value: primitives.color.blue["500"] },
+  { name: "violet", value: primitives.color.violet["500"] },
+];
+---
+
+<Panel
+  id="color"
+  num={sectionNumber("color")}
+  group="Foundations"
+  label="Color"
+  desc="An 11-step neutral ramp plus five semantic accents. Tokens are mode-aware — switching the theme remaps each step automatically."
+>
+  <div class="canvas-toolbar"><h3>Neutrals</h3><span class="meta">11 steps</span></div>
+  <div class="swatches" style="grid-template-columns: repeat(11, 1fr)">
+    {
+      grayStops.map(([step, value]) => (
+        <div class="sw" style={`background: ${value}`}>
+          <span class="lab">{step}</span>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="canvas-toolbar"><h3>Semantic</h3><span class="meta">5 accents</span></div>
+  <div class="swatches" style="grid-template-columns: repeat(5, 1fr)">
+    {
+      semantic.map((c) => (
+        <div class="sw" style={`background: ${c.value}`}>
+          <span class="lab">{c.name}</span>
+        </div>
+      ))
+    }
+  </div>
+</Panel>
+
+<style>
+  .canvas-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 36px 0 10px;
+  }
+  .canvas-toolbar h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink-1);
+    letter-spacing: -0.005em;
+  }
+  .canvas-toolbar .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+  }
+  .swatches {
+    display: grid;
+    gap: 8px;
+  }
+  .sw {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--color-ink-1) 8%, transparent);
+    position: relative;
+  }
+  .sw .lab {
+    position: absolute;
+    bottom: 6px;
+    left: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    mix-blend-mode: difference;
+  }
+</style>

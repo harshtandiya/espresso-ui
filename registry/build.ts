@@ -20,6 +20,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REGISTRY_DIR = __dirname;
 const OUT_REACT = path.join(__dirname, "..", "apps", "docs", "public", "r");
 const OUT_VUE = path.join(OUT_REACT, "vue");
+const OUT_DOCS_SRC = path.join(__dirname, "..", "apps", "docs", "src", "generated");
+const OUT_DOCS_REACT = path.join(OUT_DOCS_SRC, "react");
+const OUT_DOCS_VUE = path.join(OUT_DOCS_SRC, "vue");
 
 /** Canonical template render data — matches a TypeScript React+Vue project. */
 function makeRenderData(componentName: string): Record<string, unknown> {
@@ -199,6 +202,57 @@ async function main(): Promise<void> {
 
   await writeDir(OUT_REACT, reactItems, "espresso-ui");
   await writeDir(OUT_VUE, vueItems, "espresso-ui-vue");
+
+  await writeDocsGenerated(components);
+}
+
+/**
+ * Emit framework-real component files into apps/docs/src/generated/{react,vue}/
+ * for live previews in the Astro docs site. Same ETA templates feed both the
+ * shadcn registry output and the docs preview imports — single source of truth.
+ *
+ * Also writes a styles.css barrel that @imports every component's tokens, so
+ * the docs site can pull them all in with one import in globals.css.
+ */
+async function writeDocsGenerated(components: string[]): Promise<void> {
+  await fs.rm(OUT_DOCS_SRC, { recursive: true, force: true });
+  await fs.mkdir(OUT_DOCS_REACT, { recursive: true });
+  await fs.mkdir(OUT_DOCS_VUE, { recursive: true });
+
+  const cssImports: string[] = [];
+
+  for (const componentName of components) {
+    const pascal = toPascalCase(componentName);
+    const data = makeRenderData(pascal);
+
+    const [reactContent, vueContent, cssContent] = await Promise.all([
+      renderTemplate(componentName, "react", data),
+      renderTemplate(componentName, "vue", data),
+      readCss(componentName),
+    ]);
+
+    const reactFile = path.join(OUT_DOCS_REACT, `${pascal}.tsx`);
+    await fs.writeFile(reactFile, reactContent, "utf-8");
+    console.log(`Written → ${path.relative(process.cwd(), reactFile)}`);
+
+    const vueFile = path.join(OUT_DOCS_VUE, `${pascal}.vue`);
+    await fs.writeFile(vueFile, vueContent, "utf-8");
+    console.log(`Written → ${path.relative(process.cwd(), vueFile)}`);
+
+    if (cssContent) {
+      const cssFile = path.join(OUT_DOCS_SRC, `${componentName}.css`);
+      await fs.writeFile(cssFile, cssContent, "utf-8");
+      cssImports.push(`@import "./${componentName}.css";`);
+      console.log(`Written → ${path.relative(process.cwd(), cssFile)}`);
+    }
+  }
+
+  const stylesBarrel = path.join(OUT_DOCS_SRC, "styles.css");
+  const barrelContent = cssImports.length
+    ? `${cssImports.join("\n")}\n`
+    : "/* no component styles */\n";
+  await fs.writeFile(stylesBarrel, barrelContent, "utf-8");
+  console.log(`Written → ${path.relative(process.cwd(), stylesBarrel)}`);
 }
 
 main().catch((err) => {

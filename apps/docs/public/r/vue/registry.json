@@ -8,7 +8,12 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "espresso-ui Button component (Vue)",
-      "dependencies": ["@ark-ui/vue", "clsx", "tailwind-merge", "class-variance-authority"],
+      "dependencies": [
+        "@ark-ui/vue",
+        "clsx",
+        "tailwind-merge",
+        "class-variance-authority"
+      ],
       "registryDependencies": [],
       "files": [
         {
@@ -28,7 +33,10 @@
       "type": "registry:ui",
       "title": "Label",
       "description": "espresso-ui Label component (Vue)",
-      "dependencies": ["clsx", "tailwind-merge"],
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
       "registryDependencies": [],
       "files": [
         {

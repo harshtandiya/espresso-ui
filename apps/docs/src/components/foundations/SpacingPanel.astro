@@ -1,0 +1,62 @@
+---
+import Panel from "@/components/panels/Panel.astro";
+import { sectionNumber } from "@/lib/sections";
+import { primitives } from "@espresso-ui/tokens";
+
+const stops = Object.entries(primitives.spacing)
+  .map(([key, value]) => ({ key, value, px: parseInt(value, 10) }))
+  .filter((s) => s.px > 0);
+const maxPx = Math.max(...stops.map((s) => s.px));
+---
+
+<Panel
+  id="spacing"
+  num={sectionNumber("spacing")}
+  group="Foundations"
+  label="Spacing"
+  desc={`A ${stops.length}-stop scale. Component padding, gaps, and stack rhythm all derive from these tokens.`}
+>
+  <div class="rows">
+    {
+      stops.map((s) => (
+        <div class="row">
+          <span class="key">--spacing-{s.key}</span>
+          <span class="val">{s.value}</span>
+          <div class="bar" style={`width: ${(s.px / maxPx) * 100}%`} />
+        </div>
+      ))
+    }
+  </div>
+</Panel>
+
+<style>
+  .rows {
+    margin-top: 24px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 140px 60px 1fr;
+    align-items: center;
+    padding: 10px 0;
+    gap: 16px;
+    border-bottom: 1px solid var(--color-line-2);
+  }
+  .row:last-child {
+    border-bottom: none;
+  }
+  .row .key {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-ink-2);
+  }
+  .row .val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+  }
+  .row .bar {
+    height: 12px;
+    background: var(--color-ink-1);
+    border-radius: 2px;
+  }
+</style>

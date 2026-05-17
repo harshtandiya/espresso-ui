@@ -1,0 +1,120 @@
+---
+import "@/styles/globals.css";
+import Sidebar from "@/components/Sidebar.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "espresso-ui", description = "A small, opinionated UI kit for internal tools." } =
+  Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      // Apply persisted theme before paint to avoid flash
+      try {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = stored ?? (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch {
+        /* localStorage may be unavailable */
+      }
+    </script>
+  </head>
+  <body>
+    <div class="split">
+      <Sidebar />
+      <main id="pane-right" class="pane-right scroll-pane">
+        <slot />
+      </main>
+    </div>
+
+    <style>
+      .split {
+        display: grid;
+        grid-template-columns: minmax(360px, 1fr) 1.4fr;
+        height: 100vh;
+        width: 100vw;
+      }
+      .pane-right {
+        height: 100vh;
+        overflow-y: auto;
+        background: var(--color-surface-2);
+        scroll-behavior: smooth;
+      }
+      @media (max-width: 880px) {
+        .split {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        .pane-right {
+          height: auto;
+          overflow: visible;
+        }
+      }
+    </style>
+
+    <script is:inline>
+      // Active-section tracking — sets [data-active-section] on the index nav
+      const right = document.getElementById("pane-right");
+      if (right) {
+        const sections = right.querySelectorAll("section[id]");
+        const io = new IntersectionObserver(
+          (entries) => {
+            const visible = entries
+              .filter((e) => e.isIntersecting)
+              .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+            if (visible[0]) {
+              const id = visible[0].target.id;
+              document.querySelectorAll("[data-nav-item]").forEach((el) => {
+                el.toggleAttribute("data-active", el.getAttribute("data-nav-item") === id);
+              });
+            }
+          },
+          { root: right, rootMargin: "0px 0px -70% 0px", threshold: 0 },
+        );
+        sections.forEach((s) => io.observe(s));
+      }
+
+      // Jump-to-section
+      document.querySelectorAll("[data-nav-item]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-nav-item");
+          if (!id) return;
+          const el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      // Theme toggle
+      const toggle = document.getElementById("theme-toggle");
+      if (toggle) {
+        toggle.addEventListener("click", () => {
+          const cur = document.documentElement.getAttribute("data-theme") ?? "light";
+          const next = cur === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          try {
+            localStorage.setItem("theme", next);
+          } catch {
+            /* noop */
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

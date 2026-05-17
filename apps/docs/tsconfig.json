@@ -1,11 +1,12 @@
 {
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "lib": ["ESNext", "DOM"],
-    "strict": true,
-    "types": ["vite/client"]
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": [".vitepress/**/*", "components/**/*"]
+  "include": ["src/**/*", "astro.config.mjs", ".astro/types.d.ts"],
+  "exclude": ["dist"]
 }

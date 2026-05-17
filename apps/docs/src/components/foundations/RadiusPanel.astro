@@ -1,0 +1,56 @@
+---
+import Panel from "@/components/panels/Panel.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import { sectionNumber } from "@/lib/sections";
+import { primitives } from "@espresso-ui/tokens";
+
+const stops = Object.entries(primitives.radius).map(([key, value]) => ({
+  key,
+  value,
+  px: value === "9999px" ? 9999 : parseInt(value, 10),
+}));
+---
+
+<Panel
+  id="radius"
+  num={sectionNumber("radius")}
+  group="Foundations"
+  label="Radius"
+  desc="Rounding stops from sharp corners to fully-pilled. Aliased into semantic radius tokens for component use."
+>
+  <Canvas grid={false}>
+    {
+      stops.map((r) => (
+        <div class="stop">
+          <div class="block" style={`border-radius: ${r.px === 9999 ? "9999px" : r.value}`} />
+          <span class="key">{r.key}</span>
+          <span class="val">{r.value}</span>
+        </div>
+      ))
+    }
+  </Canvas>
+</Panel>
+
+<style>
+  .stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .block {
+    width: 80px;
+    height: 80px;
+    background: var(--color-ink-1);
+  }
+  .key {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .val {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-ink-5);
+  }
+</style>

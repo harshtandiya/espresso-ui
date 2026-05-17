@@ -1,0 +1,38 @@
+---
+interface Props {
+  grid?: boolean;
+  padded?: boolean;
+  class?: string;
+}
+
+const { grid = true, padded = true, class: className = "" } = Astro.props;
+---
+
+<div class:list={["canvas", grid && "grid", padded && "padded", className]}>
+  <slot />
+</div>
+
+<style>
+  .canvas {
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    margin-top: 12px;
+  }
+  .canvas.padded {
+    padding: 56px 32px;
+  }
+  .canvas.grid {
+    background-image:
+      linear-gradient(var(--color-line-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line-2) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: -1px -1px;
+  }
+</style>

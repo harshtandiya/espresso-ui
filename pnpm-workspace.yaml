@@ -25,6 +25,9 @@ catalogMode: prefer
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
+  # Astro 5 mutates chunk.code in a post-build hook; vite-plus (Rolldown) chunks expose
+  # code as a getter-only property, which crashes the build. Pin Astro's vite to upstream.
+  astro>vite: "^6"
 peerDependencyRules:
   allowAny:
     - vite

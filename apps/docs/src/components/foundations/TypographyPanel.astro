@@ -1,0 +1,71 @@
+---
+import Panel from "@/components/panels/Panel.astro";
+import { sectionNumber } from "@/lib/sections";
+import { primitives } from "@espresso-ui/tokens";
+
+interface Row {
+  meta: string;
+  size: string;
+  weight: string;
+  sample: string;
+  mono?: boolean;
+}
+
+const rows: Row[] = [
+  { meta: `Display ${primitives.font.size["display-md"]}`, size: primitives.font.size["display-md"], weight: "600", sample: "espresso-ui" },
+  { meta: `H1 ${primitives.font.size["display-xs"]}`, size: primitives.font.size["display-xs"], weight: "600", sample: "Section heading" },
+  { meta: `H2 ${primitives.font.size["text-xl"]}`, size: primitives.font.size["text-xl"], weight: "600", sample: "Subheading" },
+  { meta: `Body ${primitives.font.size["text-md"]}`, size: primitives.font.size["text-md"], weight: "400", sample: "The quick brown fox jumps over the lazy dog." },
+  { meta: `Body ${primitives.font.size["text-sm"]}`, size: primitives.font.size["text-sm"], weight: "400", sample: "The quick brown fox jumps over the lazy dog." },
+  { meta: `Mono ${primitives.font.size["text-sm"]}`, size: primitives.font.size["text-sm"], weight: "500", sample: "const total = items.length;", mono: true },
+];
+---
+
+<Panel
+  id="type"
+  num={sectionNumber("type")}
+  group="Foundations"
+  label="Typography"
+  desc="Inter for UI, JetBrains Mono for code. Six type roles cover everything from display headlines to inline code."
+>
+  <div class="type-list">
+    {
+      rows.map((r) => (
+        <div class="type-row">
+          <div class="meta">{r.meta}</div>
+          <div
+            class="sample"
+            style={`font-size: ${r.size}; font-weight: ${r.weight}; font-family: ${r.mono ? "var(--font-mono)" : "var(--font-sans)"}; letter-spacing: ${parseInt(r.size, 10) >= 24 ? "-0.02em" : "-0.005em"}`}
+          >
+            {r.sample}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Panel>
+
+<style>
+  .type-list {
+    margin-top: 32px;
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-line-2);
+  }
+  .type-row:last-child {
+    border-bottom: none;
+  }
+  .type-row .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+  }
+  .type-row .sample {
+    color: var(--color-ink-1);
+    line-height: 1.2;
+  }
+</style>

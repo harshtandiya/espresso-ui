@@ -3,7 +3,12 @@
   "type": "registry:ui",
   "title": "Button",
   "description": "espresso-ui Button component (React)",
-  "dependencies": ["@ark-ui/react", "clsx", "tailwind-merge", "class-variance-authority"],
+  "dependencies": [
+    "@ark-ui/react",
+    "clsx",
+    "tailwind-merge",
+    "class-variance-authority"
+  ],
   "registryDependencies": [],
   "files": [
     {

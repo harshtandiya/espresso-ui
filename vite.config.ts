@@ -5,10 +5,10 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   lint: {
-    ignorePatterns: ["test-app/**"],
+    ignorePatterns: ["test-app/**", "apps/docs/public/r/**"],
     options: { typeAware: true, typeCheck: true },
   },
   fmt: {
-    ignorePatterns: ["test-app/**"],
+    ignorePatterns: ["test-app/**", "apps/docs/public/r/**"],
   },
 });
