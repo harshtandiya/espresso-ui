@@ -8,8 +8,8 @@
     "build": "vp run build",
     "check": "vp check",
     "test": "vp test",
-    "docs:dev": "vp run --filter apps/docs dev",
-    "docs:build": "vp run --filter apps/docs build",
+    "docs:dev": "vp run --filter ./apps/docs dev",
+    "docs:build": "vp run --filter ./apps/docs build",
     "build:registry": "tsx registry/build.ts",
     "prepare": "vp config"
   },
