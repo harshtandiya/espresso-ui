@@ -397,7 +397,7 @@ Browser verification guide using the Playwright MCP. Covers starting both dev se
 
 ## What NOT to do
 
-- **Do not publish component code to npm.** The entire model is code-copying into the user's project. The only things published to npm are the `espresso-ui` CLI binary and the `@espresso-ui/tokens` CSS package.
+- **Do not publish component code to npm.** The entire model is code-copying into the user's project. The only thing published to npm is the `espresso-ui` CLI binary. `@espresso-ui/tokens` is a private, internal workspace package — its CSS/JS feeds the docs site only, and the CLI inlines the same tokens into the user's generated CSS via `themes/default.ts`. Do not publish tokens to npm.
 - **Do not add ESLint, Prettier, or standalone Biome configs.** `vp check` handles all of this.
 - **Do not add tsup config.** `vp pack` handles bundling.
 - **Do not use Next.js anywhere**, including in the docs site.

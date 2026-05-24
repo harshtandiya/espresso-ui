@@ -23,7 +23,7 @@ Theming is handled through a three-tier CSS custom property system: primitive sc
 ```bash
 vp check          # lint + format + typecheck
 vp test           # run all tests
-vp pack           # bundle CLI and tokens for npm
+vp pack           # bundle the CLI for npm
 ```
 
 Requires [pnpm](https://pnpm.io) and [Vite+](https://viteplus.dev).

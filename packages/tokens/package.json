@@ -1,21 +1,10 @@
 {
   "name": "@espresso-ui/tokens",
   "version": "0.0.0",
-  "description": "Design tokens for espresso-ui: primitives, semantic CSS variables, and a Tailwind v4 theme.",
-  "homepage": "https://github.com/harshtandiya/espresso-ui#readme",
-  "bugs": {
-    "url": "https://github.com/harshtandiya/espresso-ui/issues"
-  },
+  "private": true,
+  "description": "Internal design tokens for espresso-ui: primitives, semantic CSS variables, and a Tailwind v4 theme. Consumed by the docs site only; not published to npm.",
   "license": "MIT",
   "author": "Harsh Tandiya",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/harshtandiya/espresso-ui.git",
-    "directory": "packages/tokens"
-  },
-  "files": [
-    "dist"
-  ],
   "type": "module",
   "exports": {
     ".": {
@@ -27,21 +16,16 @@
     "./tailwind.css": "./dist/tailwind.css",
     "./package.json": "./package.json"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "generate": "tsx src/sd.config.ts",
     "build": "vp pack && pnpm generate",
     "dev": "vp pack --watch",
     "test": "vp test",
-    "check": "vp check",
-    "prepublishOnly": "vp run build"
+    "check": "vp check"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@typescript/native-preview": "7.0.0-dev.20260316.1",
-    "bumpp": "^11.0.1",
     "style-dictionary": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

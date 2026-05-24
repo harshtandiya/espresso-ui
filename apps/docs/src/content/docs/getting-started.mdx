@@ -27,16 +27,14 @@ You will be prompted for:
 - **Theme** — choose a bundled theme or point to a custom CSS file
 - **Aliases** — where components and utils live (e.g. `@/components`, `@/lib/utils`)
 
-This writes `espresso.config.json` at your project root and installs `clsx`, `tailwind-merge`, and `class-variance-authority`.
+This writes `espresso.config.json` at your project root, generates a global CSS file (default `src/styles/espresso.css`) containing Tailwind plus all design tokens, and installs `clsx`, `tailwind-merge`, and `class-variance-authority`.
 
-## 2. Import design tokens
+## 2. Import the global CSS
 
-Add the token stylesheet to your global CSS **before** Tailwind utilities:
+`init` generates a self-contained stylesheet — it already pulls in Tailwind and every design token, so there is no separate package to install. Import it once in your app entry point:
 
 ```css
-@import "@espresso-ui/tokens/tokens.css";
-@import "@espresso-ui/tokens/tailwind.css";
-@import "tailwindcss";
+@import "./styles/espresso.css";
 ```
 
 ## 3. Add components
