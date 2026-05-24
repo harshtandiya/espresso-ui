@@ -12,12 +12,20 @@ espresso-ui is a component library where you own the code. Components are copied
 - Node.js 22.12+
 - A React or Vue project with Tailwind CSS v4
 
-## 1. Initialise
+## 1. Install the CLI
+
+Install globally once on your machine:
+
+```sh
+npm install -g @espresso-ui/cli
+```
+
+## 2. Initialise
 
 Run `init` once per project to create `espresso.config.json` and install shared dependencies.
 
 ```sh
-npx espresso-ui init
+espresso-ui init
 ```
 
 You will be prompted for:
@@ -29,7 +37,7 @@ You will be prompted for:
 
 This writes `espresso.config.json` at your project root, generates a global CSS file (default `src/styles/espresso.css`) containing Tailwind plus all design tokens, and installs `clsx`, `tailwind-merge`, and `class-variance-authority`.
 
-## 2. Import the global CSS
+## 3. Import the global CSS
 
 `init` generates a self-contained stylesheet — it already pulls in Tailwind and every design token, so there is no separate package to install. Import it once in your app entry point:
 
@@ -37,15 +45,15 @@ This writes `espresso.config.json` at your project root, generates a global CSS 
 @import "./styles/espresso.css";
 ```
 
-## 3. Add components
+## 4. Add components
 
 ```sh
-npx espresso-ui add button
+espresso-ui add button
 ```
 
 The CLI reads `espresso.config.json`, renders the correct template for your framework, and writes the component file into your components directory. That file is yours — edit it freely.
 
-## 4. Use the component
+## 5. Use the component
 
 **React**
 
@@ -85,6 +93,6 @@ You can change the dark mode strategy to `"class"` or `"media-query"` in `espres
 Each component exposes CSS custom properties scoped with a component prefix (e.g. `--btn-*`). Override them anywhere in your CSS to customise without touching the component source.
 
 ```sh
-npx espresso-ui theme list
-npx espresso-ui theme add <name>
+espresso-ui theme list
+espresso-ui theme add <name>
 ```

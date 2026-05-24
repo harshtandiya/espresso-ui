@@ -1,5 +1,5 @@
 {
-  "name": "espresso-ui",
+  "name": "@espresso-ui/cli",
   "version": "0.0.0",
   "description": "Framework-agnostic UI component installer for React and Vue. Copies editable source into your project, shadcn-style.",
   "keywords": [
@@ -24,7 +24,7 @@
     "directory": "packages/cli"
   },
   "bin": {
-    "espresso-ui": "./dist/index.mjs"
+    "espresso-ui": "dist/index.mjs"
   },
   "files": [
     "dist",
