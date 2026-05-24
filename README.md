@@ -3,10 +3,13 @@
 A framework-agnostic UI component library, inspired by shadcn/ui. Components are not installed as a dependency — they are copied directly into your project as editable source code via the CLI.
 
 ```bash
+npx espresso-ui init
 npx espresso-ui add button
 ```
 
 Supports **React** and **Vue**. Styled with **Tailwind CSS v4** and CSS custom properties.
+
+Requires Node.js 22.12+.
 
 ---
 
@@ -23,7 +26,9 @@ Theming is handled through a three-tier CSS custom property system: primitive sc
 ```bash
 vp check          # lint + format + typecheck
 vp test           # run all tests
-vp pack           # bundle the CLI for npm
+pnpm --filter espresso-ui build   # bundle CLI + registry for npm
+pnpm release                      # bump version, commit, and tag
+git push --follow-tags            # triggers npm publish workflow
 ```
 
 Requires [pnpm](https://pnpm.io) and [Vite+](https://viteplus.dev).

@@ -24,5 +24,11 @@ jobs:
       - name: Generate Astro content + env types
         run: vp run docs#sync
       - run: vp check
+      - run: npm run bundle-registry
+        working-directory: packages/cli
       - run: vp test
       - run: vp run build
+      - name: Verify npm pack contents
+        run: |
+          cd packages/cli
+          npm pack --dry-run 2>&1 | grep -q "registry/registry.json"
