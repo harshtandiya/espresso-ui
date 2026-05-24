@@ -1,6 +1,6 @@
 # Creating a Component
 
-This guide walks through adding a new component to espresso-ui from scratch, using **Avatar** as the example. By the end you'll have a fully working component that users can copy into their project with `npx espresso-ui add avatar`.
+This guide walks through adding a new component to espresso-ui from scratch, using **Avatar** as the example. By the end you'll have a fully working component that users can copy into their project with `espresso-ui add avatar`.
 
 ---
 

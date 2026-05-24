@@ -4,7 +4,7 @@ import Canvas from "@/components/panels/Canvas.astro";
 import CodeBlock from "@/components/panels/CodeBlock.astro";
 import { sectionNumber } from "@/lib/sections";
 
-const usage = `// after \`npx espresso-ui init\`:
+const usage = `// after \`espresso-ui init\`:
 import { Button } from "@/components/ui/Button";
 
 export default function App() {
@@ -17,14 +17,18 @@ export default function App() {
   id="install"
   num={sectionNumber("install")}
   label="Install"
-  desc="Run the init command in your project root. It scaffolds the config, drops a base stylesheet, and wires the @ alias. No build configuration needed."
+  desc="Install the CLI globally once, then run init in your project root. It scaffolds the config, drops a base stylesheet, and wires the @ alias. No build configuration needed."
 >
   <Canvas grid={false} padded={false} class="install-canvas">
     <div class="cmd-row">
       <span class="dollar">$</span>
       <code class="cmd">
-        <span class="dim">npx </span>espresso-ui<span class="dim"> init</span>
+        <span class="dim">npm install -g </span>@espresso-ui/cli
       </code>
+    </div>
+    <div class="cmd-row">
+      <span class="dollar">$</span>
+      <code class="cmd">espresso-ui<span class="dim"> init</span></code>
     </div>
   </Canvas>
 
@@ -42,6 +46,9 @@ export default function App() {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+  .cmd-row + .cmd-row {
+    margin-top: 10px;
   }
   .dollar {
     font-family: var(--font-mono);

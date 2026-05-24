@@ -24,7 +24,7 @@ export function getPackageRoot(): string {
     dir = parent;
   }
 
-  throw new Error("Could not locate espresso-ui package root");
+  throw new Error("Could not locate @espresso-ui/cli package root");
 }
 
 export function readPackageJson(): { version: string } {

@@ -10,7 +10,7 @@ This file provides context for AI agents working in this repository. Read it ful
 
 Supported output frameworks: **React** and **Vue**.
 Styling: **Tailwind CSS v4** with CSS custom properties for theming.
-CLI invocation: `npx espresso-ui <command>`
+CLI invocation: `npm install -g @espresso-ui/cli`, then `espresso-ui <command>`
 
 ---
 
@@ -397,7 +397,7 @@ Browser verification guide using the Playwright MCP. Covers starting both dev se
 
 ## What NOT to do
 
-- **Do not publish component code to npm.** The entire model is code-copying into the user's project. The only thing published to npm is the `espresso-ui` CLI binary. `@espresso-ui/tokens` is a private, internal workspace package — its CSS/JS feeds the docs site only, and the CLI inlines the same tokens into the user's generated CSS via `themes/default.ts`. Do not publish tokens to npm.
+- **Do not publish component code to npm.** The entire model is code-copying into the user's project. The only thing published to npm is the `@espresso-ui/cli` package. `@espresso-ui/tokens` is a private, internal workspace package — its CSS/JS feeds the docs site only, and the CLI inlines the same tokens into the user's generated CSS via `themes/default.ts`. Do not publish tokens to npm.
 - **Do not add ESLint, Prettier, or standalone Biome configs.** `vp check` handles all of this.
 - **Do not add tsup config.** `vp pack` handles bundling.
 - **Do not use Next.js anywhere**, including in the docs site.

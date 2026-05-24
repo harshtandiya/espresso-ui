@@ -1,14 +1,13 @@
-# espresso-ui
+# @espresso-ui/cli
 
 Framework-agnostic UI component CLI for React and Vue. Copies editable source into your project, shadcn-style.
 
 ## Install
 
-No global install required — use `npx`:
+Install globally once:
 
 ```bash
-npx espresso-ui init
-npx espresso-ui add button
+npm install -g @espresso-ui/cli
 ```
 
 Requires Node.js 22.12+.
@@ -26,8 +25,9 @@ Requires Node.js 22.12+.
 ## Quick start
 
 ```bash
-npx espresso-ui init
-npx espresso-ui add button
+npm install -g @espresso-ui/cli
+espresso-ui init
+espresso-ui add button
 ```
 
 Import the generated global CSS in your app entry:

@@ -13,7 +13,7 @@ Design token source of truth for espresso-ui: primitives, semantic CSS variables
 
 Only the docs site (`apps/docs`), via `workspace:*` — for the CSS imports and the foundation panels that read `primitives`.
 
-End users never install this package. The CLI (`espresso-ui init`) inlines the same tokens directly into the user's generated CSS file via `packages/cli/src/themes/default.ts`.
+End users install `@espresso-ui/cli` globally. `espresso-ui init` inlines the same tokens directly into the user's generated CSS file via `packages/cli/src/themes/default.ts`.
 
 ## Scripts
 
