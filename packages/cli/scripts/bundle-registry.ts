@@ -42,7 +42,17 @@ async function bundleRegistry(): Promise<void> {
     await fs.mkdir(outDir, { recursive: true });
 
     for (const ext of [".react.eta", ".vue.eta", ".css"]) {
-      await fs.copyFile(path.join(srcDir, `${name}${ext}`), path.join(outDir, `${name}${ext}`));
+      const src = path.join(srcDir, `${name}${ext}`);
+      const dest = path.join(outDir, `${name}${ext}`);
+
+      try {
+        await fs.copyFile(src, dest);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+          throw new Error(`Missing registry/${name}/${name}${ext}`);
+        }
+        throw error;
+      }
     }
 
     const mod = await import(pathToFileURL(path.join(srcDir, "definition.ts")).href);

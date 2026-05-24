@@ -29,4 +29,4 @@ jobs:
       - name: Verify npm pack contents
         run: |
           cd packages/cli
-          npm pack --dry-run 2>&1 | grep -q "registry/button/definition.json"
+          npm pack --dry-run 2>&1 | grep -q "registry/registry.json"

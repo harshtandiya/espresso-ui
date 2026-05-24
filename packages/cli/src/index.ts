@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-import { createRequire } from "node:module";
 import { Command } from "commander";
 import { registerInit } from "./commands/init";
 import { registerAdd } from "./commands/add";
 import { registerTheme } from "./commands/theme";
+import { readPackageJson } from "./utils/package-root.js";
 
-const require = createRequire(import.meta.url);
-const { version } = require("../package.json") as { version: string };
+const { version } = readPackageJson();
 
 const program = new Command();
 

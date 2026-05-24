@@ -27,7 +27,8 @@ Theming is handled through a three-tier CSS custom property system: primitive sc
 vp check          # lint + format + typecheck
 vp test           # run all tests
 pnpm --filter espresso-ui build   # bundle CLI + registry for npm
-pnpm release      # bump version and create release tag
+pnpm release                      # bump version, commit, and tag
+git push --follow-tags            # triggers npm publish workflow
 ```
 
 Requires [pnpm](https://pnpm.io) and [Vite+](https://viteplus.dev).
