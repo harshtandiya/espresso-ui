@@ -7,7 +7,7 @@
     "dev": "vp run dev",
     "build": "vp run build",
     "check": "vp check",
-    "test": "vp test",
+    "test": "pnpm --filter ./packages/cli bundle-registry && vp test",
     "release": "bumpp",
     "docs:dev": "vp run --filter ./apps/docs dev",
     "docs:build": "vp run --filter ./apps/docs build",

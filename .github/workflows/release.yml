@@ -24,6 +24,7 @@ jobs:
           cache: true
       - run: vp install
       - run: vp check
+      - run: pnpm --filter ./packages/cli bundle-registry
       - run: vp test
       - uses: actions/setup-node@v4
         with:
