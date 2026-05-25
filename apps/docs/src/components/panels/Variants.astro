@@ -12,4 +12,15 @@
   .variants :global(.variant-row) {
     display: contents;
   }
+
+  @media (max-width: 768px) {
+    .variants {
+      margin: 18px var(--mobile-gutter, 20px) 0;
+      display: block;
+      grid-template-columns: 1fr;
+    }
+    .variants :global(.variant-row) {
+      display: block;
+    }
+  }
 </style>

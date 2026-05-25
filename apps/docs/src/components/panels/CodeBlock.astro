@@ -39,7 +39,7 @@ const { file, lang = "tsx", code } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 10px 8px 14px;
+    padding: 7px 10px;
     border-bottom: 1px solid var(--color-line-2);
     background: var(--color-surface-2);
   }
@@ -50,10 +50,10 @@ const { file, lang = "tsx", code } = Astro.props;
   }
   .code :global(pre) {
     margin: 0;
-    padding: 16px 18px;
+    padding: 12px 14px;
     font-family: var(--font-mono);
-    font-size: 12.5px;
-    line-height: 1.6;
+    font-size: 11.5px;
+    line-height: 1.55;
     overflow-x: auto;
     background: transparent !important;
     color: var(--shiki-light);
@@ -64,5 +64,11 @@ const { file, lang = "tsx", code } = Astro.props;
   :global(html[data-theme="dark"]) .code :global(pre),
   :global(html[data-theme="dark"]) .code :global(pre span) {
     color: var(--shiki-dark);
+  }
+
+  @media (max-width: 768px) {
+    .code {
+      margin: 18px var(--mobile-gutter, 20px) 24px;
+    }
   }
 </style>
