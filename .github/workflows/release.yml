@@ -33,12 +33,16 @@ jobs:
           fetch-depth: 0
 
       - name: Resolve and verify version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           set -euo pipefail
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            VERSION="${{ inputs.version }}"
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            VERSION="$INPUT_VERSION"
           else
-            VERSION="$(echo "${{ github.event.head_commit.message }}" | head -n1 | tr -d '[:space:]')"
+            VERSION="$(printf '%s' "$HEAD_COMMIT_MESSAGE" | head -n1 | tr -d '[:space:]')"
           fi
           echo "Resolved version: $VERSION"
 
@@ -82,4 +86,4 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$VERSION" --generate-notes --verify-tag
+        run: gh release create "$VERSION" --generate-notes --verify-tag --target "$GITHUB_SHA"
