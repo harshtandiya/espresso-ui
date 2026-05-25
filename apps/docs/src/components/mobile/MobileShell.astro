@@ -17,18 +17,11 @@ import MobileIndex from "./MobileIndex.astro";
     background: var(--color-surface);
     flex-direction: column;
     transform: translateX(0);
-    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0.34, 1);
   }
 
   @media (max-width: 768px) {
     .mobile-index-layer {
       display: flex;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mobile-index-layer {
-      transition: none;
     }
   }
 </style>

@@ -55,8 +55,6 @@ const introSectionIds = [...INTRO_SECTION_IDS];
             s.removeAttribute("data-mobile-active");
             s.removeAttribute("hidden");
           });
-          const detailNav = document.querySelector("[data-mobile-detail-nav]");
-          if (detailNav) detailNav.hidden = true;
         } else {
           document.body.dataset.mobileScreen =
             document.body.dataset.mobileScreen ?? "index";
@@ -70,9 +68,7 @@ const introSectionIds = [...INTRO_SECTION_IDS];
           const active = !!id && s.id === id;
           s.toggleAttribute("data-mobile-active", active);
         });
-        const detailNav = document.querySelector("[data-mobile-detail-nav]");
         const counter = document.querySelector("[data-mobile-counter]");
-        if (detailNav) detailNav.hidden = !id;
         if (counter) {
           if (id) {
             const idx = mobileNavSectionIds.indexOf(id);
@@ -156,10 +152,12 @@ const introSectionIds = [...INTRO_SECTION_IDS];
       <Sidebar />
       <div class="main-column">
         <MobileShell />
-        <MobileDetailNav />
-        <main id="pane-right" class="scroll-pane pane-right">
-          <slot />
-        </main>
+        <div class="mobile-detail-layer">
+          <MobileDetailNav />
+          <main id="pane-right" class="scroll-pane pane-right">
+            <slot />
+          </main>
+        </div>
       </div>
     </div>
 
