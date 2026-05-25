@@ -1,0 +1,46 @@
+---
+import { SITE_VERSION } from "@/lib/site-copy";
+
+interface Props {
+  href?: string;
+  showVersion?: boolean;
+}
+
+const { href = "#overview", showVersion = true } = Astro.props;
+---
+
+<a class="wordmark" href={href}>
+  <span class="glyph">e</span>
+  espresso-ui
+  {showVersion && <span class="ver">{SITE_VERSION}</span>}
+</a>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-ink-1);
+    text-decoration: none;
+  }
+  .glyph {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--color-ink-1);
+    color: var(--color-surface);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .ver {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+    margin-left: 4px;
+  }
+</style>
