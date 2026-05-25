@@ -1,0 +1,61 @@
+---
+import type { SectionStatus } from "@/lib/sections";
+
+interface Props {
+  status?: SectionStatus;
+  file: string;
+}
+
+const { status = "stable", file } = Astro.props;
+
+const statusColor: Record<SectionStatus, string> = {
+  stable: "rgb(31, 138, 91)",
+  beta: "rgb(82, 82, 82)",
+  new: "rgb(0, 123, 224)",
+};
+---
+
+<div class="detail-meta">
+  <span class="status">
+    <span class="pip" style={`background: ${statusColor[status]}`}></span>
+    {status}
+  </span>
+  <span class="dot"></span>
+  <span>{file}</span>
+  <span class="dot"></span>
+  <span>Headless API</span>
+</div>
+
+<style>
+  .detail-meta {
+    margin: 24px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--color-ink-4);
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface-2);
+    text-transform: capitalize;
+  }
+  .pip {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-ink-5);
+  }
+</style>

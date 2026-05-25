@@ -1,0 +1,44 @@
+---
+interface Props {
+  label: string;
+  sub?: string;
+}
+
+const { label, sub } = Astro.props;
+---
+
+<div class="variant-row">
+  <div class="variant-label">
+    {label}
+    {sub && <span class="sub">{sub}</span>}
+  </div>
+  <div class="variant-cell">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .variant-label {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-line-2);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink-1);
+  }
+  .variant-label .sub {
+    display: block;
+    font-weight: 400;
+    color: var(--color-ink-4);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .variant-cell {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-line-2);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+</style>
