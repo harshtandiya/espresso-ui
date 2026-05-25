@@ -1,0 +1,25 @@
+---
+import Wordmark from "@/components/shared/Wordmark.astro";
+import ThemeToggle from "@/components/shared/ThemeToggle.astro";
+---
+
+<header class="mobile-topnav" data-mobile-topnav>
+  <Wordmark href="#overview" showVersion={true} data-mobile-home />
+  <ThemeToggle id="mobile-theme-toggle" />
+</header>
+
+<style>
+  .mobile-topnav {
+    padding: max(56px, env(safe-area-inset-top, 0px) + 12px) var(--mobile-gutter, 20px) 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-surface);
+    border-bottom: 1px solid transparent;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+  .mobile-topnav[data-scrolled] {
+    border-bottom-color: var(--color-line-2);
+  }
+</style>

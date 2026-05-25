@@ -1,0 +1,215 @@
+---
+import {
+  MOBILE_NAV_SECTIONS,
+  mobileIndexGroups,
+  mobileSectionNumber,
+  sectionSub,
+} from "@/lib/sections";
+import { footer, hero, install, SITE_VERSION } from "@/lib/site-copy";
+import InstallBar from "@/components/shared/InstallBar.astro";
+---
+
+<div class="mobile-index-scroll" data-mobile-index-scroll>
+  <div class="hero">
+    <h1>{hero.mobileTitle}</h1>
+    <p>{hero.mobileLede}</p>
+  </div>
+
+  <div class="install-wrap">
+    <InstallBar action="copy" />
+  </div>
+
+  <div class="install-detail">
+    <p class="install-desc">{install.mobileDesc}</p>
+    <div class="install-steps">
+      <div class="cmd-row">
+        <span class="prompt">{install.prompt}</span>
+        <code><span class="dim">npm install -g </span>@espresso-ui/cli</code>
+      </div>
+      <div class="cmd-row">
+        <span class="prompt">{install.prompt}</span>
+        <code>espresso-ui<span class="dim"> init</span></code>
+      </div>
+    </div>
+  </div>
+
+  {
+    mobileIndexGroups().map((g) => {
+      const items = MOBILE_NAV_SECTIONS.filter((s) => s.group === g.key);
+      if (items.length === 0) return null;
+      return (
+        <div>
+          <div class="group-label">{g.label}</div>
+          {items.map((s) => (
+            <button
+              class="section-row"
+              type="button"
+              data-mobile-pick={s.id}
+              data-nav-item={s.id}
+            >
+              <span class="num">{mobileSectionNumber(s.id)}</span>
+              <span class="label">{s.label}</span>
+              <span class="sub">{sectionSub(s)}</span>
+              <span class="chev" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="14"
+                  height="14"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </span>
+            </button>
+          ))}
+        </div>
+      );
+    })
+  }
+
+  <footer class="foot">
+    {footer.copyright} · MIT · {SITE_VERSION}
+  </footer>
+</div>
+
+<style>
+  .mobile-index-scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-index-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero {
+    padding: 20px 20px 24px;
+  }
+  .hero h1 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin: 0;
+    text-wrap: balance;
+    color: var(--color-ink-1);
+  }
+  .hero p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-ink-3);
+    margin: 14px 0 0;
+    text-wrap: pretty;
+  }
+
+  .install-wrap {
+    margin: 18px 20px 0;
+  }
+
+  .install-detail {
+    margin: 14px 20px 0;
+    padding: 14px 16px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-surface-2);
+  }
+  .install-desc {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink-3);
+  }
+  .install-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cmd-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .prompt {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-ink-4);
+    flex-shrink: 0;
+  }
+  .cmd-row code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--color-ink-1);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .cmd-row code .dim {
+    color: var(--color-ink-3);
+  }
+
+  .group-label {
+    padding: 28px 20px 8px;
+    font-size: 11px;
+    color: var(--color-ink-4);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .section-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    background: var(--color-surface);
+    border: none;
+    border-bottom: 1px solid var(--color-line-2);
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .section-row:active {
+    background: var(--color-surface-2);
+  }
+  .section-row .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+    min-width: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+  .section-row .label {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-ink-1);
+  }
+  .section-row .sub {
+    font-size: 12px;
+    color: var(--color-ink-4);
+    font-family: var(--font-mono);
+    text-transform: lowercase;
+  }
+  .section-row .chev {
+    color: var(--color-ink-5);
+    transition: transform 0.12s;
+  }
+  .section-row:active .chev {
+    transform: translateX(2px);
+  }
+
+  .foot {
+    padding: 22px 20px max(32px, env(safe-area-inset-bottom, 0px) + 16px);
+    text-align: center;
+    color: var(--color-ink-5);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    border-top: 1px solid var(--color-line-2);
+    margin-top: 4px;
+  }
+</style>

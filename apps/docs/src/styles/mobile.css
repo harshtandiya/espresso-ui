@@ -1,0 +1,111 @@
+/* Mobile docs shell — layout, push navigation, shared spacing tokens */
+
+:root {
+  --bp-mobile: 768px;
+}
+
+@media (max-width: 768px) {
+  body[data-mobile] {
+    --mobile-gutter: 20px;
+    --mobile-gutter-nav: 16px;
+    overflow: hidden;
+  }
+
+  .pane-left {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block;
+    height: 100dvh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .main-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .mobile-index-layer {
+    z-index: 3;
+  }
+
+  body[data-mobile-screen="detail"] .mobile-index-layer {
+    z-index: 1;
+    transform: translateX(-22%);
+    pointer-events: none;
+  }
+
+  body[data-mobile-screen="detail"] [data-mobile-detail-nav],
+  body[data-mobile-screen="detail"] #pane-right {
+    position: relative;
+    z-index: 2;
+  }
+
+  body[data-mobile-screen="index"] [data-mobile-detail-nav] {
+    display: none !important;
+  }
+
+  body[data-mobile-screen="detail"] [data-mobile-detail-nav] {
+    display: flex !important;
+  }
+
+  body[data-mobile-screen="index"] #pane-right {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #pane-right {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    background: var(--color-surface);
+  }
+
+  #pane-right::-webkit-scrollbar {
+    display: none;
+  }
+
+  #pane-right > section[id] {
+    display: none;
+    max-width: none;
+  }
+
+  #pane-right > section[id][data-mobile-active] {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-index-layer,
+  [data-mobile-detail-nav] {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) 1.4fr;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .main-column {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #pane-right {
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--color-surface-2);
+    scroll-behavior: smooth;
+  }
+}
