@@ -1,0 +1,75 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Label as LabelReact } from "@/generated/react/Label.tsx";
+
+const usage = `import { Label } from "@/components/ui/Label";
+
+export default function App() {
+  return <Label htmlFor="email">Email address</Label>;
+}
+`;
+---
+
+<ComponentPanel
+  id="label"
+  num={sectionNumber("label")}
+  label="Label"
+  desc="Accessible text label for form controls. Pairs with inputs via htmlFor and supports a disabled state that dims the label and blocks pointer events."
+  status="stable"
+  code={usage}
+>
+  <CanvasToolbar title="Live preview" meta="default · disabled" />
+  <Canvas>
+    <LabelReact client:load htmlFor="demo-email">Email address</LabelReact>
+    <LabelReact client:load disabled>Disabled label</LabelReact>
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="With input" sub="htmlFor association">
+      <Canvas grid={false} class="label-field-canvas">
+        <div class="field">
+          <LabelReact client:load htmlFor="react-name">Full name</LabelReact>
+          <input id="react-name" type="text" placeholder="Jane Doe" class="demo-input" />
+        </div>
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.label-field-canvas) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+    padding: 28px 32px !important;
+    width: 100%;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 280px;
+  }
+  .demo-input {
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    background: var(--color-surface);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-ink-1);
+  }
+  .demo-input::placeholder {
+    color: var(--color-ink-4);
+  }
+  .demo-input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+</style>

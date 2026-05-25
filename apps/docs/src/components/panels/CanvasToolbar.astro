@@ -1,0 +1,34 @@
+---
+interface Props {
+  title: string;
+  meta?: string;
+}
+
+const { title, meta } = Astro.props;
+---
+
+<div class="canvas-toolbar">
+  <h3>{title}</h3>
+  {meta && <span class="meta">{meta}</span>}
+</div>
+
+<style>
+  .canvas-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 36px 0 10px;
+  }
+  .canvas-toolbar h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink-1);
+    letter-spacing: -0.005em;
+  }
+  .canvas-toolbar .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-5);
+  }
+</style>

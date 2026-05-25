@@ -1,0 +1,36 @@
+---
+import Panel from "./Panel.astro";
+import DetailMeta from "./DetailMeta.astro";
+import CodeBlock from "./CodeBlock.astro";
+import type { SectionStatus } from "@/lib/sections";
+
+interface Props {
+  id: string;
+  num: string;
+  label: string;
+  desc: string;
+  status?: SectionStatus;
+  code?: string;
+  codeFile?: string;
+  codeLang?: "tsx" | "vue" | "ts";
+}
+
+const {
+  id,
+  num,
+  label,
+  desc,
+  status = "stable",
+  code,
+  codeFile,
+  codeLang = "tsx",
+} = Astro.props;
+
+const file = codeFile ?? `${label.toLowerCase()}.tsx`;
+---
+
+<Panel id={id} num={num} group="Components" label={label} desc={desc}>
+  <DetailMeta slot="meta" status={status} file={file} />
+  <slot />
+  {code && <CodeBlock file={file} lang={codeLang} code={code} />}
+</Panel>

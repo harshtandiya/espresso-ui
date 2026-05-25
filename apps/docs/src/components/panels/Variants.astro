@@ -1,0 +1,15 @@
+<div class="variants">
+  <slot />
+</div>
+
+<style>
+  .variants {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-top: 1px solid var(--color-line-2);
+  }
+  .variants :global(.variant-row) {
+    display: contents;
+  }
+</style>

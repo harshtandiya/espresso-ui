@@ -6,18 +6,8 @@ import ColorPanel from "@/components/foundations/ColorPanel.astro";
 import TypographyPanel from "@/components/foundations/TypographyPanel.astro";
 import SpacingPanel from "@/components/foundations/SpacingPanel.astro";
 import RadiusPanel from "@/components/foundations/RadiusPanel.astro";
-import Panel from "@/components/panels/Panel.astro";
-import Canvas from "@/components/panels/Canvas.astro";
-import { SECTIONS, sectionNumber } from "@/lib/sections";
-
-const groupLabel = (key: string): string => {
-  if (key === "foundations") return "Foundations";
-  if (key === "components") return "Components";
-  return "";
-};
-
-const built = new Set(["overview", "install", "color", "type", "spacing", "radius"]);
-const placeholders = SECTIONS.filter((s) => !built.has(s.id));
+import ButtonPanel from "@/components/components/ButtonPanel.astro";
+import LabelPanel from "@/components/components/LabelPanel.astro";
 ---
 
 <Layout
@@ -30,17 +20,6 @@ const placeholders = SECTIONS.filter((s) => !built.has(s.id));
   <TypographyPanel />
   <SpacingPanel />
   <RadiusPanel />
-  {
-    placeholders.map((s) => (
-      <Panel
-        id={s.id}
-        num={sectionNumber(s.id)}
-        group={groupLabel(s.group)}
-        label={s.label}
-        desc="Coming soon."
-      >
-        <Canvas />
-      </Panel>
-    ))
-  }
+  <ButtonPanel />
+  <LabelPanel />
 </Layout>
