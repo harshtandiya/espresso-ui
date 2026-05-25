@@ -1,0 +1,118 @@
+---
+interface Props {
+  copyText: string;
+  prompt?: string;
+  dimPrefix?: string;
+  commandBody: string;
+  size?: "sm" | "md";
+}
+
+const { copyText, prompt = "$", dimPrefix = "", commandBody, size = "md" } = Astro.props;
+---
+
+<div class:list={["cmd-row", size === "sm" && "cmd-row-sm"]}>
+  <span class="prompt">{prompt}</span>
+  <code>
+    {dimPrefix && <span class="dim">{dimPrefix}</span>}
+    {commandBody}
+  </code>
+  <button
+    type="button"
+    class="copy-btn"
+    data-copy-cmd={copyText}
+    aria-label={`Copy command: ${copyText}`}
+  >
+    <svg
+      class="icon-copy"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+    <svg
+      class="icon-check"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6L9 17l-5-5"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .cmd-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .prompt {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-ink-4);
+    flex-shrink: 0;
+  }
+  .cmd-row-sm .prompt {
+    font-size: 13px;
+  }
+  code {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--color-ink-1);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .cmd-row-sm code {
+    font-size: 12.5px;
+  }
+  code .dim {
+    color: var(--color-ink-3);
+  }
+  .copy-btn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--color-line);
+    border-radius: 7px;
+    background: var(--color-surface);
+    color: var(--color-ink-4);
+    cursor: pointer;
+    padding: 0;
+  }
+  .copy-btn:hover {
+    color: var(--color-ink-1);
+    border-color: var(--color-ink-5);
+    background: var(--color-surface-3);
+  }
+  .copy-btn:active {
+    background: var(--color-surface-2);
+  }
+  .copy-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .icon-check {
+    display: none;
+  }
+  .copy-btn[data-copied] .icon-copy {
+    display: none;
+  }
+  .copy-btn[data-copied] .icon-check {
+    display: block;
+    color: var(--color-primary);
+  }
+</style>

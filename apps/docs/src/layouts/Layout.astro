@@ -239,18 +239,14 @@ const introSectionIds = [...INTRO_SECTION_IDS];
       bindThemeToggle("theme-toggle");
       bindThemeToggle("mobile-theme-toggle");
 
-      // Install copy button
-      document.querySelectorAll("[data-copy-install]").forEach((btn) => {
+      document.querySelectorAll("[data-copy-cmd]").forEach((btn) => {
         btn.addEventListener("click", async () => {
-          const cmd = btn.getAttribute("data-install-cmd");
+          const cmd = btn.getAttribute("data-copy-cmd");
           if (!cmd) return;
           try {
             await navigator.clipboard.writeText(cmd);
-            const label = btn.textContent;
-            btn.textContent = "Copied";
-            setTimeout(() => {
-              btn.textContent = label;
-            }, 1400);
+            btn.setAttribute("data-copied", "");
+            window.setTimeout(() => btn.removeAttribute("data-copied"), 1400);
           } catch {
             /* clipboard unavailable */
           }

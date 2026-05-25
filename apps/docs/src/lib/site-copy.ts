@@ -9,7 +9,6 @@ export const hero = {
 } as const;
 
 export const install = {
-  command: "npx espresso-ui init",
   prompt: "$",
   mobileDesc:
     "Install the CLI globally once, then run init in your project root. It scaffolds the config, drops a base stylesheet, and wires the @ alias.",

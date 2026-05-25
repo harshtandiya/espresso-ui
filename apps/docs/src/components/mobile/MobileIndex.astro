@@ -6,7 +6,7 @@ import {
   sectionSub,
 } from "@/lib/sections";
 import { footer, hero, install, SITE_VERSION } from "@/lib/site-copy";
-import InstallBar from "@/components/shared/InstallBar.astro";
+import CopyCmdRow from "@/components/shared/CopyCmdRow.astro";
 
 const GLOBAL_CMD_PREFIX = "npm install -g ";
 const INIT_CMD_SUFFIX = " init";
@@ -18,20 +18,16 @@ const INIT_CMD_SUFFIX = " init";
     <p>{hero.mobileLede}</p>
   </div>
 
-  <div class="install-wrap">
-    <InstallBar action="copy" />
-  </div>
-
   <div class="install-detail">
     <p class="install-desc">{install.mobileDesc}</p>
     <div class="install-steps">
-      <div class="cmd-row">
-        <span class="prompt">{install.prompt}</span>
-        <code>
-          <span class="dim">{GLOBAL_CMD_PREFIX}</span>
-          {install.globalCmd.slice(GLOBAL_CMD_PREFIX.length)}
-        </code>
-      </div>
+      <CopyCmdRow
+        size="sm"
+        copyText={install.globalCmd}
+        prompt={install.prompt}
+        dimPrefix={GLOBAL_CMD_PREFIX}
+        commandBody={install.globalCmd.slice(GLOBAL_CMD_PREFIX.length)}
+      />
       <div class="cmd-row">
         <span class="prompt">{install.prompt}</span>
         <code>
@@ -115,12 +111,8 @@ const INIT_CMD_SUFFIX = " init";
     text-wrap: pretty;
   }
 
-  .install-wrap {
-    margin: 18px 20px 0;
-  }
-
   .install-detail {
-    margin: 14px 20px 0;
+    margin: 18px 20px 0;
     padding: 14px 16px;
     border: 1px solid var(--color-line);
     border-radius: 10px;
@@ -136,6 +128,9 @@ const INIT_CMD_SUFFIX = " init";
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+  .install-steps :global(.cmd-row) + .cmd-row {
+    margin-top: 0;
   }
   .cmd-row {
     display: flex;

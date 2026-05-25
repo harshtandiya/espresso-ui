@@ -2,7 +2,6 @@
 import { GROUPS, SECTIONS, sectionNumber } from "@/lib/sections";
 import { footer, hero } from "@/lib/site-copy";
 import Wordmark from "@/components/shared/Wordmark.astro";
-import InstallBar from "@/components/shared/InstallBar.astro";
 import ThemeToggle from "@/components/shared/ThemeToggle.astro";
 ---
 
@@ -13,10 +12,6 @@ import ThemeToggle from "@/components/shared/ThemeToggle.astro";
 
   <h1 class="display">{hero.title}</h1>
   <p class="lede">{hero.lede}</p>
-
-  <div class="install-wrap">
-    <InstallBar action="read" />
-  </div>
 
   {
     GROUPS.map((g) => {
@@ -82,11 +77,6 @@ import ThemeToggle from "@/components/shared/ThemeToggle.astro";
     max-width: 460px;
     margin: 28px 0 0;
     text-wrap: pretty;
-  }
-
-  .install-wrap {
-    margin-top: 36px;
-    max-width: 460px;
   }
 
   .label {
