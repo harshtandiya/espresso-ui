@@ -1,5 +1,6 @@
 ---
 import Panel from "@/components/panels/Panel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
 import { sectionNumber } from "@/lib/sections";
 import { primitives } from "@espresso-ui/tokens";
 
@@ -20,8 +21,8 @@ const semantic: { name: string; value: string }[] = [
   label="Color"
   desc="An 11-step neutral ramp plus five semantic accents. Tokens are mode-aware — switching the theme remaps each step automatically."
 >
-  <div class="canvas-toolbar"><h3>Neutrals</h3><span class="meta">11 steps</span></div>
-  <div class="swatches" style="grid-template-columns: repeat(11, 1fr)">
+  <CanvasToolbar title="Neutrals" meta="11 steps" />
+  <div class="swatches swatches-neutral">
     {
       grayStops.map(([step, value]) => (
         <div class="sw" style={`background: ${value}`}>
@@ -31,8 +32,8 @@ const semantic: { name: string; value: string }[] = [
     }
   </div>
 
-  <div class="canvas-toolbar"><h3>Semantic</h3><span class="meta">5 accents</span></div>
-  <div class="swatches" style="grid-template-columns: repeat(5, 1fr)">
+  <CanvasToolbar title="Semantic" meta="5 accents" />
+  <div class="swatches swatches-semantic">
     {
       semantic.map((c) => (
         <div class="sw" style={`background: ${c.value}`}>
@@ -44,27 +45,16 @@ const semantic: { name: string; value: string }[] = [
 </Panel>
 
 <style>
-  .canvas-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 36px 0 10px;
-  }
-  .canvas-toolbar h3 {
-    margin: 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-ink-1);
-    letter-spacing: -0.005em;
-  }
-  .canvas-toolbar .meta {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--color-ink-5);
-  }
   .swatches {
     display: grid;
-    gap: 8px;
+    gap: 6px;
+  }
+  .swatches-neutral {
+    grid-template-columns: repeat(11, 1fr);
+  }
+  .swatches-semantic {
+    grid-template-columns: repeat(5, 1fr);
+    margin-bottom: 24px;
   }
   .sw {
     aspect-ratio: 1;
@@ -74,11 +64,22 @@ const semantic: { name: string; value: string }[] = [
   }
   .sw .lab {
     position: absolute;
-    bottom: 6px;
-    left: 8px;
+    bottom: 5px;
+    left: 7px;
     font-family: var(--font-mono);
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.95);
     mix-blend-mode: difference;
+  }
+  @media (max-width: 768px) {
+    .swatches-neutral {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .swatches {
+      margin: 0 var(--mobile-gutter, 20px);
+    }
+    .swatches-semantic {
+      margin-bottom: 24px;
+    }
   }
 </style>
