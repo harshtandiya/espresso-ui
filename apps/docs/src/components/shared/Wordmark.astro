@@ -4,18 +4,41 @@ import { SITE_VERSION } from "@/lib/site-copy";
 interface Props {
   href?: string;
   showVersion?: boolean;
+  /** Push version to the far end of a flex topbar (desktop sidebar). */
+  versionAlign?: "inline" | "end";
 }
 
-const { href = "#overview", showVersion = true } = Astro.props;
+const { href = "#overview", showVersion = true, versionAlign = "inline" } = Astro.props;
 ---
 
-<a class="wordmark" href={href}>
-  <span class="glyph">e</span>
-  espresso-ui
-  {showVersion && <span class="ver">{SITE_VERSION}</span>}
-</a>
+{
+  versionAlign === "end" ? (
+    <div class="wordmark-topbar">
+      <a class="wordmark" href={href}>
+        <span class="glyph">e</span>
+        espresso-ui
+      </a>
+      {showVersion && <span class="ver">{SITE_VERSION}</span>}
+    </div>
+  ) : (
+    <a class="wordmark" href={href}>
+      <span class="glyph">e</span>
+      espresso-ui
+      {showVersion && <span class="ver">{SITE_VERSION}</span>}
+    </a>
+  )
+}
 
 <style>
+  .wordmark-topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .wordmark-topbar .ver {
+    margin-left: auto;
+  }
   .wordmark {
     display: inline-flex;
     align-items: center;
@@ -42,5 +65,8 @@ const { href = "#overview", showVersion = true } = Astro.props;
     font-size: 11px;
     color: var(--color-ink-5);
     margin-left: 4px;
+  }
+  .wordmark-topbar .ver {
+    margin-left: auto;
   }
 </style>

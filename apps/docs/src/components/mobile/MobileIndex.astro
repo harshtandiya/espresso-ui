@@ -7,6 +7,9 @@ import {
 } from "@/lib/sections";
 import { footer, hero, install, SITE_VERSION } from "@/lib/site-copy";
 import InstallBar from "@/components/shared/InstallBar.astro";
+
+const GLOBAL_CMD_PREFIX = "npm install -g ";
+const INIT_CMD_SUFFIX = " init";
 ---
 
 <div class="mobile-index-scroll" data-mobile-index-scroll>
@@ -24,11 +27,17 @@ import InstallBar from "@/components/shared/InstallBar.astro";
     <div class="install-steps">
       <div class="cmd-row">
         <span class="prompt">{install.prompt}</span>
-        <code><span class="dim">npm install -g </span>@espresso-ui/cli</code>
+        <code>
+          <span class="dim">{GLOBAL_CMD_PREFIX}</span>
+          {install.globalCmd.slice(GLOBAL_CMD_PREFIX.length)}
+        </code>
       </div>
       <div class="cmd-row">
         <span class="prompt">{install.prompt}</span>
-        <code>espresso-ui<span class="dim"> init</span></code>
+        <code>
+          {install.initCmd.slice(0, -INIT_CMD_SUFFIX.length)}
+          <span class="dim">{INIT_CMD_SUFFIX}</span>
+        </code>
       </div>
     </div>
   </div>
@@ -45,7 +54,6 @@ import InstallBar from "@/components/shared/InstallBar.astro";
               class="section-row"
               type="button"
               data-mobile-pick={s.id}
-              data-nav-item={s.id}
             >
               <span class="num">{mobileSectionNumber(s.id)}</span>
               <span class="label">{s.label}</span>

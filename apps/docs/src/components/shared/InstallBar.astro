@@ -7,12 +7,16 @@ interface Props {
 }
 
 const { action = "copy", navTarget = "install" } = Astro.props;
+
+const CMD_PREFIX = "npx ";
+const CMD_ARG = " init";
+const cmdName = install.command.slice(CMD_PREFIX.length, -CMD_ARG.length);
 ---
 
 <div class="install" data-install-bar>
   <span class="prompt">{install.prompt}</span>
   <code>
-    <span class="tok-cmd">npx </span>espresso-ui<span class="tok-arg"> init</span>
+    <span class="tok-cmd">{CMD_PREFIX}</span>{cmdName}<span class="tok-arg">{CMD_ARG}</span>
   </code>
   {
     action === "read" ? (
@@ -20,7 +24,7 @@ const { action = "copy", navTarget = "install" } = Astro.props;
         Read
       </button>
     ) : (
-      <button class="install-action" type="button" data-copy-install>
+      <button class="install-action" type="button" data-copy-install data-install-cmd={install.command}>
         Copy
       </button>
     )

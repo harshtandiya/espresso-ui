@@ -26,7 +26,7 @@ export const SECTIONS: readonly Section[] = [
 export const MOBILE_NAV_SECTIONS: readonly Section[] = SECTIONS.filter((s) => s.group !== "intro");
 
 export const GROUPS: readonly { key: SectionGroup; label: string }[] = [
-  { key: "intro", label: "Getting started" },
+  { key: "intro", label: "" },
   { key: "foundations", label: "Foundations" },
   { key: "components", label: "Components" },
 ] as const;
@@ -45,10 +45,6 @@ export function mobileSectionNumber(id: string): string {
   return String(idx + 1).padStart(2, "0");
 }
 
-export function sectionIndex(id: string): number {
-  return SECTIONS.findIndex((s) => s.id === id);
-}
-
 export function sectionsByGroup(group: SectionGroup): readonly Section[] {
   return SECTIONS.filter((s) => s.group === group);
 }
@@ -57,10 +53,6 @@ export function sectionSub(section: Section): string {
   if (section.sub) return section.sub;
   if (section.status) return section.status;
   return "";
-}
-
-export function sectionGroupLabel(group: SectionGroup): string {
-  return GROUPS.find((g) => g.key === group)?.label ?? group;
 }
 
 /** Groups shown in the mobile index list (intro content lives on the home screen). */

@@ -73,9 +73,13 @@ const introSectionIds = [...INTRO_SECTION_IDS];
         const detailNav = document.querySelector("[data-mobile-detail-nav]");
         const counter = document.querySelector("[data-mobile-counter]");
         if (detailNav) detailNav.hidden = !id;
-        if (counter && id) {
-          const idx = mobileNavSectionIds.indexOf(id);
-          counter.textContent = `${String(idx + 1).padStart(2, "0")} / ${String(mobileNavSectionIds.length).padStart(2, "0")}`;
+        if (counter) {
+          if (id) {
+            const idx = mobileNavSectionIds.indexOf(id);
+            counter.textContent = `${String(idx + 1).padStart(2, "0")} / ${String(mobileNavSectionIds.length).padStart(2, "0")}`;
+          } else {
+            counter.textContent = "";
+          }
         }
       }
 
@@ -236,11 +240,12 @@ const introSectionIds = [...INTRO_SECTION_IDS];
       bindThemeToggle("mobile-theme-toggle");
 
       // Install copy button
-      const INSTALL_CMD = "npx espresso-ui init";
       document.querySelectorAll("[data-copy-install]").forEach((btn) => {
         btn.addEventListener("click", async () => {
+          const cmd = btn.getAttribute("data-install-cmd");
+          if (!cmd) return;
           try {
-            await navigator.clipboard.writeText(INSTALL_CMD);
+            await navigator.clipboard.writeText(cmd);
             const label = btn.textContent;
             btn.textContent = "Copied";
             setTimeout(() => {

@@ -5,14 +5,14 @@
 }
 
 @media (max-width: 768px) {
+  .pane-left {
+    display: none !important;
+  }
+
   body[data-mobile] {
     --mobile-gutter: 20px;
     --mobile-gutter-nav: 16px;
     overflow: hidden;
-  }
-
-  .pane-left {
-    display: none !important;
   }
 
   .app-shell {

@@ -2,7 +2,7 @@ export const SITE_VERSION = "v0.1";
 
 export const hero = {
   title: "A small, opinionated UI kit for internal tools.",
-  lede: "A carefully-tuned component library for React and Vue. Two themes, a handful of tokens, copy components straight into your project. Tap anything below to see its details.",
+  lede: "A carefully-tuned component library for React and Vue. Two themes, a handful of tokens, copy components straight into your project. Click anything below to jump to its details.",
   mobileTitle: "An opinionated UI kit for internal tools.",
   mobileLede:
     "Carefully-tuned React and Vue components, two themes, and a handful of tokens. Tap anything below to see its details.",
