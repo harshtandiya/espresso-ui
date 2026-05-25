@@ -2,6 +2,7 @@
 @import "@espresso-ui/tokens/tailwind.css";
 @import "@espresso-ui/tokens/tokens.css";
 @import "../generated/styles.css";
+@import "./mobile.css";
 
 @layer base {
   :root {
@@ -39,8 +40,8 @@
   }
 }
 
-@media (max-width: 880px) {
-  body {
-    overflow: auto;
+@media (max-width: 768px) {
+  body[data-mobile] {
+    overflow: hidden;
   }
 }

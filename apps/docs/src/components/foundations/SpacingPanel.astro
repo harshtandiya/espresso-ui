@@ -59,4 +59,19 @@ const maxPx = Math.max(...stops.map((s) => s.px));
     background: var(--color-ink-1);
     border-radius: 2px;
   }
+
+  @media (max-width: 768px) {
+    .rows {
+      margin: 0 var(--mobile-gutter, 20px) 24px;
+      margin-top: 0;
+    }
+    .row {
+      grid-template-columns: 60px 50px 1fr;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .row .bar {
+      height: 10px;
+    }
+  }
 </style>

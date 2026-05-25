@@ -2,7 +2,11 @@
 import Panel from "@/components/panels/Panel.astro";
 import Canvas from "@/components/panels/Canvas.astro";
 import CodeBlock from "@/components/panels/CodeBlock.astro";
+import CopyCmdRow from "@/components/shared/CopyCmdRow.astro";
 import { sectionNumber } from "@/lib/sections";
+import { install } from "@/lib/site-copy";
+
+const GLOBAL_CMD_PREFIX = "npm install -g ";
 
 const usage = `// after \`espresso-ui init\`:
 import { Button } from "@/components/ui/Button";
@@ -20,12 +24,11 @@ export default function App() {
   desc="Install the CLI globally once, then run init in your project root. It scaffolds the config, drops a base stylesheet, and wires the @ alias. No build configuration needed."
 >
   <Canvas grid={false} padded={false} class="install-canvas">
-    <div class="cmd-row">
-      <span class="dollar">$</span>
-      <code class="cmd">
-        <span class="dim">npm install -g </span>@espresso-ui/cli
-      </code>
-    </div>
+    <CopyCmdRow
+      copyText={install.globalCmd}
+      dimPrefix={GLOBAL_CMD_PREFIX}
+      commandBody={install.globalCmd.slice(GLOBAL_CMD_PREFIX.length)}
+    />
     <div class="cmd-row">
       <span class="dollar">$</span>
       <code class="cmd">espresso-ui<span class="dim"> init</span></code>
@@ -47,7 +50,9 @@ export default function App() {
     align-items: center;
     gap: 12px;
   }
-  .cmd-row + .cmd-row {
+  .cmd-row + .cmd-row,
+  .cmd-row + :global(.cmd-row),
+  :global(.cmd-row) + .cmd-row {
     margin-top: 10px;
   }
   .dollar {

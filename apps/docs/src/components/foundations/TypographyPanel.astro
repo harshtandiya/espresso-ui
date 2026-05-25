@@ -68,4 +68,19 @@ const rows: Row[] = [
     color: var(--color-ink-1);
     line-height: 1.2;
   }
+
+  @media (max-width: 768px) {
+    .type-list {
+      margin: 0 var(--mobile-gutter, 20px) 24px;
+      margin-top: 0;
+    }
+    .type-row {
+      display: block;
+      padding: 14px 0;
+    }
+    .type-row .meta {
+      font-size: 10px;
+      margin-bottom: 6px;
+    }
+  }
 </style>

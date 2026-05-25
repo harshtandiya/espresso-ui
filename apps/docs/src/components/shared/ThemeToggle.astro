@@ -1,0 +1,72 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+}
+
+const { id = "theme-toggle", class: className = "" } = Astro.props;
+---
+
+<button id={id} class:list={["theme-toggle", className]} aria-label="Toggle theme" type="button">
+  <svg
+    class="icon-moon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path>
+  </svg>
+  <svg
+    class="icon-sun"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+    ></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--color-line);
+    border-radius: 9px;
+    background: var(--color-surface);
+    color: var(--color-ink-3);
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    color: var(--color-ink-1);
+    border-color: var(--color-ink-5);
+  }
+  .theme-toggle:active {
+    background: var(--color-surface-2);
+  }
+  .theme-toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+  .icon-sun {
+    display: none;
+  }
+  :global(html[data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  :global(html[data-theme="dark"]) .icon-moon {
+    display: none;
+  }
+</style>

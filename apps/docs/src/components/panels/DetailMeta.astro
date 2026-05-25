@@ -21,9 +21,9 @@ const statusColor: Record<SectionStatus, string> = {
     {status}
   </span>
   <span class="dot"></span>
-  <span>{file}</span>
-  <span class="dot"></span>
-  <span>Headless API</span>
+  <span class="file">{file}</span>
+  <span class="dot desktop-only"></span>
+  <span class="desktop-only">Headless API</span>
 </div>
 
 <style>
@@ -57,5 +57,36 @@ const statusColor: Record<SectionStatus, string> = {
     height: 3px;
     border-radius: 50%;
     background: var(--color-ink-5);
+  }
+  .file {
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 768px) {
+    .detail-meta {
+      margin-top: 14px;
+      gap: 0;
+      flex-wrap: nowrap;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      padding: 0;
+    }
+    .status {
+      border: none;
+      background: none;
+      padding: 0;
+      gap: 5px;
+      text-transform: uppercase;
+    }
+    .pip {
+      width: 5px;
+      height: 5px;
+    }
+    .dot {
+      margin: 0 6px;
+    }
+    .desktop-only {
+      display: none;
+    }
   }
 </style>

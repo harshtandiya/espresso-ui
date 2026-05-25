@@ -23,7 +23,7 @@ export default function App() {
   status="stable"
   code={usage}
 >
-  <CanvasToolbar title="Live preview" meta="default · disabled" />
+  <CanvasToolbar title="Preview" meta="default · disabled" />
   <Canvas>
     <LabelReact client:load htmlFor="demo-email">Email address</LabelReact>
     <LabelReact client:load disabled>Disabled label</LabelReact>
@@ -71,5 +71,15 @@ export default function App() {
   .demo-input:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.label-field-canvas) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
   }
 </style>

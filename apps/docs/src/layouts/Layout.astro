@@ -1,6 +1,9 @@
 ---
 import "@/styles/globals.css";
 import Sidebar from "@/components/Sidebar.astro";
+import MobileShell from "@/components/mobile/MobileShell.astro";
+import MobileDetailNav from "@/components/mobile/MobileDetailNav.astro";
+import { INTRO_SECTION_IDS, MOBILE_BP, MOBILE_NAV_SECTIONS } from "@/lib/sections";
 
 interface Props {
   title?: string;
@@ -9,6 +12,9 @@ interface Props {
 
 const { title = "espresso-ui", description = "A small, opinionated UI kit for internal tools." } =
   Astro.props;
+
+const mobileNavSectionIds = MOBILE_NAV_SECTIONS.map((s) => s.id);
+const introSectionIds = [...INTRO_SECTION_IDS];
 ---
 
 <!doctype html>
@@ -24,7 +30,7 @@ const { title = "espresso-ui", description = "A small, opinionated UI kit for in
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <script is:inline>
+    <script is:inline define:vars={{ MOBILE_BP, mobileNavSectionIds, introSectionIds }}>
       // Apply persisted theme before paint to avoid flash
       try {
         const stored = localStorage.getItem("theme");
@@ -34,48 +40,137 @@ const { title = "espresso-ui", description = "A small, opinionated UI kit for in
       } catch {
         /* localStorage may be unavailable */
       }
+
+      const mobileMq = window.matchMedia(`(max-width: ${MOBILE_BP}px)`);
+
+      function isMobile() {
+        return mobileMq.matches;
+      }
+
+      function setMobileMode(on) {
+        document.body.toggleAttribute("data-mobile", on);
+        if (!on) {
+          document.body.removeAttribute("data-mobile-screen");
+          document.querySelectorAll("#pane-right section[id]").forEach((s) => {
+            s.removeAttribute("data-mobile-active");
+            s.removeAttribute("hidden");
+          });
+          const detailNav = document.querySelector("[data-mobile-detail-nav]");
+          if (detailNav) detailNav.hidden = true;
+        } else {
+          document.body.dataset.mobileScreen =
+            document.body.dataset.mobileScreen ?? "index";
+          syncMobileSections(document.body.dataset.mobileSelected ?? null);
+        }
+      }
+
+      function syncMobileSections(id) {
+        const sections = document.querySelectorAll("#pane-right section[id]");
+        sections.forEach((s) => {
+          const active = !!id && s.id === id;
+          s.toggleAttribute("data-mobile-active", active);
+        });
+        const detailNav = document.querySelector("[data-mobile-detail-nav]");
+        const counter = document.querySelector("[data-mobile-counter]");
+        if (detailNav) detailNav.hidden = !id;
+        if (counter) {
+          if (id) {
+            const idx = mobileNavSectionIds.indexOf(id);
+            counter.textContent = `${String(idx + 1).padStart(2, "0")} / ${String(mobileNavSectionIds.length).padStart(2, "0")}`;
+          } else {
+            counter.textContent = "";
+          }
+        }
+      }
+
+      function openMobileSection(id, { push = true } = {}) {
+        if (introSectionIds.includes(id)) {
+          closeMobileSection({ push });
+          return;
+        }
+        if (!mobileNavSectionIds.includes(id)) return;
+        document.body.dataset.mobileSelected = id;
+        document.body.dataset.mobileScreen = "detail";
+        syncMobileSections(id);
+        if (push) {
+          history.pushState({ mobileSection: id }, "", `#${id}`);
+        }
+        const pane = document.getElementById("pane-right");
+        if (pane) pane.scrollTop = 0;
+      }
+
+      function closeMobileSection({ push = true } = {}) {
+        delete document.body.dataset.mobileSelected;
+        document.body.dataset.mobileScreen = "index";
+        syncMobileSections(null);
+        if (push) {
+          history.pushState({ mobileSection: null }, "", window.location.pathname);
+        }
+      }
+
+      function syncFromHash() {
+        if (!isMobile()) return;
+        const hash = window.location.hash.replace(/^#/, "");
+        if (hash && introSectionIds.includes(hash)) {
+          closeMobileSection({ push: false });
+        } else if (hash && mobileNavSectionIds.includes(hash)) {
+          openMobileSection(hash, { push: false });
+        } else {
+          closeMobileSection({ push: false });
+        }
+      }
+
+      mobileMq.addEventListener("change", () => {
+        setMobileMode(isMobile());
+        if (isMobile()) syncFromHash();
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        setMobileMode(isMobile());
+        if (isMobile()) {
+          const preset = document.body.dataset.mobileSelected;
+          if (preset) {
+            document.body.dataset.mobileScreen = "detail";
+            syncMobileSections(preset);
+          } else {
+            syncFromHash();
+          }
+        }
+      });
+
+      window.__mobileNav = { openMobileSection, closeMobileSection, isMobile, syncFromHash };
     </script>
   </head>
-  <body>
-    <div class="split">
+  <body data-mobile-screen="index">
+    <script is:inline define:vars={{ MOBILE_BP, mobileNavSectionIds, introSectionIds }}>
+      if (window.matchMedia(`(max-width: ${MOBILE_BP}px)`).matches) {
+        document.body.setAttribute("data-mobile", "");
+        const hash = window.location.hash.replace(/^#/, "");
+        if (hash && mobileNavSectionIds.includes(hash)) {
+          document.body.dataset.mobileScreen = "detail";
+          document.body.dataset.mobileSelected = hash;
+        }
+      }
+    </script>
+    <div class="app-shell">
       <Sidebar />
-      <main id="pane-right" class="pane-right scroll-pane">
-        <slot />
-      </main>
+      <div class="main-column">
+        <MobileShell />
+        <MobileDetailNav />
+        <main id="pane-right" class="scroll-pane pane-right">
+          <slot />
+        </main>
+      </div>
     </div>
 
-    <style>
-      .split {
-        display: grid;
-        grid-template-columns: minmax(360px, 1fr) 1.4fr;
-        height: 100vh;
-        width: 100vw;
-      }
-      .pane-right {
-        height: 100vh;
-        overflow-y: auto;
-        background: var(--color-surface-2);
-        scroll-behavior: smooth;
-      }
-      @media (max-width: 880px) {
-        .split {
-          grid-template-columns: 1fr;
-          height: auto;
-        }
-        .pane-right {
-          height: auto;
-          overflow: visible;
-        }
-      }
-    </style>
-
     <script is:inline>
-      // Active-section tracking — sets [data-active-section] on the index nav
+      // Active-section tracking — desktop split-pane nav highlight
       const right = document.getElementById("pane-right");
       if (right) {
         const sections = right.querySelectorAll("section[id]");
         const io = new IntersectionObserver(
           (entries) => {
+            if (window.__mobileNav?.isMobile()) return;
             const visible = entries
               .filter((e) => e.isIntersecting)
               .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -91,19 +186,45 @@ const { title = "espresso-ui", description = "A small, opinionated UI kit for in
         sections.forEach((s) => io.observe(s));
       }
 
-      // Jump-to-section
+      // Desktop jump-to-section + mobile push-nav picks
       document.querySelectorAll("[data-nav-item]").forEach((btn) => {
         btn.addEventListener("click", () => {
           const id = btn.getAttribute("data-nav-item");
           if (!id) return;
+          if (window.__mobileNav?.isMobile()) {
+            window.__mobileNav.openMobileSection(id);
+            return;
+          }
           const el = document.getElementById(id);
           if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       });
 
-      // Theme toggle
-      const toggle = document.getElementById("theme-toggle");
-      if (toggle) {
+      document.querySelectorAll("[data-mobile-pick]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-mobile-pick");
+          if (id) window.__mobileNav?.openMobileSection(id);
+        });
+      });
+
+      document.querySelector("[data-mobile-back]")?.addEventListener("click", () => {
+        window.__mobileNav?.closeMobileSection();
+      });
+
+      document.querySelector("[data-mobile-home]")?.addEventListener("click", (e) => {
+        if (!window.__mobileNav?.isMobile()) return;
+        e.preventDefault();
+        window.__mobileNav?.closeMobileSection();
+      });
+
+      window.addEventListener("popstate", () => {
+        if (window.__mobileNav?.isMobile()) window.__mobileNav.syncFromHash();
+      });
+
+      // Theme toggle (desktop footer + mobile top nav)
+      function bindThemeToggle(id) {
+        const toggle = document.getElementById(id);
+        if (!toggle) return;
         toggle.addEventListener("click", () => {
           const cur = document.documentElement.getAttribute("data-theme") ?? "light";
           const next = cur === "dark" ? "light" : "dark";
@@ -115,6 +236,29 @@ const { title = "espresso-ui", description = "A small, opinionated UI kit for in
           }
         });
       }
+      bindThemeToggle("theme-toggle");
+      bindThemeToggle("mobile-theme-toggle");
+
+      document.querySelectorAll("[data-copy-cmd]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const cmd = btn.getAttribute("data-copy-cmd");
+          if (!cmd) return;
+          try {
+            await navigator.clipboard.writeText(cmd);
+            btn.setAttribute("data-copied", "");
+            window.setTimeout(() => btn.removeAttribute("data-copied"), 1400);
+          } catch {
+            /* clipboard unavailable */
+          }
+        });
+      });
+
+      // Mobile index scroll → topnav border
+      const indexScroll = document.querySelector("[data-mobile-index-scroll]");
+      const topnav = document.querySelector("[data-mobile-topnav]");
+      indexScroll?.addEventListener("scroll", () => {
+        topnav?.toggleAttribute("data-scrolled", (indexScroll.scrollTop ?? 0) > 8);
+      });
     </script>
   </body>
 </html>
