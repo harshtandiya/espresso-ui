@@ -1,0 +1,50 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Button as ButtonReact } from "@/generated/react/Button.tsx";
+
+const usage = `import { Button } from "@/components/ui/Button";
+
+export default function App() {
+  return (
+    <Button variant="solid" size="md">
+      Get started
+    </Button>
+  );
+}
+`;
+---
+
+<ComponentPanel
+  id="button"
+  num={sectionNumber("button")}
+  label="Button"
+  desc="Primary action control with solid, outline, ghost, and link variants at three sizes. Supports disabled state and asChild composition via Ark UI."
+  status="stable"
+  code={usage}
+>
+  <CanvasToolbar title="Live preview" meta="solid · outline · ghost · link" />
+  <Canvas>
+    <ButtonReact client:load variant="solid">Solid</ButtonReact>
+    <ButtonReact client:load variant="outline">Outline</ButtonReact>
+    <ButtonReact client:load variant="ghost">Ghost</ButtonReact>
+    <ButtonReact client:load variant="link">Link</ButtonReact>
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="32 / 36 / 40 px">
+      <ButtonReact client:load size="sm" variant="solid">Small</ButtonReact>
+      <ButtonReact client:load size="md" variant="solid">Medium</ButtonReact>
+      <ButtonReact client:load size="lg" variant="solid">Large</ButtonReact>
+    </VariantRow>
+
+    <VariantRow label="Disabled" sub="reduced opacity, no pointer events">
+      <ButtonReact client:load variant="solid" disabled>Disabled</ButtonReact>
+      <ButtonReact client:load variant="outline" disabled>Disabled</ButtonReact>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
