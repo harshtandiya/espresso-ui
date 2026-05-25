@@ -16,6 +16,7 @@
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.0.0",
     "@astrojs/vue": "^5.0.0",
+    "@espresso-ui/cli": "workspace:*",
     "@espresso-ui/tokens": "workspace:*",
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.0.0",

@@ -1,4 +1,6 @@
-export const SITE_VERSION = "v0.1";
+import cliPackage from "@espresso-ui/cli/package.json";
+
+export const SITE_VERSION = `v${cliPackage.version}`;
 
 export const hero = {
   title: "A small, opinionated UI kit for internal tools.",
