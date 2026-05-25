@@ -2,40 +2,84 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag to publish (e.g. v0.1.2). Must already exist and point to current main."
+        required: true
+        type: string
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
+permissions: {}
+
 jobs:
   publish:
-    name: Publish to npm
+    name: Publish to npm and GitHub
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'v')
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve and verify version
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="$(echo "${{ github.event.head_commit.message }}" | head -n1 | tr -d '[:space:]')"
+          fi
+          echo "Resolved version: $VERSION"
+
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] \
+            || { echo "::error::Version '$VERSION' does not match vX.Y.Z[-pre]"; exit 1; }
+
+          TAG_SHA="$(git rev-list -n1 "refs/tags/$VERSION" 2>/dev/null || true)"
+          [[ -n "$TAG_SHA" ]] \
+            || { echo "::error::Tag $VERSION not found"; exit 1; }
+          [[ "$TAG_SHA" == "$GITHUB_SHA" ]] \
+            || { echo "::error::Tag $VERSION ($TAG_SHA) does not point to commit $GITHUB_SHA"; exit 1; }
+
+          PKG_VERSION="v$(node -p "require('./packages/cli/package.json').version")"
+          [[ "$PKG_VERSION" == "$VERSION" ]] \
+            || { echo "::error::packages/cli/package.json version $PKG_VERSION != $VERSION"; exit 1; }
+
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - uses: voidzero-dev/setup-vp@ca1c46663915d6c1042ae23bd39ab85718bfb0fa # v1
         with:
           node-version: "22"
           cache: true
+
       - run: vp install
       - run: vp check
       - run: npm run bundle-registry
         working-directory: packages/cli
       - run: vp test
-      - uses: actions/setup-node@v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           registry-url: https://registry.npmjs.org
-      - run: npm publish --provenance --access public
+
+      - name: Publish to npm
         working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        run: gh release create "$VERSION" --generate-notes --verify-tag
