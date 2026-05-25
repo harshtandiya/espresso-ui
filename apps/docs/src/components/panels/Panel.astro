@@ -1,5 +1,6 @@
 ---
 import Crumb from "./Crumb.astro";
+import MobileSectionPager from "@/components/mobile/MobileSectionPager.astro";
 
 interface Props {
   id: string;
@@ -21,6 +22,7 @@ const { id, num, group, label, desc } = Astro.props;
   </div>
   <div class="detail-body">
     <slot />
+    <MobileSectionPager id={id} />
   </div>
 </section>
 

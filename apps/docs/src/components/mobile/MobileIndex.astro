@@ -175,9 +175,17 @@ const INIT_CMD_SUFFIX = " init";
     text-align: left;
     cursor: pointer;
     font-family: inherit;
+    transition:
+      background-color 0.15s ease,
+      transform 0.15s ease;
+  }
+  .section-row:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-primary);
   }
   .section-row:active {
     background: var(--color-surface-2);
+    transform: scale(0.98);
   }
   .section-row .num {
     font-family: var(--font-mono);
@@ -200,10 +208,25 @@ const INIT_CMD_SUFFIX = " init";
   }
   .section-row .chev {
     color: var(--color-ink-5);
-    transition: transform 0.12s;
+    transition: transform 0.15s ease;
   }
   .section-row:active .chev {
     transform: translateX(2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section-row {
+      transition: none;
+    }
+    .section-row:active {
+      transform: none;
+    }
+    .section-row .chev {
+      transition: none;
+    }
+    .section-row:active .chev {
+      transform: none;
+    }
   }
 
   .foot {

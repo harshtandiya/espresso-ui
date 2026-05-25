@@ -45,6 +45,18 @@ export function mobileSectionNumber(id: string): string {
   return String(idx + 1).padStart(2, "0");
 }
 
+export function mobileSectionNeighbors(id: string): {
+  prev: Section | undefined;
+  next: Section | undefined;
+} {
+  const idx = MOBILE_NAV_SECTIONS.findIndex((s) => s.id === id);
+  if (idx === -1) return { prev: undefined, next: undefined };
+  return {
+    prev: idx > 0 ? MOBILE_NAV_SECTIONS[idx - 1] : undefined,
+    next: idx < MOBILE_NAV_SECTIONS.length - 1 ? MOBILE_NAV_SECTIONS[idx + 1] : undefined,
+  };
+}
+
 export function sectionsByGroup(group: SectionGroup): readonly Section[] {
   return SECTIONS.filter((s) => s.group === group);
 }
