@@ -1,0 +1,141 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { AvatarGroup as AvatarGroupReact } from "@/generated/react/AvatarGroup.tsx";
+
+const stackItems = [
+  { src: "https://i.pravatar.cc/96?img=1", alt: "Member 1" },
+  { fallback: "AB" },
+  { fallback: "CD" },
+  { src: "https://i.pravatar.cc/96?img=5", alt: "Member 4" },
+  { fallback: "EF" },
+];
+
+const overflowItems = [
+  { fallback: "01" },
+  { fallback: "02" },
+  { fallback: "03" },
+  { fallback: "04" },
+  { fallback: "05" },
+  { fallback: "06" },
+  { fallback: "07" },
+  { fallback: "08" },
+];
+
+const contentItems = [{}, { fallback: "AB" }, { src: "https://i.pravatar.cc/96?img=8", alt: "Photo" }];
+
+const usageReact = `import { AvatarGroup } from "@/components/ui/AvatarGroup";
+
+export default function App() {
+  return (
+    <AvatarGroup
+      size="md"
+      max={4}
+      count={8}
+      showCount
+      items={[
+        { fallback: "A" },
+        { fallback: "B" },
+        { fallback: "C" },
+        { fallback: "D" },
+        { fallback: "E" },
+      ]}
+    />
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import AvatarGroup from "@/components/ui/AvatarGroup.vue";
+
+const items = [
+  { fallback: "A" },
+  { fallback: "B" },
+  { fallback: "C" },
+  { fallback: "D" },
+  { fallback: "E" },
+];
+</script>
+
+<template>
+  <AvatarGroup size="md" :max="4" :count="8" show-count :items="items" />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="avatar-group"
+  num={sectionNumber("avatar-group")}
+  label="Avatar Group"
+  desc="Overlapping stack of circular avatars with optional overflow counter and member count label."
+  status="new"
+  code={usageReact}
+  codeFile="avatar-group.tsx"
+  codeVue={usageVue}
+  codeVueFile="avatar-group.vue"
+>
+  <CanvasToolbar title="Preview" meta="stack · overlap ring" />
+  <Canvas>
+    <AvatarGroupReact client:load size="md" items={stackItems} />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Stack" sub="5 overlapping avatars">
+      <AvatarGroupReact client:load size="md" items={stackItems} />
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="xs → 3xl">
+      <Canvas grid={false} class="avatar-group-size-col">
+        <AvatarGroupReact client:load size="xs" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="sm" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="md" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="lg" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="xl" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="2xl" items={stackItems.slice(0, 4)} />
+        <AvatarGroupReact client:load size="3xl" items={stackItems.slice(0, 4)} />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Overflow" sub="max=4 with 8 items">
+      <AvatarGroupReact client:load size="md" max={4} items={overflowItems} />
+    </VariantRow>
+
+    <VariantRow label="With label" sub="showCount + count">
+      <AvatarGroupReact client:load size="md" max={4} count={8} showCount items={overflowItems} />
+    </VariantRow>
+
+    <VariantRow label="Content types" sub="icon · initials · image">
+      <AvatarGroupReact client:load size="lg" items={contentItems} />
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.avatar-group-size-col) {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+    padding: 28px 32px !important;
+    width: 100%;
+  }
+
+  :global(.avatar-group-size-col > *) {
+    align-self: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    :global(.avatar-group-size-col) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

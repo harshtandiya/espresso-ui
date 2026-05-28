@@ -20,6 +20,8 @@ export const SECTIONS: readonly Section[] = [
   { id: "radius", label: "Radius", group: "foundations", sub: "6 stops" },
   { id: "button", label: "Button", group: "components", status: "stable", sub: "stable" },
   { id: "label", label: "Label", group: "components", status: "stable", sub: "stable" },
+  { id: "avatar", label: "Avatar", group: "components", status: "new", sub: "7 sizes" },
+  { id: "avatar-group", label: "Avatar Group", group: "components", status: "new", sub: "stack" },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */

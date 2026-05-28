@@ -1,0 +1,129 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Avatar as AvatarReact } from "@/generated/react/Avatar.tsx";
+import { AvatarStatusRow } from "@/components/examples/AvatarStatusRow.tsx";
+
+const usageReact = `import { Avatar } from "@/components/ui/Avatar";
+import { Circle } from "lucide-react";
+
+export default function App() {
+  return (
+    <Avatar
+      fallback="JD"
+      size="md"
+      shape="circle"
+      status={
+        <span className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 ...">
+          <Circle className="size-1.5 fill-green-500 text-green-500" />
+        </span>
+      }
+    />
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import Avatar from "@/components/ui/Avatar.vue";
+import { Circle } from "@lucide/vue";
+</script>
+
+<template>
+  <Avatar fallback="JD" size="md" shape="circle">
+    <template #status>
+      <span class="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 ...">
+        <Circle class="size-1.5 fill-green-500 text-green-500" />
+      </span>
+    </template>
+  </Avatar>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="avatar"
+  num={sectionNumber("avatar")}
+  label="Avatar"
+  desc="User avatar with image, initials, or icon fallback. Seven sizes and squircle or circle shape. Compose your own status badge via the status prop (React) or status slot (Vue)."
+  status="new"
+  code={usageReact}
+  codeFile="avatar.tsx"
+  codeVue={usageVue}
+  codeVueFile="avatar.vue"
+>
+  <CanvasToolbar title="Preview" meta="initials · icon · image" />
+  <Canvas>
+    <AvatarReact client:load fallback="JD" size="md" />
+    <AvatarReact client:load size="md" />
+    <AvatarReact
+      client:load
+      src="https://i.pravatar.cc/96?img=12"
+      alt="Demo user"
+      size="md"
+    />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Shapes" sub="squircle vs circle">
+      <AvatarReact client:load fallback="SQ" size="lg" shape="squircle" />
+      <AvatarReact client:load fallback="CI" size="lg" shape="circle" />
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="xs → 3xl">
+      <Canvas grid={false} class="avatar-size-row">
+        <AvatarReact client:load size="xs" />
+        <AvatarReact client:load size="sm" />
+        <AvatarReact client:load size="md" />
+        <AvatarReact client:load size="lg" />
+        <AvatarReact client:load size="xl" />
+        <AvatarReact client:load size="2xl" />
+        <AvatarReact client:load size="3xl" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Content" sub="image · initials · icon">
+      <AvatarReact
+        client:load
+        src="https://i.pravatar.cc/96?img=32"
+        alt="Photo avatar"
+        size="xl"
+      />
+      <AvatarReact client:load fallback="AB" size="xl" />
+      <AvatarReact client:load size="xl" />
+    </VariantRow>
+
+    <VariantRow label="Status" sub="compose via status prop">
+      <Canvas grid={false} class="avatar-status-row">
+        <AvatarStatusRow client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.avatar-size-row),
+  :global(.avatar-status-row) {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    padding: 28px 32px !important;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.avatar-size-row),
+    :global(.avatar-status-row) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>
