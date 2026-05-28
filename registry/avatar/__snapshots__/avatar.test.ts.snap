@@ -1,0 +1,318 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`avatar templates > renders React template 1`] = `
+"import { forwardRef, useState } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { User } from "lucide-react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+const avatarFaceVariants = cva(
+  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  {
+    variants: {
+      size: {
+        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)] rounded-(--avatar-xs-radius)",
+        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)] rounded-(--avatar-sm-radius)",
+        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)] rounded-(--avatar-md-radius)",
+        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)] rounded-(--avatar-lg-radius)",
+        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)] rounded-(--avatar-xl-radius)",
+        "2xl":
+          "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)] rounded-(--avatar-2xl-radius)",
+        "3xl":
+          "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)] rounded-(--avatar-3xl-radius)",
+      },
+      shape: {
+        squircle: "",
+        circle: "!rounded-full",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      shape: "squircle",
+    },
+  },
+);
+
+const fallbackIconSizeClasses = {
+  xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
+  sm: "[width:var(--avatar-sm-icon-size)] [height:var(--avatar-sm-icon-size)]",
+  md: "[width:var(--avatar-md-icon-size)] [height:var(--avatar-md-icon-size)]",
+  lg: "[width:var(--avatar-lg-icon-size)] [height:var(--avatar-lg-icon-size)]",
+  xl: "[width:var(--avatar-xl-icon-size)] [height:var(--avatar-xl-icon-size)]",
+  "2xl": "[width:var(--avatar-2xl-icon-size)] [height:var(--avatar-2xl-icon-size)]",
+  "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
+} as const;
+
+type AvatarSize = NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]>;
+
+export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
+  src?: string;
+  alt?: string;
+  fallback?: string;
+  size?: AvatarSize;
+  shape?: AvatarShape;
+  /** Custom status indicator rendered over the avatar. Compose your own badge here. */
+  status?: ReactNode;
+};
+
+export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
+  (
+    {
+      className,
+      src = "",
+      alt = "",
+      fallback = "",
+      size = "md",
+      shape = "squircle",
+      status,
+      ...props
+    },
+    ref,
+  ) => {
+    const [imageError, setImageError] = useState(false);
+    const showImage = Boolean(src) && !imageError;
+    const initials = fallback.trim().slice(0, 2);
+    const label = alt || initials || "User avatar";
+
+    return (
+      <span
+        ref={ref}
+        role="img"
+        aria-label={label}
+        data-size={size}
+        data-shape={shape}
+        className={cn("relative inline-flex shrink-0 select-none", className)}
+        {...props}
+      >
+        <span className={avatarFaceVariants({ size, shape })}>
+          {showImage ? (
+            <img
+              src={src}
+              alt={alt}
+              className="size-full object-cover"
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+          ) : initials ? (
+            <span aria-hidden="true">{initials}</span>
+          ) : (
+            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+          )}
+        </span>
+        {status}
+      </span>
+    );
+  },
+);
+
+Avatar.displayName = "Avatar";
+"
+`;
+
+exports[`avatar templates > renders React template without TypeScript 1`] = `
+"import { forwardRef, useState } from "react";
+import { cva } from "class-variance-authority";
+import { User } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const avatarFaceVariants = cva(
+  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  {
+    variants: {
+      size: {
+        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)] rounded-(--avatar-xs-radius)",
+        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)] rounded-(--avatar-sm-radius)",
+        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)] rounded-(--avatar-md-radius)",
+        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)] rounded-(--avatar-lg-radius)",
+        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)] rounded-(--avatar-xl-radius)",
+        "2xl":
+          "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)] rounded-(--avatar-2xl-radius)",
+        "3xl":
+          "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)] rounded-(--avatar-3xl-radius)",
+      },
+      shape: {
+        squircle: "",
+        circle: "!rounded-full",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      shape: "squircle",
+    },
+  },
+);
+
+const fallbackIconSizeClasses = {
+  xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
+  sm: "[width:var(--avatar-sm-icon-size)] [height:var(--avatar-sm-icon-size)]",
+  md: "[width:var(--avatar-md-icon-size)] [height:var(--avatar-md-icon-size)]",
+  lg: "[width:var(--avatar-lg-icon-size)] [height:var(--avatar-lg-icon-size)]",
+  xl: "[width:var(--avatar-xl-icon-size)] [height:var(--avatar-xl-icon-size)]",
+  "2xl": "[width:var(--avatar-2xl-icon-size)] [height:var(--avatar-2xl-icon-size)]",
+  "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
+} as const;
+
+
+export const Avatar = forwardRef(
+  (
+    {
+      className,
+      src = "",
+      alt = "",
+      fallback = "",
+      size = "md",
+      shape = "squircle",
+      status,
+      ...props
+    },
+    ref,
+  ) => {
+    const [imageError, setImageError] = useState(false);
+    const showImage = Boolean(src) && !imageError;
+    const initials = fallback.trim().slice(0, 2);
+    const label = alt || initials || "User avatar";
+
+    return (
+      <span
+        ref={ref}
+        role="img"
+        aria-label={label}
+        data-size={size}
+        data-shape={shape}
+        className={cn("relative inline-flex shrink-0 select-none", className)}
+        {...props}
+      >
+        <span className={avatarFaceVariants({ size, shape })}>
+          {showImage ? (
+            <img
+              src={src}
+              alt={alt}
+              className="size-full object-cover"
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+          ) : initials ? (
+            <span aria-hidden="true">{initials}</span>
+          ) : (
+            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+          )}
+        </span>
+        {status}
+      </span>
+    );
+  },
+);
+
+Avatar.displayName = "Avatar";
+"
+`;
+
+exports[`avatar templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, ref } from "vue";
+import { cva, type VariantProps } from "class-variance-authority";
+import { User } from "@lucide/vue";
+import { cn } from "@/lib/utils";
+
+const avatarFaceVariants = cva(
+  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  {
+    variants: {
+      size: {
+        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)] rounded-(--avatar-xs-radius)",
+        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)] rounded-(--avatar-sm-radius)",
+        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)] rounded-(--avatar-md-radius)",
+        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)] rounded-(--avatar-lg-radius)",
+        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)] rounded-(--avatar-xl-radius)",
+        "2xl":
+          "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)] rounded-(--avatar-2xl-radius)",
+        "3xl":
+          "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)] rounded-(--avatar-3xl-radius)",
+      },
+      shape: {
+        squircle: "",
+        circle: "!rounded-full",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      shape: "squircle",
+    },
+  },
+);
+
+type AvatarVariants = VariantProps<typeof avatarFaceVariants>;
+
+const fallbackIconSizeClasses: Record<NonNullable<AvatarVariants["size"]>, string> = {
+  xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
+  sm: "[width:var(--avatar-sm-icon-size)] [height:var(--avatar-sm-icon-size)]",
+  md: "[width:var(--avatar-md-icon-size)] [height:var(--avatar-md-icon-size)]",
+  lg: "[width:var(--avatar-lg-icon-size)] [height:var(--avatar-lg-icon-size)]",
+  xl: "[width:var(--avatar-xl-icon-size)] [height:var(--avatar-xl-icon-size)]",
+  "2xl": "[width:var(--avatar-2xl-icon-size)] [height:var(--avatar-2xl-icon-size)]",
+  "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
+};
+
+const props = withDefaults(
+  defineProps<{
+    src?: string;
+    alt?: string;
+    fallback?: string;
+    size?: AvatarVariants["size"];
+    shape?: AvatarVariants["shape"];
+    class?: string;
+  }>(),
+  {
+    src: "",
+    alt: "",
+    fallback: "",
+    size: "md",
+    shape: "squircle",
+  },
+);
+
+const imageError = ref(false);
+const faceClasses = computed(() => avatarFaceVariants({ size: props.size, shape: props.shape }));
+const rootClasses = computed(() => cn("relative inline-flex shrink-0 select-none", props.class));
+const showImage = computed(() => Boolean(props.src) && !imageError.value);
+const initials = computed(() => props.fallback.trim().slice(0, 2));
+const label = computed(() => props.alt || initials.value || "User avatar");
+
+function onImageError(): void {
+  imageError.value = true;
+}
+</script>
+
+<template>
+  <span
+    role="img"
+    :aria-label="label"
+    :data-size="props.size"
+    :data-shape="props.shape"
+    :class="rootClasses"
+    v-bind="$attrs"
+  >
+    <span :class="faceClasses">
+      <img
+        v-if="showImage"
+        :src="props.src"
+        :alt="props.alt"
+        class="size-full object-cover"
+        @error="onImageError"
+      />
+      <span v-else-if="initials" aria-hidden="true">{{ initials }}</span>
+      <User
+        v-else
+        :class="cn(fallbackIconSizeClasses[props.size!], 'text-(--color-muted-foreground)')"
+        aria-hidden="true"
+      />
+    </span>
+    <slot name="status" />
+  </span>
+</template>
+"
+`;

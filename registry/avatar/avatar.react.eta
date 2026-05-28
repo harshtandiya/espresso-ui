@@ -1,0 +1,110 @@
+import { forwardRef, useState } from "react";
+import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
+import { User } from "lucide-react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+const avatarFaceVariants = cva(
+  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  {
+    variants: {
+      size: {
+        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)] rounded-(--avatar-xs-radius)",
+        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)] rounded-(--avatar-sm-radius)",
+        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)] rounded-(--avatar-md-radius)",
+        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)] rounded-(--avatar-lg-radius)",
+        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)] rounded-(--avatar-xl-radius)",
+        "2xl":
+          "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)] rounded-(--avatar-2xl-radius)",
+        "3xl":
+          "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)] rounded-(--avatar-3xl-radius)",
+      },
+      shape: {
+        squircle: "",
+        circle: "!rounded-full",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+      shape: "squircle",
+    },
+  },
+);
+
+const fallbackIconSizeClasses = {
+  xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
+  sm: "[width:var(--avatar-sm-icon-size)] [height:var(--avatar-sm-icon-size)]",
+  md: "[width:var(--avatar-md-icon-size)] [height:var(--avatar-md-icon-size)]",
+  lg: "[width:var(--avatar-lg-icon-size)] [height:var(--avatar-lg-icon-size)]",
+  xl: "[width:var(--avatar-xl-icon-size)] [height:var(--avatar-xl-icon-size)]",
+  "2xl": "[width:var(--avatar-2xl-icon-size)] [height:var(--avatar-2xl-icon-size)]",
+  "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
+} as const;
+
+<% if (it.typescript) { %>
+type AvatarSize = NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]>;
+
+export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
+  src?: string;
+  alt?: string;
+  fallback?: string;
+  size?: AvatarSize;
+  shape?: AvatarShape;
+  /** Custom status indicator rendered over the avatar. Compose your own badge here. */
+  status?: ReactNode;
+};
+<% } %>
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLSpanElement, AvatarProps><% } %>(
+  (
+    {
+      className,
+      src = "",
+      alt = "",
+      fallback = "",
+      size = "md",
+      shape = "squircle",
+      status,
+      ...props
+    },
+    ref,
+  ) => {
+    const [imageError, setImageError] = useState(false);
+    const showImage = Boolean(src) && !imageError;
+    const initials = fallback.trim().slice(0, 2);
+    const label = alt || initials || "User avatar";
+
+    return (
+      <span
+        ref={ref}
+        role="img"
+        aria-label={label}
+        data-size={size}
+        data-shape={shape}
+        className={cn("relative inline-flex shrink-0 select-none", className)}
+        {...props}
+      >
+        <span className={avatarFaceVariants({ size, shape })}>
+          {showImage ? (
+            <img
+              src={src}
+              alt={alt}
+              className="size-full object-cover"
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+          ) : initials ? (
+            <span aria-hidden="true">{initials}</span>
+          ) : (
+            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+          )}
+        </span>
+        {status}
+      </span>
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";
