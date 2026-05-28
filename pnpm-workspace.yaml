@@ -6,12 +6,14 @@ packages:
 catalog:
   "@ark-ui/react": ^5.36.1
   "@ark-ui/vue": ^5.36.1
+  "@lucide/vue": ^1.17.0
   "@types/node": ^25
   "@vitepress-demo-preview/component": ^2.6.2
   "@vitepress-demo-preview/plugin": ^1.4.1
   "@whyframe/core": ^0.1.14
   "@whyframe/vue": ^0.1.9
   jsonc-parser: ^3.3.1
+  lucide-react: ^1.3.0
   style-dictionary: ^5.4.0
   tsx: ^4.21.0
   typescript: ^5
@@ -23,11 +25,11 @@ catalog:
 
 catalogMode: prefer
 overrides:
-  vite: "catalog:"
-  vitest: "catalog:"
   # Astro 5 mutates chunk.code in a post-build hook; vite-plus (Rolldown) chunks expose
   # code as a getter-only property, which crashes the build. Pin Astro's vite to upstream.
   astro>vite: "^6"
+  vite: "catalog:"
+  vitest: "catalog:"
 peerDependencyRules:
   allowAny:
     - vite
