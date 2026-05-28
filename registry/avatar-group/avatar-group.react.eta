@@ -67,7 +67,7 @@ export function <%= it.componentName %>({
             size={size}
             shape="circle"
             className={cn(ringClass, index > 0 && overlapClasses[size])}
-            style={{ zIndex: index + 1 }}
+            style={{ zIndex: visibleItems.length - index }}
           />
         ))}
         {overflowCount > 0 ? (
@@ -76,7 +76,7 @@ export function <%= it.componentName %>({
             size={size}
             shape="circle"
             className={cn(ringClass, visibleItems.length > 0 && overlapClasses[size])}
-            style={{ zIndex: visibleItems.length + 1 }}
+            style={{ zIndex: 0 }}
           />
         ) : null}
       </div>

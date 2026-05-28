@@ -30,6 +30,8 @@ describe("avatar templates", () => {
   it("exposes a composable status prop in React template", async () => {
     const result = await eta.renderAsync("./avatar.react.eta", baseData);
     expect(result).toContain("status?: ReactNode");
+    expect(result).toContain("statusClassName");
+    expect(result).toContain("--avatar-status-bg");
     expect(result).toContain("{status}");
     expect(result).not.toContain("StatusBadge");
   });
@@ -37,6 +39,8 @@ describe("avatar templates", () => {
   it("exposes a status slot in Vue template", async () => {
     const result = await eta.renderAsync("./avatar.vue.eta", baseData);
     expect(result).toContain('<slot name="status" />');
+    expect(result).toContain("$slots.status");
+    expect(result).toContain("--avatar-status-bg");
     expect(result).not.toContain('status === "active"');
   });
 

@@ -50,6 +50,12 @@ describe("avatar-group templates", () => {
     expect(result).not.toContain("ring-(--avatar-group-ring)");
   });
 
+  it("stacks avatars with the leftmost item on top", async () => {
+    const result = await eta.renderAsync("./avatar-group.react.eta", baseData);
+    expect(result).toContain("zIndex: visibleItems.length - index");
+    expect(result).toContain("zIndex: 0");
+  });
+
   it("renders React template", async () => {
     const result = await eta.renderAsync("./avatar-group.react.eta", baseData);
     expect(result).toMatchSnapshot();

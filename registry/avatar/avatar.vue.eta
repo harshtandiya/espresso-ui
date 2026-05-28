@@ -51,6 +51,7 @@ const props = withDefaults(
     size?: AvatarVariants["size"];
     shape?: AvatarVariants["shape"];
     class?: string;
+    statusClass?: string;
   }>(),
   {
     src: "",
@@ -58,12 +59,19 @@ const props = withDefaults(
     fallback: "",
     size: "md",
     shape: "squircle",
+    statusClass: "",
   },
 );
 
 const imageError = ref(false);
 const faceClasses = computed(() => avatarFaceVariants({ size: props.size, shape: props.shape }));
 const rootClasses = computed(() => cn("relative inline-flex shrink-0 select-none", props.class));
+const statusBadgeClasses = computed(() =>
+  cn(
+    "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+    props.statusClass,
+  ),
+);
 const showImage = computed(() => Boolean(props.src) && !imageError.value);
 const initials = computed(() => props.fallback.trim().slice(0, 2));
 const label = computed(() => props.alt || initials.value || "User avatar");
@@ -97,6 +105,8 @@ function onImageError(): void {
         aria-hidden="true"
       />
     </span>
-    <slot name="status" />
+    <span v-if="$slots.status" aria-hidden="true" :class="statusBadgeClasses">
+      <slot name="status" />
+    </span>
   </span>
 </template>

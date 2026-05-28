@@ -51,8 +51,10 @@ export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
   fallback?: string;
   size?: AvatarSize;
   shape?: AvatarShape;
-  /** Custom status indicator rendered over the avatar. Compose your own badge here. */
+  /** Icon rendered inside the avatar status badge shell. */
   status?: ReactNode;
+  /** Optional classes applied to the status badge shell (e.g. tinted backgrounds). */
+  statusClassName?: string;
 };
 <% } %>
 
@@ -66,6 +68,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
       size = "md",
       shape = "squircle",
       status,
+      statusClassName,
       ...props
     },
     ref,
@@ -101,7 +104,17 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
             <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
           )}
         </span>
-        {status}
+        {status ? (
+          <span
+            aria-hidden="true"
+            className={cn(
+              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              statusClassName,
+            )}
+          >
+            {status}
+          </span>
+        ) : null}
       </span>
     );
   },

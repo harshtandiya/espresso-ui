@@ -1,73 +1,45 @@
-import type { ReactNode } from "react";
 import { Circle, CircleDashed, Moon, Pin } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-type AvatarStatusBadgeProps = {
-  className?: string;
-  children: ReactNode;
-};
-
-function AvatarStatusBadge({ className, children }: AvatarStatusBadgeProps) {
+export function LiveStatusIcon() {
   return (
-    <span
+    <Circle
+      className="size-(--avatar-status-icon-size) fill-(--color-success) text-(--color-success)"
       aria-hidden="true"
-      className={cn(
-        "absolute bottom-0 right-0 flex size-2.5 translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--color-background) [box-shadow:0_0_0_2px_var(--color-background)]",
-        className,
-      )}
-    >
-      {children}
-    </span>
+    />
   );
 }
 
-export function LiveStatus() {
+export function AwayStatusIcon() {
   return (
-    <AvatarStatusBadge>
-      <Circle
-        className="size-1.5 fill-(--color-success) text-(--color-success)"
-        aria-hidden="true"
-      />
-    </AvatarStatusBadge>
+    <CircleDashed
+      className="size-(--avatar-status-icon-size) text-(--color-muted-foreground)"
+      aria-hidden="true"
+    />
   );
 }
 
-export function AwayStatus() {
+export function SleepStatusIcon() {
   return (
-    <AvatarStatusBadge>
-      <CircleDashed className="size-1.5 text-(--color-muted-foreground)" aria-hidden="true" />
-    </AvatarStatusBadge>
+    <Moon className="size-(--avatar-status-icon-size) text-(--color-ink-4)" aria-hidden="true" />
   );
 }
 
-export function SleepStatus() {
+export function PinStatusIcon() {
   return (
-    <AvatarStatusBadge>
-      <Moon className="size-1.5 text-(--color-ink-4)" aria-hidden="true" />
-    </AvatarStatusBadge>
+    <Pin
+      className="size-(--avatar-status-icon-size) fill-none text-(--color-muted-foreground)"
+      strokeWidth={2}
+      aria-hidden="true"
+    />
   );
 }
 
-export function PinStatus() {
+export function PinnedStatusIcon() {
   return (
-    <AvatarStatusBadge>
-      <Pin
-        className="size-1.5 fill-none text-(--color-muted-foreground)"
-        strokeWidth={2}
-        aria-hidden="true"
-      />
-    </AvatarStatusBadge>
-  );
-}
-
-export function PinnedStatus() {
-  return (
-    <AvatarStatusBadge className="bg-(--color-info)">
-      <Pin
-        className="size-1.5 -rotate-12 text-(--color-info-foreground)"
-        strokeWidth={2.5}
-        aria-hidden="true"
-      />
-    </AvatarStatusBadge>
+    <Pin
+      className="size-(--avatar-status-icon-size) -rotate-12 text-(--color-info-foreground)"
+      strokeWidth={2.5}
+      aria-hidden="true"
+    />
   );
 }

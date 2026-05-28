@@ -18,9 +18,7 @@ export default function App() {
       size="md"
       shape="circle"
       status={
-        <span className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 ...">
-          <Circle className="size-1.5 fill-green-500 text-green-500" />
-        </span>
+        <Circle className="size-(--avatar-status-icon-size) fill-green-500 text-green-500" />
       }
     />
   );
@@ -35,9 +33,7 @@ import { Circle } from "@lucide/vue";
 <template>
   <Avatar fallback="JD" size="md" shape="circle">
     <template #status>
-      <span class="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 ...">
-        <Circle class="size-1.5 fill-green-500 text-green-500" />
-      </span>
+      <Circle class="size-(--avatar-status-icon-size) fill-green-500 text-green-500" />
     </template>
   </Avatar>
 </template>
@@ -48,7 +44,7 @@ import { Circle } from "@lucide/vue";
   id="avatar"
   num={sectionNumber("avatar")}
   label="Avatar"
-  desc="User avatar with image, initials, or icon fallback. Seven sizes and squircle or circle shape. Compose your own status badge via the status prop (React) or status slot (Vue)."
+  desc="User avatar with image, initials, or icon fallback. Seven sizes and squircle or circle shape. Pass an icon to the status prop (React) or status slot (Vue); Avatar renders the positioned badge shell."
   status="new"
   code={usageReact}
   codeFile="avatar.tsx"
@@ -96,7 +92,7 @@ import { Circle } from "@lucide/vue";
       <AvatarReact client:load size="xl" />
     </VariantRow>
 
-    <VariantRow label="Status" sub="compose via status prop">
+    <VariantRow label="Status" sub="icon only — badge shell is built in">
       <Canvas grid={false} class="avatar-status-row">
         <AvatarStatusRow client:load />
       </Canvas>

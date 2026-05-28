@@ -53,8 +53,10 @@ export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
   fallback?: string;
   size?: AvatarSize;
   shape?: AvatarShape;
-  /** Custom status indicator rendered over the avatar. Compose your own badge here. */
+  /** Icon rendered inside the avatar status badge shell. */
   status?: ReactNode;
+  /** Optional classes applied to the status badge shell (e.g. tinted backgrounds). */
+  statusClassName?: string;
 };
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
@@ -67,6 +69,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
       size = "md",
       shape = "squircle",
       status,
+      statusClassName,
       ...props
     },
     ref,
@@ -102,7 +105,17 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
             <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
           )}
         </span>
-        {status}
+        {status ? (
+          <span
+            aria-hidden="true"
+            className={cn(
+              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              statusClassName,
+            )}
+          >
+            {status}
+          </span>
+        ) : null}
       </span>
     );
   },
@@ -166,6 +179,7 @@ export const Avatar = forwardRef(
       size = "md",
       shape = "squircle",
       status,
+      statusClassName,
       ...props
     },
     ref,
@@ -201,7 +215,17 @@ export const Avatar = forwardRef(
             <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
           )}
         </span>
-        {status}
+        {status ? (
+          <span
+            aria-hidden="true"
+            className={cn(
+              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              statusClassName,
+            )}
+          >
+            {status}
+          </span>
+        ) : null}
       </span>
     );
   },
@@ -265,6 +289,7 @@ const props = withDefaults(
     size?: AvatarVariants["size"];
     shape?: AvatarVariants["shape"];
     class?: string;
+    statusClass?: string;
   }>(),
   {
     src: "",
@@ -272,12 +297,19 @@ const props = withDefaults(
     fallback: "",
     size: "md",
     shape: "squircle",
+    statusClass: "",
   },
 );
 
 const imageError = ref(false);
 const faceClasses = computed(() => avatarFaceVariants({ size: props.size, shape: props.shape }));
 const rootClasses = computed(() => cn("relative inline-flex shrink-0 select-none", props.class));
+const statusBadgeClasses = computed(() =>
+  cn(
+    "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+    props.statusClass,
+  ),
+);
 const showImage = computed(() => Boolean(props.src) && !imageError.value);
 const initials = computed(() => props.fallback.trim().slice(0, 2));
 const label = computed(() => props.alt || initials.value || "User avatar");
@@ -311,7 +343,9 @@ function onImageError(): void {
         aria-hidden="true"
       />
     </span>
-    <slot name="status" />
+    <span v-if="$slots.status" aria-hidden="true" :class="statusBadgeClasses">
+      <slot name="status" />
+    </span>
   </span>
 </template>
 "

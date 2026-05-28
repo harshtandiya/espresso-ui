@@ -39,4 +39,11 @@
   /* Surfaces */
   --avatar-bg: var(--color-muted);
   --avatar-fg: var(--color-foreground);
+
+  /* Status badge shell — slot/prop content is the icon only */
+  --avatar-status-size: 10px;
+  --avatar-status-icon-size: 6px;
+  --avatar-status-bg: var(--color-background);
+  --avatar-status-ring: var(--color-background);
+  --avatar-status-ring-width: 2px;
 }
