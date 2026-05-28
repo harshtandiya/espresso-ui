@@ -12,10 +12,20 @@
  *     <ButtonVue   slot="vue"   client:load>Click me</ButtonVue>
  *   </Preview>
  */
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+
+const { compact = false, class: className = "" } = Astro.props;
 ---
 
 <div
-  class="not-prose my-6 rounded-lg border border-(--color-border) overflow-hidden bg-(--color-bg)"
+  class:list={[
+    "not-prose rounded-lg border border-(--color-border) overflow-hidden bg-(--color-bg)",
+    compact ? "my-0" : "my-6",
+    className,
+  ]}
 >
   <section>
     <header
