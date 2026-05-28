@@ -1,0 +1,90 @@
+import { Avatar } from "./Avatar";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const overlapClasses = {
+  xs: "-ml-(--avatar-group-overlap-xs)",
+  sm: "-ml-(--avatar-group-overlap-sm)",
+  md: "-ml-(--avatar-group-overlap-md)",
+  lg: "-ml-(--avatar-group-overlap-lg)",
+  xl: "-ml-(--avatar-group-overlap-xl)",
+  "2xl": "-ml-(--avatar-group-overlap-2xl)",
+  "3xl": "-ml-(--avatar-group-overlap-3xl)",
+} as const;
+
+const labelSizeClasses = {
+  xs: "[font-size:var(--avatar-group-label-xs-font-size)]",
+  sm: "[font-size:var(--avatar-group-label-sm-font-size)]",
+  md: "[font-size:var(--avatar-group-label-md-font-size)]",
+  lg: "[font-size:var(--avatar-group-label-lg-font-size)]",
+  xl: "[font-size:var(--avatar-group-label-xl-font-size)]",
+  "2xl": "[font-size:var(--avatar-group-label-2xl-font-size)]",
+  "3xl": "[font-size:var(--avatar-group-label-3xl-font-size)]",
+} as const;
+
+const ringClass =
+  "[&>span:first-child]:[box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]";
+
+<% if (it.typescript) { %>
+type AvatarGroupSize = keyof typeof overlapClasses;
+
+export type AvatarGroupItem = {
+  src?: string;
+  alt?: string;
+  fallback?: string;
+};
+
+export type AvatarGroupProps = {
+  items?: AvatarGroupItem[];
+  max?: number;
+  showCount?: boolean;
+  count?: number;
+  size?: AvatarGroupSize;
+  className?: string;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  items = [],
+  max = 5,
+  showCount = false,
+  count = 0,
+  size = "md",
+  className,
+}<% if (it.typescript) { %>: AvatarGroupProps<% } %>) {
+  const visibleItems = items.slice(0, max);
+  const overflowCount = items.length > max ? items.length - max : 0;
+  const memberCount = count > 0 ? count : items.length;
+
+  return (
+    <div className={cn("inline-flex items-center gap-3", className)} data-size={size}>
+      <div className="inline-flex items-center">
+        {visibleItems.map((item, index) => (
+          <Avatar
+            key={`${item.src ?? item.fallback ?? "avatar"}-${index}`}
+            src={item.src}
+            alt={item.alt}
+            fallback={item.fallback}
+            size={size}
+            shape="circle"
+            className={cn(ringClass, index > 0 && overlapClasses[size])}
+            style={{ zIndex: index + 1 }}
+          />
+        ))}
+        {overflowCount > 0 ? (
+          <Avatar
+            fallback={`+${overflowCount}`}
+            size={size}
+            shape="circle"
+            className={cn(ringClass, visibleItems.length > 0 && overlapClasses[size])}
+            style={{ zIndex: visibleItems.length + 1 }}
+          />
+        ) : null}
+      </div>
+      {showCount ? (
+        <span className={cn("text-(--avatar-group-label-fg)", labelSizeClasses[size])}>
+          {memberCount} members
+        </span>
+      ) : null}
+    </div>
+  );
+}

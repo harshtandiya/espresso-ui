@@ -16,6 +16,10 @@ import { Eta } from "eta";
 import type { ComponentDefinition } from "../packages/cli/src/utils/registry.js";
 import type { RegistryItem, RegistryRoot } from "./shadcn-schema.js";
 
+type RegistryComponentDefinition = ComponentDefinition & {
+  registryDependencies?: string[];
+};
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REGISTRY_DIR = __dirname;
 const OUT_REACT = path.join(__dirname, "..", "apps", "docs", "public", "r");
@@ -43,7 +47,7 @@ function toPascalCase(name: string): string {
 }
 
 /** Load a component definition by dynamic import. */
-async function loadDef(componentName: string): Promise<ComponentDefinition> {
+async function loadDef(componentName: string): Promise<RegistryComponentDefinition> {
   const defPath = path.join(REGISTRY_DIR, componentName, "definition.ts");
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- dynamic import of registry file
   const mod = await import(defPath);
@@ -53,7 +57,7 @@ async function loadDef(componentName: string): Promise<ComponentDefinition> {
   if (!defKey) {
     throw new Error(`No *Def export found in registry/${componentName}/definition.ts`);
   }
-  return (mod as Record<string, ComponentDefinition>)[defKey]!;
+  return (mod as Record<string, RegistryComponentDefinition>)[defKey]!;
 }
 
 /** Render a single ETA template, returning the rendered string. */
@@ -138,7 +142,7 @@ async function buildRegistryItems(componentName: string): Promise<ComponentItems
     title: pascal,
     description: `espresso-ui ${pascal} component (React)`,
     dependencies: def.peerDeps.react ?? [],
-    registryDependencies: [],
+    registryDependencies: def.registryDependencies ?? [],
     files: reactFiles,
   };
 
@@ -148,7 +152,7 @@ async function buildRegistryItems(componentName: string): Promise<ComponentItems
     title: pascal,
     description: `espresso-ui ${pascal} component (Vue)`,
     dependencies: def.peerDeps.vue ?? [],
-    registryDependencies: [],
+    registryDependencies: def.registryDependencies ?? [],
     files: vueFiles,
   };
 

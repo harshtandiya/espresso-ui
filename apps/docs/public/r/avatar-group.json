@@ -1,0 +1,27 @@
+{
+  "name": "avatar-group",
+  "type": "registry:ui",
+  "title": "AvatarGroup",
+  "description": "espresso-ui AvatarGroup component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge",
+    "class-variance-authority",
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "avatar"
+  ],
+  "files": [
+    {
+      "path": "components/ui/AvatarGroup.tsx",
+      "content": "import { Avatar } from \"./Avatar\";\nimport { cn } from \"@/lib/utils\";\n\nconst overlapClasses = {\n  xs: \"-ml-(--avatar-group-overlap-xs)\",\n  sm: \"-ml-(--avatar-group-overlap-sm)\",\n  md: \"-ml-(--avatar-group-overlap-md)\",\n  lg: \"-ml-(--avatar-group-overlap-lg)\",\n  xl: \"-ml-(--avatar-group-overlap-xl)\",\n  \"2xl\": \"-ml-(--avatar-group-overlap-2xl)\",\n  \"3xl\": \"-ml-(--avatar-group-overlap-3xl)\",\n} as const;\n\nconst labelSizeClasses = {\n  xs: \"[font-size:var(--avatar-group-label-xs-font-size)]\",\n  sm: \"[font-size:var(--avatar-group-label-sm-font-size)]\",\n  md: \"[font-size:var(--avatar-group-label-md-font-size)]\",\n  lg: \"[font-size:var(--avatar-group-label-lg-font-size)]\",\n  xl: \"[font-size:var(--avatar-group-label-xl-font-size)]\",\n  \"2xl\": \"[font-size:var(--avatar-group-label-2xl-font-size)]\",\n  \"3xl\": \"[font-size:var(--avatar-group-label-3xl-font-size)]\",\n} as const;\n\nconst ringClass =\n  \"[&>span:first-child]:[box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]\";\n\ntype AvatarGroupSize = keyof typeof overlapClasses;\n\nexport type AvatarGroupItem = {\n  src?: string;\n  alt?: string;\n  fallback?: string;\n};\n\nexport type AvatarGroupProps = {\n  items?: AvatarGroupItem[];\n  max?: number;\n  showCount?: boolean;\n  count?: number;\n  size?: AvatarGroupSize;\n  className?: string;\n};\n\nexport function AvatarGroup({\n  items = [],\n  max = 5,\n  showCount = false,\n  count = 0,\n  size = \"md\",\n  className,\n}: AvatarGroupProps) {\n  const visibleItems = items.slice(0, max);\n  const overflowCount = items.length > max ? items.length - max : 0;\n  const memberCount = count > 0 ? count : items.length;\n\n  return (\n    <div className={cn(\"inline-flex items-center gap-3\", className)} data-size={size}>\n      <div className=\"inline-flex items-center\">\n        {visibleItems.map((item, index) => (\n          <Avatar\n            key={`${item.src ?? item.fallback ?? \"avatar\"}-${index}`}\n            src={item.src}\n            alt={item.alt}\n            fallback={item.fallback}\n            size={size}\n            shape=\"circle\"\n            className={cn(ringClass, index > 0 && overlapClasses[size])}\n            style={{ zIndex: index + 1 }}\n          />\n        ))}\n        {overflowCount > 0 ? (\n          <Avatar\n            fallback={`+${overflowCount}`}\n            size={size}\n            shape=\"circle\"\n            className={cn(ringClass, visibleItems.length > 0 && overlapClasses[size])}\n            style={{ zIndex: visibleItems.length + 1 }}\n          />\n        ) : null}\n      </div>\n      {showCount ? (\n        <span className={cn(\"text-(--avatar-group-label-fg)\", labelSizeClasses[size])}>\n          {memberCount} members\n        </span>\n      ) : null}\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/avatar-group.css",
+      "content": "/* Avatar group component tokens — override these to customise avatar stacks. */\n:root {\n  --avatar-group-ring: var(--color-background);\n  --avatar-group-ring-width: 2px;\n\n  --avatar-group-overlap-xs: 2px;\n  --avatar-group-overlap-sm: 4px;\n  --avatar-group-overlap-md: 4px;\n  --avatar-group-overlap-lg: 5px;\n  --avatar-group-overlap-xl: 4px;\n  --avatar-group-overlap-2xl: 6px;\n  --avatar-group-overlap-3xl: 8px;\n\n  --avatar-group-label-fg: var(--color-muted-foreground);\n\n  --avatar-group-label-xs-font-size: 11px;\n  --avatar-group-label-sm-font-size: 11px;\n  --avatar-group-label-md-font-size: 14px;\n  --avatar-group-label-lg-font-size: 14px;\n  --avatar-group-label-xl-font-size: 16px;\n  --avatar-group-label-2xl-font-size: 18px;\n  --avatar-group-label-3xl-font-size: 20px;\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}
