@@ -38,7 +38,7 @@
 
   /* Surfaces */
   --avatar-bg: var(--color-muted);
-  --avatar-fg: var(--color-foreground);
+  --avatar-fg: var(--color-muted-foreground);
 
   /* Status badge shell — slot/prop content is the icon only */
   --avatar-status-size: 10px;

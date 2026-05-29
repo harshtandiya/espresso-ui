@@ -9,21 +9,28 @@ const avatarFaceVariants = cva(
   {
     variants: {
       size: {
-        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)] rounded-(--avatar-xs-radius)",
-        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)] rounded-(--avatar-sm-radius)",
-        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)] rounded-(--avatar-md-radius)",
-        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)] rounded-(--avatar-lg-radius)",
-        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)] rounded-(--avatar-xl-radius)",
-        "2xl":
-          "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)] rounded-(--avatar-2xl-radius)",
-        "3xl":
-          "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)] rounded-(--avatar-3xl-radius)",
+        xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)]",
+        sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)]",
+        md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)]",
+        lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)]",
+        xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)]",
+        "2xl": "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)]",
+        "3xl": "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)]",
       },
       shape: {
         squircle: "",
-        circle: "!rounded-full",
+        circle: "rounded-full",
       },
     },
+    compoundVariants: [
+      { shape: "squircle", size: "xs", class: "rounded-(--avatar-xs-radius)" },
+      { shape: "squircle", size: "sm", class: "rounded-(--avatar-sm-radius)" },
+      { shape: "squircle", size: "md", class: "rounded-(--avatar-md-radius)" },
+      { shape: "squircle", size: "lg", class: "rounded-(--avatar-lg-radius)" },
+      { shape: "squircle", size: "xl", class: "rounded-(--avatar-xl-radius)" },
+      { shape: "squircle", size: "2xl", class: "rounded-(--avatar-2xl-radius)" },
+      { shape: "squircle", size: "3xl", class: "rounded-(--avatar-3xl-radius)" },
+    ],
     defaultVariants: {
       size: "md",
       shape: "squircle",
@@ -68,12 +75,12 @@ const faceClasses = computed(() => avatarFaceVariants({ size: props.size, shape:
 const rootClasses = computed(() => cn("relative inline-flex shrink-0 select-none", props.class));
 const statusBadgeClasses = computed(() =>
   cn(
-    "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+    "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)] [&_svg]:size-(--avatar-status-icon-size)",
     props.statusClass,
   ),
 );
 const showImage = computed(() => Boolean(props.src) && !imageError.value);
-const initials = computed(() => props.fallback.trim().slice(0, 2));
+const initials = computed(() => props.fallback.trim().slice(0, 2).toUpperCase());
 const label = computed(() => props.alt || initials.value || "User avatar");
 
 function onImageError(): void {
@@ -94,7 +101,7 @@ function onImageError(): void {
       <img
         v-if="showImage"
         :src="props.src"
-        :alt="props.alt"
+        alt=""
         class="size-full object-cover"
         @error="onImageError"
       />

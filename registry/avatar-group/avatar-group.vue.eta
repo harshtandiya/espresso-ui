@@ -31,6 +31,16 @@ const labelSizeClasses: Record<AvatarGroupSize, string> = {
   "3xl": "[font-size:var(--avatar-group-label-3xl-font-size)]",
 };
 
+const countFaceClasses: Record<AvatarGroupSize, string> = {
+  xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)]",
+  sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)]",
+  md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)]",
+  lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)]",
+  xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)]",
+  "2xl": "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)]",
+  "3xl": "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)]",
+};
+
 const ringClass =
   "[&>span:first-child]:[box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]";
 
@@ -61,7 +71,7 @@ const rootClass = computed(() => cn("inline-flex items-center gap-3", props.clas
 </script>
 
 <template>
-  <div :class="rootClass" :data-size="props.size">
+  <div role="group" :class="rootClass" :data-size="props.size">
     <div class="inline-flex items-center">
       <Avatar
         v-for="(item, index) in visibleItems"
@@ -74,17 +84,24 @@ const rootClass = computed(() => cn("inline-flex items-center gap-3", props.clas
         :class="cn(ringClass, index > 0 ? overlapClasses[props.size] : undefined)"
         :style="{ zIndex: visibleItems.length - index }"
       />
-      <Avatar
+      <span
         v-if="overflowCount > 0"
-        :fallback="`+${overflowCount}`"
-        :size="props.size"
-        shape="circle"
-        :class="cn(ringClass, visibleItems.length > 0 ? overlapClasses[props.size] : undefined)"
+        role="img"
+        :aria-label="`+${overflowCount}`"
+        :class="
+          cn(
+            'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--avatar-bg) font-medium text-(--avatar-fg) [box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]',
+            countFaceClasses[props.size],
+            visibleItems.length > 0 ? overlapClasses[props.size] : undefined,
+          )
+        "
         :style="{ zIndex: 0 }"
-      />
+      >
+        +{{ overflowCount }}
+      </span>
     </div>
     <span v-if="props.showCount" :class="cn('text-(--avatar-group-label-fg)', labelSizeClasses[props.size])">
-      {{ memberCount }} members
+      {{ memberCount }} {{ memberCount === 1 ? "member" : "members" }}
     </span>
   </div>
 </template>
