@@ -1,5 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { cssVar } from "../src";
+import { cssVar } from "../src/index.js";
 
 test("cssVar wraps token name in var()", () => {
   expect(cssVar("color-primary")).toBe("var(--color-primary)");
@@ -19,19 +19,19 @@ test("cssVar accepts line and surface ramp tokens", () => {
 });
 
 test("primitives exports raw gray scale", async () => {
-  const { primitives } = await import("../src");
+  const { primitives } = await import("../src/index.js");
   expect(primitives.color.gray["500"]).toMatch(/^oklch/);
   expect(Object.keys(primitives.color.gray)).toHaveLength(11);
 });
 
 test("primitives exports spacing and radius scales", async () => {
-  const { primitives } = await import("../src");
+  const { primitives } = await import("../src/index.js");
   expect(primitives.spacing["4"]).toBe("4px");
   expect(primitives.radius.full).toBe("9999px");
 });
 
 test("semantic exports light + dark color sections", async () => {
-  const { semantic } = await import("../src");
+  const { semantic } = await import("../src/index.js");
   expect(semantic.light.color["ink-1"]).toBe("{color.gray.900}");
   expect(semantic.dark.color["surface"]).toMatch(/^oklch/);
 });
