@@ -1,0 +1,27 @@
+{
+  "name": "avatar-group",
+  "type": "registry:ui",
+  "title": "AvatarGroup",
+  "description": "espresso-ui AvatarGroup component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge",
+    "class-variance-authority",
+    "@lucide/vue"
+  ],
+  "registryDependencies": [
+    "avatar"
+  ],
+  "files": [
+    {
+      "path": "components/ui/AvatarGroup.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport Avatar from \"./Avatar.vue\";\nimport { cn } from \"@/lib/utils\";\n\ntype AvatarGroupSize = \"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | \"3xl\";\n\nexport type AvatarGroupItem = {\n  src?: string;\n  alt?: string;\n  fallback?: string;\n};\n\nconst overlapClasses: Record<AvatarGroupSize, string> = {\n  xs: \"-ml-(--avatar-group-overlap-xs)\",\n  sm: \"-ml-(--avatar-group-overlap-sm)\",\n  md: \"-ml-(--avatar-group-overlap-md)\",\n  lg: \"-ml-(--avatar-group-overlap-lg)\",\n  xl: \"-ml-(--avatar-group-overlap-xl)\",\n  \"2xl\": \"-ml-(--avatar-group-overlap-2xl)\",\n  \"3xl\": \"-ml-(--avatar-group-overlap-3xl)\",\n};\n\nconst labelSizeClasses: Record<AvatarGroupSize, string> = {\n  xs: \"[font-size:var(--avatar-group-label-xs-font-size)]\",\n  sm: \"[font-size:var(--avatar-group-label-sm-font-size)]\",\n  md: \"[font-size:var(--avatar-group-label-md-font-size)]\",\n  lg: \"[font-size:var(--avatar-group-label-lg-font-size)]\",\n  xl: \"[font-size:var(--avatar-group-label-xl-font-size)]\",\n  \"2xl\": \"[font-size:var(--avatar-group-label-2xl-font-size)]\",\n  \"3xl\": \"[font-size:var(--avatar-group-label-3xl-font-size)]\",\n};\n\nconst countFaceClasses: Record<AvatarGroupSize, string> = {\n  xs: \"size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)]\",\n  sm: \"size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)]\",\n  md: \"size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)]\",\n  lg: \"size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)]\",\n  xl: \"size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)]\",\n  \"2xl\": \"size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)]\",\n  \"3xl\": \"size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)]\",\n};\n\nconst ringClass =\n  \"[&>span:first-child]:[box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]\";\n\nconst props = withDefaults(\n  defineProps<{\n    items?: AvatarGroupItem[];\n    max?: number;\n    showCount?: boolean;\n    count?: number;\n    size?: AvatarGroupSize;\n    class?: string;\n  }>(),\n  {\n    items: () => [],\n    max: 5,\n    showCount: false,\n    count: 0,\n    size: \"md\",\n  },\n);\n\nconst visibleItems = computed(() => props.items.slice(0, props.max));\nconst overflowCount = computed(() =>\n  props.items.length > props.max ? props.items.length - props.max : 0,\n);\nconst memberCount = computed(() => (props.count > 0 ? props.count : props.items.length));\nconst rootClass = computed(() => cn(\"inline-flex items-center gap-3\", props.class));\n</script>\n\n<template>\n  <div role=\"group\" :class=\"rootClass\" :data-size=\"props.size\">\n    <div class=\"inline-flex items-center\">\n      <Avatar\n        v-for=\"(item, index) in visibleItems\"\n        :key=\"`${item.src ?? item.fallback ?? 'avatar'}-${index}`\"\n        :src=\"item.src\"\n        :alt=\"item.alt\"\n        :fallback=\"item.fallback\"\n        :size=\"props.size\"\n        shape=\"circle\"\n        :class=\"cn(ringClass, index > 0 ? overlapClasses[props.size] : undefined)\"\n        :style=\"{ zIndex: visibleItems.length - index }\"\n      />\n      <span\n        v-if=\"overflowCount > 0\"\n        role=\"img\"\n        :aria-label=\"`+${overflowCount}`\"\n        :class=\"\n          cn(\n            'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--avatar-bg) font-medium text-(--avatar-fg) [box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]',\n            countFaceClasses[props.size],\n            visibleItems.length > 0 ? overlapClasses[props.size] : undefined,\n          )\n        \"\n        :style=\"{ zIndex: 0 }\"\n      >\n        +{{ overflowCount }}\n      </span>\n    </div>\n    <span v-if=\"props.showCount\" :class=\"cn('text-(--avatar-group-label-fg)', labelSizeClasses[props.size])\">\n      {{ memberCount }} {{ memberCount === 1 ? \"member\" : \"members\" }}\n    </span>\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/avatar-group.css",
+      "content": "/* Avatar group component tokens — override these to customise avatar stacks. */\n:root {\n  --avatar-group-ring: var(--color-background);\n  --avatar-group-ring-width: 2px;\n\n  --avatar-group-overlap-xs: 2px;\n  --avatar-group-overlap-sm: 4px;\n  --avatar-group-overlap-md: 4px;\n  --avatar-group-overlap-lg: 5px;\n  --avatar-group-overlap-xl: 4px;\n  --avatar-group-overlap-2xl: 6px;\n  --avatar-group-overlap-3xl: 8px;\n\n  --avatar-group-label-fg: var(--color-muted-foreground);\n\n  --avatar-group-label-xs-font-size: 11px;\n  --avatar-group-label-sm-font-size: 11px;\n  --avatar-group-label-md-font-size: 14px;\n  --avatar-group-label-lg-font-size: 14px;\n  --avatar-group-label-xl-font-size: 16px;\n  --avatar-group-label-2xl-font-size: 18px;\n  --avatar-group-label-3xl-font-size: 20px;\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

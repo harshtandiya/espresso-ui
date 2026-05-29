@@ -2,6 +2,7 @@
 import Panel from "./Panel.astro";
 import DetailMeta from "./DetailMeta.astro";
 import CodeBlock from "./CodeBlock.astro";
+import FrameworkCodeBlock from "./FrameworkCodeBlock.astro";
 import type { SectionStatus } from "@/lib/sections";
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   code?: string;
   codeFile?: string;
   codeLang?: "tsx" | "vue" | "ts";
+  codeVue?: string;
+  codeVueFile?: string;
 }
 
 const {
@@ -24,13 +27,27 @@ const {
   code,
   codeFile,
   codeLang = "tsx",
+  codeVue,
+  codeVueFile,
 } = Astro.props;
 
 const file = codeFile ?? `${label.toLowerCase()}.tsx`;
+const vueFile = codeVueFile ?? `${label.toLowerCase()}.vue`;
 ---
 
 <Panel id={id} num={num} group="Components" label={label} desc={desc}>
   <DetailMeta slot="meta" status={status} file={file} />
   <slot />
-  {code && <CodeBlock file={file} lang={codeLang} code={code} />}
+  {
+    code && codeVue ? (
+      <FrameworkCodeBlock
+        reactCode={code}
+        vueCode={codeVue}
+        reactFile={file}
+        vueFile={vueFile}
+      />
+    ) : (
+      code && <CodeBlock file={file} lang={codeLang} code={code} />
+    )
+  }
 </Panel>

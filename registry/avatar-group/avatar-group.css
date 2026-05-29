@@ -1,0 +1,23 @@
+/* Avatar group component tokens — override these to customise avatar stacks. */
+:root {
+  --avatar-group-ring: var(--color-background);
+  --avatar-group-ring-width: 2px;
+
+  --avatar-group-overlap-xs: 2px;
+  --avatar-group-overlap-sm: 4px;
+  --avatar-group-overlap-md: 4px;
+  --avatar-group-overlap-lg: 5px;
+  --avatar-group-overlap-xl: 4px;
+  --avatar-group-overlap-2xl: 6px;
+  --avatar-group-overlap-3xl: 8px;
+
+  --avatar-group-label-fg: var(--color-muted-foreground);
+
+  --avatar-group-label-xs-font-size: 11px;
+  --avatar-group-label-sm-font-size: 11px;
+  --avatar-group-label-md-font-size: 14px;
+  --avatar-group-label-lg-font-size: 14px;
+  --avatar-group-label-xl-font-size: 16px;
+  --avatar-group-label-2xl-font-size: 18px;
+  --avatar-group-label-3xl-font-size: 20px;
+}

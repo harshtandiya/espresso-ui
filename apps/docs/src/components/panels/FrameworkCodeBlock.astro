@@ -1,0 +1,129 @@
+---
+import CodeBlock from "./CodeBlock.astro";
+
+interface Props {
+  reactCode: string;
+  vueCode: string;
+  reactFile?: string;
+  vueFile?: string;
+}
+
+const {
+  reactCode,
+  vueCode,
+  reactFile = "component.tsx",
+  vueFile = "component.vue",
+} = Astro.props;
+
+const uid = `fw-code-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="framework-code" data-framework-code={uid}>
+  <div class="framework-code-tabs" role="tablist" aria-label="Framework">
+    <button
+      type="button"
+      class="framework-code-tab"
+      role="tab"
+      aria-selected="true"
+      data-framework-tab="react"
+    >
+      React
+    </button>
+    <button
+      type="button"
+      class="framework-code-tab"
+      role="tab"
+      aria-selected="false"
+      data-framework-tab="vue"
+    >
+      Vue
+    </button>
+  </div>
+
+  <div class="framework-code-panel" data-framework-panel="react">
+    <CodeBlock file={reactFile} lang="tsx" code={reactCode} flat />
+  </div>
+  <div class="framework-code-panel" data-framework-panel="vue" hidden>
+    <CodeBlock file={vueFile} lang="vue" code={vueCode} flat />
+  </div>
+</div>
+
+<script>
+  function bindFrameworkCode(root: Element): void {
+    const tabs = root.querySelectorAll<HTMLButtonElement>("[data-framework-tab]");
+    const panels = root.querySelectorAll<HTMLElement>("[data-framework-panel]");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const framework = tab.getAttribute("data-framework-tab");
+        if (!framework) return;
+
+        tabs.forEach((t) => t.setAttribute("aria-selected", t === tab ? "true" : "false"));
+        panels.forEach((panel) => {
+          const active = panel.getAttribute("data-framework-panel") === framework;
+          if (active) panel.removeAttribute("hidden");
+          else panel.setAttribute("hidden", "");
+        });
+      });
+    });
+  }
+
+  document.querySelectorAll("[data-framework-code]").forEach(bindFrameworkCode);
+</script>
+
+<style>
+  .framework-code {
+    margin-top: 28px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+
+  .framework-code-tabs {
+    display: flex;
+    gap: 0;
+    padding: 6px;
+    border-bottom: 1px solid var(--color-line-2);
+    background: var(--color-surface-2);
+  }
+
+  .framework-code-tab {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-ink-3);
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .framework-code-tab:hover {
+    color: var(--color-ink-1);
+    background: var(--color-surface);
+  }
+
+  .framework-code-tab[aria-selected="true"] {
+    color: var(--color-ink-1);
+    background: var(--color-surface);
+    border-color: var(--color-line);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .framework-code-panel[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .framework-code {
+      margin: 18px var(--mobile-gutter, 20px) 24px;
+    }
+  }
+</style>

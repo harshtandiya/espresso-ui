@@ -23,6 +23,8 @@ jobs:
           node-version: "22"
           cache: true
       - run: vp install
+      - name: Generate registry components
+        run: npm run build:registry
       - run: vp check
       - run: npm run bundle-registry
         working-directory: packages/cli

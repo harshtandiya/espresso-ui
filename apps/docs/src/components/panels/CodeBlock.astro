@@ -6,12 +6,13 @@ interface Props {
   file?: string;
   lang?: BuiltinLanguage;
   code: string;
+  flat?: boolean;
 }
 
-const { file, lang = "tsx", code } = Astro.props;
+const { file, lang = "tsx", code, flat = false } = Astro.props;
 ---
 
-<div class="code">
+<div class:list={["code", flat && "code-flat"]}>
   {
     file && (
       <div class="code-head">
@@ -34,6 +35,15 @@ const { file, lang = "tsx", code } = Astro.props;
     border-radius: 10px;
     background: var(--color-surface);
     overflow: hidden;
+  }
+  .code-flat {
+    margin-top: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+  .code-flat .code-head {
+    border-top: 1px solid var(--color-line-2);
   }
   .code-head {
     display: flex;

@@ -1,0 +1,49 @@
+/* Avatar component tokens — override these to customise avatars. */
+:root {
+  /* Per-size dimensions */
+  --avatar-xs-size: 16px;
+  --avatar-sm-size: 20px;
+  --avatar-md-size: 24px;
+  --avatar-lg-size: 28px;
+  --avatar-xl-size: 32px;
+  --avatar-2xl-size: 40px;
+  --avatar-3xl-size: 46px;
+
+  /* Per-size squircle radii */
+  --avatar-xs-radius: 4px;
+  --avatar-sm-radius: 5px;
+  --avatar-md-radius: 5px;
+  --avatar-lg-radius: 6px;
+  --avatar-xl-radius: 6px;
+  --avatar-2xl-radius: 8px;
+  --avatar-3xl-radius: 8px;
+
+  /* Per-size initials font sizes */
+  --avatar-xs-font-size: 11px;
+  --avatar-sm-font-size: 13px;
+  --avatar-md-font-size: 14px;
+  --avatar-lg-font-size: 14px;
+  --avatar-xl-font-size: 16px;
+  --avatar-2xl-font-size: 18px;
+  --avatar-3xl-font-size: 20px;
+
+  /* Per-size fallback icon sizes */
+  --avatar-xs-icon-size: 10px;
+  --avatar-sm-icon-size: 12px;
+  --avatar-md-icon-size: 14px;
+  --avatar-lg-icon-size: 16px;
+  --avatar-xl-icon-size: 18px;
+  --avatar-2xl-icon-size: 22px;
+  --avatar-3xl-icon-size: 24px;
+
+  /* Surfaces */
+  --avatar-bg: var(--color-muted);
+  --avatar-fg: var(--color-muted-foreground);
+
+  /* Status badge shell — slot/prop content is the icon only */
+  --avatar-status-size: 10px;
+  --avatar-status-icon-size: 6px;
+  --avatar-status-bg: var(--color-background);
+  --avatar-status-ring: var(--color-background);
+  --avatar-status-ring-width: 2px;
+}

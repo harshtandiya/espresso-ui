@@ -1,0 +1,107 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import Avatar from "./Avatar.vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+type AvatarGroupSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+
+export type AvatarGroupItem = {
+  src?: string;
+  alt?: string;
+  fallback?: string;
+};
+
+const overlapClasses: Record<AvatarGroupSize, string> = {
+  xs: "-ml-(--avatar-group-overlap-xs)",
+  sm: "-ml-(--avatar-group-overlap-sm)",
+  md: "-ml-(--avatar-group-overlap-md)",
+  lg: "-ml-(--avatar-group-overlap-lg)",
+  xl: "-ml-(--avatar-group-overlap-xl)",
+  "2xl": "-ml-(--avatar-group-overlap-2xl)",
+  "3xl": "-ml-(--avatar-group-overlap-3xl)",
+};
+
+const labelSizeClasses: Record<AvatarGroupSize, string> = {
+  xs: "[font-size:var(--avatar-group-label-xs-font-size)]",
+  sm: "[font-size:var(--avatar-group-label-sm-font-size)]",
+  md: "[font-size:var(--avatar-group-label-md-font-size)]",
+  lg: "[font-size:var(--avatar-group-label-lg-font-size)]",
+  xl: "[font-size:var(--avatar-group-label-xl-font-size)]",
+  "2xl": "[font-size:var(--avatar-group-label-2xl-font-size)]",
+  "3xl": "[font-size:var(--avatar-group-label-3xl-font-size)]",
+};
+
+const countFaceClasses: Record<AvatarGroupSize, string> = {
+  xs: "size-(--avatar-xs-size) [font-size:var(--avatar-xs-font-size)]",
+  sm: "size-(--avatar-sm-size) [font-size:var(--avatar-sm-font-size)]",
+  md: "size-(--avatar-md-size) [font-size:var(--avatar-md-font-size)]",
+  lg: "size-(--avatar-lg-size) [font-size:var(--avatar-lg-font-size)]",
+  xl: "size-(--avatar-xl-size) [font-size:var(--avatar-xl-font-size)]",
+  "2xl": "size-(--avatar-2xl-size) [font-size:var(--avatar-2xl-font-size)]",
+  "3xl": "size-(--avatar-3xl-size) [font-size:var(--avatar-3xl-font-size)]",
+};
+
+const ringClass =
+  "[&>span:first-child]:[box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]";
+
+const props = withDefaults(
+  defineProps<{
+    items?: AvatarGroupItem[];
+    max?: number;
+    showCount?: boolean;
+    count?: number;
+    size?: AvatarGroupSize;
+    class?: string;
+  }>(),
+  {
+    items: () => [],
+    max: 5,
+    showCount: false,
+    count: 0,
+    size: "md",
+  },
+);
+
+const visibleItems = computed(() => props.items.slice(0, props.max));
+const overflowCount = computed(() =>
+  props.items.length > props.max ? props.items.length - props.max : 0,
+);
+const memberCount = computed(() => (props.count > 0 ? props.count : props.items.length));
+const rootClass = computed(() => cn("inline-flex items-center gap-3", props.class));
+</script>
+
+<template>
+  <div role="group" :class="rootClass" :data-size="props.size">
+    <div class="inline-flex items-center">
+      <Avatar
+        v-for="(item, index) in visibleItems"
+        :key="`${item.src ?? item.fallback ?? 'avatar'}-${index}`"
+        :src="item.src"
+        :alt="item.alt"
+        :fallback="item.fallback"
+        :size="props.size"
+        shape="circle"
+        :class="cn(ringClass, index > 0 ? overlapClasses[props.size] : undefined)"
+        :style="{ zIndex: visibleItems.length - index }"
+      />
+      <span
+        v-if="overflowCount > 0"
+        role="img"
+        :aria-label="`+${overflowCount}`"
+        :class="
+          cn(
+            'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--avatar-bg) font-medium text-(--avatar-fg) [box-shadow:0_0_0_var(--avatar-group-ring-width)_var(--avatar-group-ring)]',
+            countFaceClasses[props.size],
+            visibleItems.length > 0 ? overlapClasses[props.size] : undefined,
+          )
+        "
+        :style="{ zIndex: 0 }"
+      >
+        +{{ overflowCount }}
+      </span>
+    </div>
+    <span v-if="props.showCount" :class="cn('text-(--avatar-group-label-fg)', labelSizeClasses[props.size])">
+      {{ memberCount }} {{ memberCount === 1 ? "member" : "members" }}
+    </span>
+  </div>
+</template>
