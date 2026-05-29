@@ -150,6 +150,8 @@ export function <%= it.componentName %>({
 
 - Use `(--token-name)` for CSS variable references in Tailwind utilities — not `[--token-name]`. The bracket form generates empty rules in Tailwind v4.
 - For **font-size** tokens specifically, use `[font-size:var(--token)]` instead of `text-(--token)`. The `text-` prefix is treated as a color utility by both Tailwind and tailwind-merge, which will silently drop your actual text-color class.
+- **cva output is not run through tailwind-merge.** When you assign `variants({...})` straight to `className` (or `:class`), conflicting classes from two variant axes both survive. For example a `shape: { circle }` axis emitting `rounded-full` will not override a `size` axis emitting `rounded-(--x-radius)`. Do not patch this with `!important` (`!rounded-full`) — make the classes mutually exclusive with `compoundVariants` instead (keep the overriding class in one axis and move the conflicting per-size class into `compoundVariants` keyed on the other axis).
+- To size an icon a consumer passes through a slot or `children` (status badges, overlays), size it from the wrapper with a descendant utility — `[&_svg]:size-(--token)` — rather than relying on the consumer to size it.
 - Never hardcode colors or sizes. Route everything through CSS custom properties.
 
 ---
