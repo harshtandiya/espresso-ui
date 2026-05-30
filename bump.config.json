@@ -1,6 +1,0 @@
-{
-  "files": ["packages/cli/package.json"],
-  "commit": true,
-  "tag": true,
-  "push": false
-}
