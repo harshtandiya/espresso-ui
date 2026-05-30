@@ -25,6 +25,8 @@ jobs:
       - run: vp install
       - name: Generate registry components
         run: npm run build:registry
+      - name: Generate Astro content + env types
+        run: vp run docs#sync
       - run: vp check
       - run: npm run bundle-registry
         working-directory: packages/cli
