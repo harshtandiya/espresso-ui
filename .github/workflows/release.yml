@@ -31,6 +31,11 @@ jobs:
       - run: npm run bundle-registry
         working-directory: packages/cli
       - run: vp test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@11
       - run: npm publish --provenance --access public
         working-directory: packages/cli
       - name: Create GitHub Release
