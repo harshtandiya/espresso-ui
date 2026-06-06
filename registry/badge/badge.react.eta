@@ -58,7 +58,6 @@ const badgeVariants = cva(
 <% if (it.typescript) { %>
 export type BadgeProps = Omit<ComponentPropsWithoutRef<typeof ark.span>, "prefix" | "suffix"> &
   VariantProps<typeof badgeVariants> & {
-    asChild?: boolean;
     prefix?: ReactNode;
     suffix?: ReactNode;
   };
@@ -68,7 +67,6 @@ export function <%= it.componentName %>({
   theme,
   variant,
   size,
-  asChild = false,
   prefix,
   suffix,
   children,
@@ -76,7 +74,6 @@ export function <%= it.componentName %>({
 }<% if (it.typescript) { %>: BadgeProps<% } %>) {
   return (
     <ark.span
-      asChild={asChild}
       className={cn(badgeVariants({ theme, variant, size }), className)}
       {...props}
     >

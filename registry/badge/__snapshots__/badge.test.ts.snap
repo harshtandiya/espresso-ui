@@ -60,7 +60,6 @@ const badgeVariants = cva(
 );
 export type BadgeProps = Omit<ComponentPropsWithoutRef<typeof ark.span>, "prefix" | "suffix"> &
   VariantProps<typeof badgeVariants> & {
-    asChild?: boolean;
     prefix?: ReactNode;
     suffix?: ReactNode;
   };
@@ -69,7 +68,6 @@ export function Badge({
   theme,
   variant,
   size,
-  asChild = false,
   prefix,
   suffix,
   children,
@@ -77,7 +75,6 @@ export function Badge({
 }: BadgeProps) {
   return (
     <ark.span
-      asChild={asChild}
       className={cn(badgeVariants({ theme, variant, size }), className)}
       {...props}
     >
@@ -152,7 +149,6 @@ export function Badge({
   theme,
   variant,
   size,
-  asChild = false,
   prefix,
   suffix,
   children,
@@ -160,7 +156,6 @@ export function Badge({
 }) {
   return (
     <ark.span
-      asChild={asChild}
       className={cn(badgeVariants({ theme, variant, size }), className)}
       {...props}
     >
@@ -240,14 +235,12 @@ const props = withDefaults(
     theme?: BadgeVariants["theme"];
     variant?: BadgeVariants["variant"];
     size?: BadgeVariants["size"];
-    asChild?: boolean;
     class?: string;
   }>(),
   {
     theme: "default",
     variant: "solid",
     size: "md",
-    asChild: false,
   },
 );
 
@@ -257,7 +250,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <component :is="ark.span" :as-child="props.asChild" :class="classes" v-bind="$attrs">
+  <component :is="ark.span" :class="classes" v-bind="$attrs">
     <span v-if="$slots.prefix" class="inline-flex shrink-0 items-center">
       <slot name="prefix" />
     </span>

@@ -17,12 +17,11 @@ const baseData = {
 };
 
 describe("badge definition", () => {
-  it("exposes theme, variant, size, and asChild props", () => {
+  it("exposes theme, variant, and size props", () => {
     expect(badgeDef.name).toBe("badge");
     expect(badgeDef.props.theme.values).toEqual(["default", "error", "warning", "success", "info"]);
     expect(badgeDef.props.variant.values).toEqual(["solid", "subtle", "outline", "ghost"]);
     expect(badgeDef.props.size.values).toEqual(["sm", "md", "lg"]);
-    expect(badgeDef.props.asChild.default).toBe(false);
   });
 
   it("declares default, prefix, and suffix slots", () => {
@@ -42,11 +41,11 @@ describe("badge css tokens", () => {
 });
 
 describe("badge templates", () => {
-  it("uses ark.span with asChild in React template", async () => {
+  it("uses ark.span in React template", async () => {
     const result = await eta.renderAsync("./badge.react.eta", baseData);
     expect(result).toContain("@ark-ui/react/factory");
     expect(result).toContain("ark.span");
-    expect(result).toContain("asChild");
+    expect(result).not.toContain("asChild");
   });
 
   it("exposes prefix and suffix props in React template", async () => {

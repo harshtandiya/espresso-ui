@@ -64,14 +64,12 @@ const props = withDefaults(
     theme?: BadgeVariants["theme"];
     variant?: BadgeVariants["variant"];
     size?: BadgeVariants["size"];
-    asChild?: boolean;
     class?: string;
   }>(),
   {
     theme: "default",
     variant: "solid",
     size: "md",
-    asChild: false,
   },
 );
 
@@ -81,7 +79,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <component :is="ark.span" :as-child="props.asChild" :class="classes" v-bind="$attrs">
+  <component :is="ark.span" :class="classes" v-bind="$attrs">
     <span v-if="$slots.prefix" class="inline-flex shrink-0 items-center">
       <slot name="prefix" />
     </span>

@@ -16,12 +16,6 @@ export const badgeDef = {
       values: ["sm", "md", "lg"],
       default: "md",
     },
-    asChild: {
-      type: "boolean",
-      default: false,
-      description:
-        "Render the badge's child element instead, forwarding all styles and props (uses Ark's slot mechanism)",
-    },
   },
   slots: ["default", "prefix", "suffix"],
   emits: [],
