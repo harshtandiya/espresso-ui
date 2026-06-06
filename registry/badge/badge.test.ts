@@ -31,11 +31,12 @@ describe("badge definition", () => {
 });
 
 describe("badge css tokens", () => {
-  it("aliases semantic tokens and strengthens default outline border", async () => {
+  it("aliases semantic tokens and keeps outline border matched to text color", async () => {
     const css = await fs.readFile(path.join(__dirname, "badge.css"), "utf-8");
     expect(css).toContain("--badge-default-solid-bg: var(--color-primary)");
     expect(css).toContain("--badge-error-subtle-bg: var(--color-error-subtle)");
-    expect(css).toContain("--badge-default-outline-border: color-mix(");
+    expect(css).toContain("--badge-default-outline-border: var(--badge-default-outline-fg)");
+    expect(css).toContain("--badge-info-outline-border: var(--badge-info-outline-fg)");
     expect(css).not.toMatch(/#[0-9a-f]{3,8}/i);
   });
 });

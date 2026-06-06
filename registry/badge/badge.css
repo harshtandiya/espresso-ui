@@ -26,12 +26,8 @@
   --badge-default-solid-fg: var(--color-primary-foreground);
   --badge-default-subtle-bg: var(--color-muted);
   --badge-default-subtle-fg: var(--color-muted-foreground);
-  --badge-default-outline-border: color-mix(
-    in oklch,
-    var(--color-muted-foreground) 45%,
-    var(--color-background)
-  );
   --badge-default-outline-fg: var(--color-muted-foreground);
+  --badge-default-outline-border: var(--badge-default-outline-fg);
   --badge-default-ghost-fg: var(--color-muted-foreground);
 
   /* Theme: error */
@@ -39,12 +35,8 @@
   --badge-error-solid-fg: var(--color-error-foreground);
   --badge-error-subtle-bg: var(--color-error-subtle);
   --badge-error-subtle-fg: var(--color-error);
-  --badge-error-outline-border: color-mix(
-    in oklch,
-    var(--color-error) 35%,
-    var(--color-background)
-  );
   --badge-error-outline-fg: var(--color-error);
+  --badge-error-outline-border: var(--badge-error-outline-fg);
   --badge-error-ghost-fg: var(--color-error);
 
   /* Theme: warning */
@@ -52,12 +44,8 @@
   --badge-warning-solid-fg: var(--color-warning-foreground);
   --badge-warning-subtle-bg: var(--color-warning-subtle);
   --badge-warning-subtle-fg: var(--color-warning);
-  --badge-warning-outline-border: color-mix(
-    in oklch,
-    var(--color-warning) 45%,
-    var(--color-background)
-  );
   --badge-warning-outline-fg: var(--color-warning);
+  --badge-warning-outline-border: var(--badge-warning-outline-fg);
   --badge-warning-ghost-fg: var(--color-warning);
 
   /* Theme: success */
@@ -65,12 +53,8 @@
   --badge-success-solid-fg: var(--color-success-foreground);
   --badge-success-subtle-bg: var(--color-success-subtle);
   --badge-success-subtle-fg: var(--color-success);
-  --badge-success-outline-border: color-mix(
-    in oklch,
-    var(--color-success) 40%,
-    var(--color-background)
-  );
   --badge-success-outline-fg: var(--color-success);
+  --badge-success-outline-border: var(--badge-success-outline-fg);
   --badge-success-ghost-fg: var(--color-success);
 
   /* Theme: info */
@@ -78,7 +62,7 @@
   --badge-info-solid-fg: var(--color-info-foreground);
   --badge-info-subtle-bg: var(--color-info-subtle);
   --badge-info-subtle-fg: var(--color-info);
-  --badge-info-outline-border: color-mix(in oklch, var(--color-info) 40%, var(--color-background));
   --badge-info-outline-fg: var(--color-info);
+  --badge-info-outline-border: var(--badge-info-outline-fg);
   --badge-info-ghost-fg: var(--color-info);
 }
