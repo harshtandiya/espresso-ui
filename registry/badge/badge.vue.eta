@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { ark } from "@ark-ui/vue/factory";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const badgeVariants = cva(
+  "inline-flex shrink-0 items-center whitespace-nowrap font-normal [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      theme: {
+        default: "",
+        error: "",
+        warning: "",
+        success: "",
+        info: "",
+      },
+      variant: {
+        solid: "",
+        subtle: "",
+        outline: "border bg-transparent",
+        ghost: "bg-transparent",
+      },
+      size: {
+        sm: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-sm-py) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
+        md: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-md-py) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
+        lg: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-lg-py) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
+      },
+    },
+    compoundVariants: [
+      { theme: "default", variant: "solid", class: "bg-(--badge-default-solid-bg) text-(--badge-default-solid-fg)" },
+      { theme: "default", variant: "subtle", class: "bg-(--badge-default-subtle-bg) text-(--badge-default-subtle-fg)" },
+      { theme: "default", variant: "outline", class: "border-(--badge-default-outline-border) text-(--badge-default-outline-fg)" },
+      { theme: "default", variant: "ghost", class: "text-(--badge-default-ghost-fg)" },
+      { theme: "error", variant: "solid", class: "bg-(--badge-error-solid-bg) text-(--badge-error-solid-fg)" },
+      { theme: "error", variant: "subtle", class: "bg-(--badge-error-subtle-bg) text-(--badge-error-subtle-fg)" },
+      { theme: "error", variant: "outline", class: "border-(--badge-error-outline-border) text-(--badge-error-outline-fg)" },
+      { theme: "error", variant: "ghost", class: "text-(--badge-error-ghost-fg)" },
+      { theme: "warning", variant: "solid", class: "bg-(--badge-warning-solid-bg) text-(--badge-warning-solid-fg)" },
+      { theme: "warning", variant: "subtle", class: "bg-(--badge-warning-subtle-bg) text-(--badge-warning-subtle-fg)" },
+      { theme: "warning", variant: "outline", class: "border-(--badge-warning-outline-border) text-(--badge-warning-outline-fg)" },
+      { theme: "warning", variant: "ghost", class: "text-(--badge-warning-ghost-fg)" },
+      { theme: "success", variant: "solid", class: "bg-(--badge-success-solid-bg) text-(--badge-success-solid-fg)" },
+      { theme: "success", variant: "subtle", class: "bg-(--badge-success-subtle-bg) text-(--badge-success-subtle-fg)" },
+      { theme: "success", variant: "outline", class: "border-(--badge-success-outline-border) text-(--badge-success-outline-fg)" },
+      { theme: "success", variant: "ghost", class: "text-(--badge-success-ghost-fg)" },
+      { theme: "info", variant: "solid", class: "bg-(--badge-info-solid-bg) text-(--badge-info-solid-fg)" },
+      { theme: "info", variant: "subtle", class: "bg-(--badge-info-subtle-bg) text-(--badge-info-subtle-fg)" },
+      { theme: "info", variant: "outline", class: "border-(--badge-info-outline-border) text-(--badge-info-outline-fg)" },
+      { theme: "info", variant: "ghost", class: "text-(--badge-info-ghost-fg)" },
+    ],
+    defaultVariants: {
+      theme: "default",
+      variant: "solid",
+      size: "md",
+    },
+  },
+);
+
+type BadgeVariants = VariantProps<typeof badgeVariants>;
+
+const props = withDefaults(
+  defineProps<{
+    theme?: BadgeVariants["theme"];
+    variant?: BadgeVariants["variant"];
+    size?: BadgeVariants["size"];
+    asChild?: boolean;
+    class?: string;
+  }>(),
+  {
+    theme: "default",
+    variant: "solid",
+    size: "md",
+    asChild: false,
+  },
+);
+
+const classes = computed(() =>
+  cn(badgeVariants({ theme: props.theme, variant: props.variant, size: props.size }), props.class),
+);
+</script>
+
+<template>
+  <component :is="ark.span" :as-child="props.asChild" :class="classes" v-bind="$attrs">
+    <span v-if="$slots.prefix" class="inline-flex shrink-0 items-center">
+      <slot name="prefix" />
+    </span>
+    <slot />
+    <span v-if="$slots.suffix" class="inline-flex shrink-0 items-center">
+      <slot name="suffix" />
+    </span>
+  </component>
+</template>
