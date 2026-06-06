@@ -1,0 +1,88 @@
+import { ark } from "@ark-ui/react/factory";
+import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+const badgeVariants = cva(
+  "inline-flex shrink-0 items-center whitespace-nowrap font-normal [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      theme: {
+        default: "",
+        error: "",
+        warning: "",
+        success: "",
+        info: "",
+      },
+      variant: {
+        solid: "",
+        subtle: "",
+        outline: "border bg-transparent",
+        ghost: "bg-transparent",
+      },
+      size: {
+        sm: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-sm-py) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
+        md: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-md-py) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
+        lg: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-lg-py) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
+      },
+    },
+    compoundVariants: [
+      { theme: "default", variant: "solid", class: "bg-(--badge-default-solid-bg) text-(--badge-default-solid-fg)" },
+      { theme: "default", variant: "subtle", class: "bg-(--badge-default-subtle-bg) text-(--badge-default-subtle-fg)" },
+      { theme: "default", variant: "outline", class: "border-(--badge-default-outline-border) text-(--badge-default-outline-fg)" },
+      { theme: "default", variant: "ghost", class: "text-(--badge-default-ghost-fg)" },
+      { theme: "error", variant: "solid", class: "bg-(--badge-error-solid-bg) text-(--badge-error-solid-fg)" },
+      { theme: "error", variant: "subtle", class: "bg-(--badge-error-subtle-bg) text-(--badge-error-subtle-fg)" },
+      { theme: "error", variant: "outline", class: "border-(--badge-error-outline-border) text-(--badge-error-outline-fg)" },
+      { theme: "error", variant: "ghost", class: "text-(--badge-error-ghost-fg)" },
+      { theme: "warning", variant: "solid", class: "bg-(--badge-warning-solid-bg) text-(--badge-warning-solid-fg)" },
+      { theme: "warning", variant: "subtle", class: "bg-(--badge-warning-subtle-bg) text-(--badge-warning-subtle-fg)" },
+      { theme: "warning", variant: "outline", class: "border-(--badge-warning-outline-border) text-(--badge-warning-outline-fg)" },
+      { theme: "warning", variant: "ghost", class: "text-(--badge-warning-ghost-fg)" },
+      { theme: "success", variant: "solid", class: "bg-(--badge-success-solid-bg) text-(--badge-success-solid-fg)" },
+      { theme: "success", variant: "subtle", class: "bg-(--badge-success-subtle-bg) text-(--badge-success-subtle-fg)" },
+      { theme: "success", variant: "outline", class: "border-(--badge-success-outline-border) text-(--badge-success-outline-fg)" },
+      { theme: "success", variant: "ghost", class: "text-(--badge-success-ghost-fg)" },
+      { theme: "info", variant: "solid", class: "bg-(--badge-info-solid-bg) text-(--badge-info-solid-fg)" },
+      { theme: "info", variant: "subtle", class: "bg-(--badge-info-subtle-bg) text-(--badge-info-subtle-fg)" },
+      { theme: "info", variant: "outline", class: "border-(--badge-info-outline-border) text-(--badge-info-outline-fg)" },
+      { theme: "info", variant: "ghost", class: "text-(--badge-info-ghost-fg)" },
+    ],
+    defaultVariants: {
+      theme: "default",
+      variant: "solid",
+      size: "md",
+    },
+  },
+);
+<% if (it.typescript) { %>
+export type BadgeProps = Omit<ComponentPropsWithoutRef<typeof ark.span>, "prefix" | "suffix"> &
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean;
+    prefix?: ReactNode;
+    suffix?: ReactNode;
+  };
+<% } %>
+export function <%= it.componentName %>({
+  className,
+  theme,
+  variant,
+  size,
+  asChild = false,
+  prefix,
+  suffix,
+  children,
+  ...props
+}<% if (it.typescript) { %>: BadgeProps<% } %>) {
+  return (
+    <ark.span
+      asChild={asChild}
+      className={cn(badgeVariants({ theme, variant, size }), className)}
+      {...props}
+    >
+      {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
+      {children}
+      {suffix ? <span className="inline-flex shrink-0 items-center">{suffix}</span> : null}
+    </ark.span>
+  );
+}

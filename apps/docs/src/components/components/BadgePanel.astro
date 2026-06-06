@@ -1,0 +1,86 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Badge as BadgeReact } from "@/generated/react/Badge.tsx";
+import { BadgeWithIcons } from "@/components/examples/BadgeWithIcons.tsx";
+
+const usageReact = `import { Badge } from "@/components/ui/Badge";
+import { Sparkles } from "lucide-react";
+
+export default function App() {
+  return (
+    <Badge
+      theme="success"
+      variant="subtle"
+      prefix={<Sparkles aria-hidden="true" />}
+    >
+      Active
+    </Badge>
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import Badge from "@/components/ui/Badge.vue";
+import { Sparkles } from "@lucide/vue";
+</script>
+
+<template>
+  <Badge theme="success" variant="subtle">
+    <template #prefix><Sparkles aria-hidden="true" /></template>
+    Active
+  </Badge>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="badge"
+  num={sectionNumber("badge")}
+  label="Badge"
+  desc="Compact status label for counts, alerts, and metadata. Five themes and four variants at three sizes. Prefix and suffix props (React) or slots (Vue) accept icons, spinners, or any inline content."
+  status="new"
+  code={usageReact}
+  codeFile="badge.tsx"
+  codeVue={usageVue}
+  codeVueFile="badge.vue"
+>
+  <CanvasToolbar title="Preview" meta="solid · subtle · outline · ghost" />
+  <Canvas>
+    <BadgeReact client:load theme="default" variant="solid">Label</BadgeReact>
+    <BadgeReact client:load theme="success" variant="subtle">Active</BadgeReact>
+    <BadgeReact client:load theme="error" variant="outline">Failed</BadgeReact>
+    <BadgeReact client:load theme="info" variant="ghost">Draft</BadgeReact>
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Themes" sub="default · error · warning · success · info">
+      <BadgeReact client:load theme="default" variant="solid">Default</BadgeReact>
+      <BadgeReact client:load theme="error" variant="solid">Error</BadgeReact>
+      <BadgeReact client:load theme="warning" variant="solid">Warning</BadgeReact>
+      <BadgeReact client:load theme="success" variant="solid">Success</BadgeReact>
+      <BadgeReact client:load theme="info" variant="solid">Info</BadgeReact>
+    </VariantRow>
+
+    <VariantRow label="Variants" sub="solid · subtle · outline · ghost">
+      <BadgeReact client:load theme="default" variant="solid">Solid</BadgeReact>
+      <BadgeReact client:load theme="default" variant="subtle">Subtle</BadgeReact>
+      <BadgeReact client:load theme="default" variant="outline">Outline</BadgeReact>
+      <BadgeReact client:load theme="default" variant="ghost">Ghost</BadgeReact>
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="sm · md · lg">
+      <BadgeReact client:load size="sm" theme="default" variant="solid">Small</BadgeReact>
+      <BadgeReact client:load size="md" theme="default" variant="solid">Medium</BadgeReact>
+      <BadgeReact client:load size="lg" theme="default" variant="solid">Large</BadgeReact>
+    </VariantRow>
+
+    <VariantRow label="Prefix & suffix" sub="icons sized via badge tokens">
+      <BadgeWithIcons client:load />
+    </VariantRow>
+  </Variants>
+</ComponentPanel>

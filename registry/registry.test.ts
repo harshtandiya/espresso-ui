@@ -114,6 +114,32 @@ describe("registry parity", () => {
   });
 });
 
+describe("badge registry export", () => {
+  async function loadItem(framework: "react" | "vue") {
+    const filePath = path.join(R_DIR, framework === "vue" ? "vue/badge.json" : "badge.json");
+    const raw = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(raw) as RegistryRoot["items"][number];
+  }
+
+  it("React export includes prefix/suffix props and badge tokens", async () => {
+    const item = await loadItem("react");
+    const tsx = item.files.find((file) => file.path.endsWith(".tsx"));
+    const css = item.files.find((file) => file.path.endsWith(".css"));
+    expect(tsx?.content).toContain("prefix?: ReactNode");
+    expect(tsx?.content).toContain("suffix?: ReactNode");
+    expect(tsx?.content).toContain('theme: "default"');
+    expect(css?.content).toContain("--badge-default-outline-border");
+  });
+
+  it("Vue export includes prefix/suffix slots", async () => {
+    const item = await loadItem("vue");
+    const vue = item.files.find((file) => file.path.endsWith(".vue"));
+    expect(vue?.content).toContain('<slot name="prefix" />');
+    expect(vue?.content).toContain('<slot name="suffix" />');
+    expect(vue?.content).toContain("$slots.prefix");
+  });
+});
+
 describe("React templates use named imports", () => {
   it("contains no React.* namespace references", async () => {
     const { items } = await loadRegistry(REACT_REGISTRY);
