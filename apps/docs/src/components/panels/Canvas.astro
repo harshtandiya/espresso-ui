@@ -8,27 +8,19 @@ interface Props {
 const { grid = true, padded = true, class: className = "" } = Astro.props;
 ---
 
-<div class:list={["canvas", grid && "grid", padded && "padded", className]}>
+<div
+  class:list={[
+    "border border-(--color-line) bg-(--color-surface) rounded-[14px] flex flex-wrap gap-[18px] items-center justify-center min-h-[220px] mt-3 max-md:mx-[var(--mobile-gutter,20px)] max-md:mt-0 max-md:min-h-[140px] max-md:rounded-xl max-md:gap-3",
+    padded && "py-14 px-8 max-md:py-8 max-md:px-4",
+    grid && "canvas-grid",
+    className,
+  ]}
+>
   <slot />
 </div>
 
 <style>
-  .canvas {
-    border: 1px solid var(--color-line);
-    background: var(--color-surface);
-    border-radius: 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
-    margin-top: 12px;
-  }
-  .canvas.padded {
-    padding: 56px 32px;
-  }
-  .canvas.grid {
+  .canvas-grid {
     background-image:
       linear-gradient(var(--color-line-2) 1px, transparent 1px),
       linear-gradient(90deg, var(--color-line-2) 1px, transparent 1px);
@@ -37,17 +29,7 @@ const { grid = true, padded = true, class: className = "" } = Astro.props;
   }
 
   @media (max-width: 768px) {
-    .canvas {
-      margin: 0 var(--mobile-gutter, 20px);
-      margin-top: 0;
-      min-height: 140px;
-      border-radius: 12px;
-      gap: 12px;
-    }
-    .canvas.padded {
-      padding: 32px 16px;
-    }
-    .canvas.grid {
+    .canvas-grid {
       background-size: 14px 14px;
     }
   }

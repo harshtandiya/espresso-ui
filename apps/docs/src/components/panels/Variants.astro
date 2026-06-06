@@ -1,26 +1,5 @@
-<div class="variants">
+<div
+  class="mt-9 grid grid-cols-[200px_1fr] border-t border-(--color-line-2) max-md:mt-[18px] max-md:mx-[var(--mobile-gutter,20px)] max-md:block"
+>
   <slot />
 </div>
-
-<style>
-  .variants {
-    margin-top: 36px;
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    border-top: 1px solid var(--color-line-2);
-  }
-  .variants :global(.variant-row) {
-    display: contents;
-  }
-
-  @media (max-width: 768px) {
-    .variants {
-      margin: 18px var(--mobile-gutter, 20px) 0;
-      display: block;
-      grid-template-columns: 1fr;
-    }
-    .variants :global(.variant-row) {
-      display: block;
-    }
-  }
-</style>
