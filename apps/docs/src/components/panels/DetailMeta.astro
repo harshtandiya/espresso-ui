@@ -15,78 +15,20 @@ const statusColor: Record<SectionStatus, string> = {
 };
 ---
 
-<div class="detail-meta">
-  <span class="status">
-    <span class="pip" style={`background: ${statusColor[status]}`}></span>
+<div
+  class="detail-meta mt-6 mb-0 flex items-center gap-4 flex-wrap text-xs text-(--color-ink-4) max-md:mt-3.5 max-md:gap-0 max-md:flex-nowrap max-md:text-[11px] max-md:[font-family:var(--font-mono)] max-md:p-0"
+>
+  <span
+    class="status inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full border border-(--color-line) bg-(--color-surface-2) capitalize max-md:border-0 max-md:bg-transparent max-md:p-0 max-md:gap-[5px] max-md:uppercase"
+  >
+    <span
+      class="pip size-1.5 rounded-full shrink-0 max-md:size-[5px]"
+      style={`background: ${statusColor[status]}`}
+    />
     {status}
   </span>
-  <span class="dot"></span>
-  <span class="file">{file}</span>
-  <span class="dot desktop-only"></span>
-  <span class="desktop-only">Headless API</span>
+  <span class="dot size-[3px] rounded-full bg-(--color-ink-5) max-md:mx-1.5" />
+  <span class="file [font-family:var(--font-mono)]">{file}</span>
+  <span class="dot desktop-only size-[3px] rounded-full bg-(--color-ink-5) max-md:mx-1.5" />
+  <span class="desktop-only max-md:hidden">Headless API</span>
 </div>
-
-<style>
-  .detail-meta {
-    margin: 24px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: var(--color-ink-4);
-  }
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--color-line);
-    background: var(--color-surface-2);
-    text-transform: capitalize;
-  }
-  .pip {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .dot {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: var(--color-ink-5);
-  }
-  .file {
-    font-family: var(--font-mono);
-  }
-
-  @media (max-width: 768px) {
-    .detail-meta {
-      margin-top: 14px;
-      gap: 0;
-      flex-wrap: nowrap;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      padding: 0;
-    }
-    .status {
-      border: none;
-      background: none;
-      padding: 0;
-      gap: 5px;
-      text-transform: uppercase;
-    }
-    .pip {
-      width: 5px;
-      height: 5px;
-    }
-    .dot {
-      margin: 0 6px;
-    }
-    .desktop-only {
-      display: none;
-    }
-  }
-</style>

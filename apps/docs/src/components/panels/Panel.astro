@@ -13,63 +13,31 @@ interface Props {
 const { id, num, group, label, desc } = Astro.props;
 ---
 
-<section id={id} class="detail" data-section-num={num}>
-  <div class="detail-head">
+<section
+  id={id}
+  class="detail py-16 px-16 pb-24 max-w-[880px] max-md:p-0 max-md:max-w-none max-md:bg-(--color-surface)"
+  data-section-num={num}
+>
+  <div
+    class="detail-head max-md:px-[var(--mobile-gutter,20px)] max-md:pt-2 max-md:pb-[18px] max-md:border-b max-md:border-(--color-line-2)"
+  >
     <Crumb group={group} label={label} />
-    <h2>{label}</h2>
-    {desc && <p class="desc">{desc}</p>}
+    <h2
+      class="text-4xl font-semibold tracking-tight leading-tight m-0 text-(--color-ink-1) max-md:text-[26px] max-md:leading-[1.08]"
+    >
+      {label}
+    </h2>
+    {
+      desc && (
+        <p class="desc mt-3.5 mb-0 text-base leading-relaxed text-(--color-ink-3) max-w-[600px] max-md:mt-2.5 max-md:text-sm max-md:leading-normal max-md:max-w-none">
+          {desc}
+        </p>
+      )
+    }
     <slot name="meta" />
   </div>
-  <div class="detail-body">
+  <div class="detail-body max-md:bg-(--color-surface)">
     <slot />
     <MobileSectionPager id={id} />
   </div>
 </section>
-
-<style>
-  .detail {
-    padding: 64px 64px 96px;
-    max-width: 880px;
-  }
-  .detail h2 {
-    font-size: 36px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin: 0;
-    color: var(--color-ink-1);
-  }
-  .desc {
-    margin: 14px 0 0;
-    font-size: 16px;
-    line-height: 1.55;
-    color: var(--color-ink-3);
-    max-width: 600px;
-  }
-
-  @media (max-width: 768px) {
-    .detail {
-      padding: 0 0 32px;
-      max-width: none;
-      background: var(--color-surface);
-    }
-    .detail-head {
-      padding: 8px var(--mobile-gutter, 20px) 18px;
-      border-bottom: 1px solid var(--color-line-2);
-    }
-    .detail h2 {
-      font-size: 26px;
-      letter-spacing: -0.015em;
-      line-height: 1.08;
-    }
-    .desc {
-      margin: 10px 0 0;
-      font-size: 14px;
-      line-height: 1.5;
-      max-width: none;
-    }
-    .detail-body {
-      background: var(--color-surface);
-    }
-  }
-</style>
