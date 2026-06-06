@@ -162,7 +162,7 @@ Every component in espresso-ui uses one of two Ark UI patterns depending on its 
 
 ### Pattern A — `ark` factory (styled HTML elements)
 
-Use for: Button, Input, Label, Badge, and any component that is fundamentally a styled HTML element that needs polymorphic rendering (`asChild`).
+Use for: Button, Input, Label, and any component that is fundamentally a styled HTML element that needs polymorphic rendering (`asChild`). Badge uses `ark.span` without `asChild` (prefix/suffix adornments are incompatible with single-child composition).
 
 The `ark` factory creates enhanced HTML elements that support `asChild`. When `asChild={false}` (default), the element behaves identically to the native HTML element — zero overhead. When `asChild={true}`, it renders its single child element instead, merging all props and class names onto that child.
 
