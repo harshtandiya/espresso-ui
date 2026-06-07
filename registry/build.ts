@@ -20,8 +20,16 @@ type RegistryComponentDefinition = ComponentDefinition & {
   registryDependencies?: string[];
 };
 
+type LibDefinition = {
+  name: string;
+  type: "lib";
+  description: string;
+  outputPath: string;
+};
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REGISTRY_DIR = __dirname;
+const LIB_DIR = path.join(REGISTRY_DIR, "_lib");
 const OUT_REACT = path.join(__dirname, "..", "apps", "docs", "public", "r");
 const OUT_VUE = path.join(OUT_REACT, "vue");
 const OUT_DOCS_SRC = path.join(__dirname, "..", "apps", "docs", "src", "generated");
@@ -99,6 +107,71 @@ async function discoverComponents(): Promise<string[]> {
   return components.sort();
 }
 
+/** Discover lib names by scanning _lib/ for subdirectories with definition.ts. */
+async function discoverLibs(): Promise<string[]> {
+  try {
+    const entries = await fs.readdir(LIB_DIR, { withFileTypes: true });
+    const libs: string[] = [];
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const defPath = path.join(LIB_DIR, entry.name, "definition.ts");
+      try {
+        await fs.access(defPath);
+        libs.push(entry.name);
+      } catch {
+        // No definition.ts — skip.
+      }
+    }
+    return libs.sort();
+  } catch {
+    return [];
+  }
+}
+
+/** Load a lib definition by dynamic import. */
+async function loadLibDef(libName: string): Promise<LibDefinition> {
+  const defPath = path.join(LIB_DIR, libName, "definition.ts");
+  const mod = await import(defPath);
+  const defKey = Object.keys(mod as Record<string, unknown>).find((k) =>
+    k.toLowerCase().includes("def"),
+  );
+  if (!defKey) {
+    throw new Error(`No *Def export found in registry/_lib/${libName}/definition.ts`);
+  }
+  return (mod as Record<string, LibDefinition>)[defKey]!;
+}
+
+/** Render a lib ETA template. */
+async function renderLibTemplate(libName: string, data: Record<string, unknown>): Promise<string> {
+  const tmplDir = path.join(LIB_DIR, libName);
+  const tmplFile = `./${libName}.eta`;
+  const eta = new Eta({ views: tmplDir });
+  return eta.renderAsync(tmplFile, data);
+}
+
+/** Build a registry item for a lib utility. Same content for React and Vue. */
+async function buildLibItem(libName: string): Promise<RegistryItem> {
+  const def = await loadLibDef(libName);
+  const data = makeRenderData(libName);
+  const content = await renderLibTemplate(libName, data);
+
+  return {
+    name: libName,
+    type: "registry:lib",
+    title: libName,
+    description: def.description,
+    dependencies: [],
+    registryDependencies: [],
+    files: [
+      {
+        path: `lib/${def.outputPath}.ts`,
+        content,
+        type: "registry:lib",
+      },
+    ],
+  };
+}
+
 type ComponentItems = { react: RegistryItem; vue: RegistryItem };
 
 async function buildRegistryItems(componentName: string): Promise<ComponentItems> {
@@ -160,7 +233,7 @@ async function buildRegistryItems(componentName: string): Promise<ComponentItems
 }
 
 async function main(): Promise<void> {
-  const components = await discoverComponents();
+  const [components, libs] = await Promise.all([discoverComponents(), discoverLibs()]);
 
   if (components.length === 0) {
     console.error("No components found in registry/. Aborting.");
@@ -168,10 +241,16 @@ async function main(): Promise<void> {
   }
 
   console.log(`Found ${components.length} component(s): ${components.join(", ")}`);
+  if (libs.length > 0) {
+    console.log(`Found ${libs.length} lib(s): ${libs.join(", ")}`);
+  }
 
-  const componentItems = await Promise.all(components.map(buildRegistryItems));
-  const reactItems = componentItems.map(({ react }) => react);
-  const vueItems = componentItems.map(({ vue }) => vue);
+  const [componentItems, libItems] = await Promise.all([
+    Promise.all(components.map(buildRegistryItems)),
+    Promise.all(libs.map(buildLibItem)),
+  ]);
+  const reactItems = [...libItems, ...componentItems.map(({ react }) => react)];
+  const vueItems = [...libItems, ...componentItems.map(({ vue }) => vue)];
 
   const makeRegistry = (items: RegistryItem[], name: string): RegistryRoot => ({
     $schema: "https://ui.shadcn.com/schema/registry.json",
@@ -207,7 +286,7 @@ async function main(): Promise<void> {
   await writeDir(OUT_REACT, reactItems, "espresso-ui");
   await writeDir(OUT_VUE, vueItems, "espresso-ui-vue");
 
-  await writeDocsGenerated(components);
+  await writeDocsGenerated(components, libs);
 }
 
 /**
@@ -218,10 +297,19 @@ async function main(): Promise<void> {
  * Also writes a styles.css barrel that @imports every component's tokens, so
  * the docs site can pull them all in with one import in globals.css.
  */
-async function writeDocsGenerated(components: string[]): Promise<void> {
+async function writeDocsGenerated(components: string[], libs: string[]): Promise<void> {
   await fs.rm(OUT_DOCS_SRC, { recursive: true, force: true });
   await fs.mkdir(OUT_DOCS_REACT, { recursive: true });
   await fs.mkdir(OUT_DOCS_VUE, { recursive: true });
+
+  const OUT_DOCS_LIB = path.join(__dirname, "..", "apps", "docs", "src", "lib");
+  for (const libName of libs) {
+    const data = makeRenderData(libName);
+    const content = await renderLibTemplate(libName, data);
+    const libFile = path.join(OUT_DOCS_LIB, `${libName}.ts`);
+    await fs.writeFile(libFile, content, "utf-8");
+    console.log(`Written → ${path.relative(process.cwd(), libFile)}`);
+  }
 
   const cssImports: string[] = [];
 

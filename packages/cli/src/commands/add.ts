@@ -4,7 +4,13 @@ import * as p from "@clack/prompts";
 import { Eta } from "eta";
 import type { Command } from "commander";
 import { loadConfig } from "../utils/config.js";
-import { cssPath, loadDefinition, templatePath } from "../utils/registry.js";
+import {
+  cssPath,
+  loadDefinition,
+  loadLibDefinition,
+  libTemplatePath,
+  templatePath,
+} from "../utils/registry.js";
 import { detectPackageManager, installDeps } from "../utils/deps.js";
 import { detectTailwind } from "../utils/detect-tailwind.js";
 import { formatTailwindError } from "../utils/tailwind-error.js";
@@ -93,6 +99,49 @@ export function registerAdd(program: Command): void {
       }
 
       const s = p.spinner();
+
+      const registryDeps = definition.registryDependencies ?? [];
+      if (registryDeps.length > 0) {
+        s.start("Installing registry dependencies");
+        const utilsDir = path.join(cwd, resolveAlias(path.posix.dirname(config.aliases.utils)));
+        await fs.mkdir(utilsDir, { recursive: true });
+
+        for (const depName of registryDeps) {
+          let libDef;
+          try {
+            libDef = await loadLibDefinition(depName);
+          } catch {
+            p.log.warn(`Registry dependency "${depName}" not found, skipping.`);
+            continue;
+          }
+          const libExt = config.typescript ? ".ts" : ".js";
+          const libOutFile = path.join(utilsDir, `${libDef.outputPath}${libExt}`);
+
+          let libExists = false;
+          try {
+            await fs.access(libOutFile);
+            libExists = true;
+          } catch {
+            // doesn't exist
+          }
+
+          if (!libExists) {
+            const libTmplPath = libTemplatePath(depName);
+            const libEta = new Eta({ views: path.dirname(libTmplPath) });
+            const libRendered = await libEta.renderAsync(`./${path.basename(libTmplPath)}`, {
+              typescript: config.typescript,
+              darkMode: config.theme.darkMode,
+              utilsAlias: path.posix.dirname(config.aliases.utils),
+              componentName: depName,
+            });
+            await fs.writeFile(libOutFile, libRendered, "utf-8");
+            s.message(`Wrote ${libOutFile}`);
+          } else {
+            s.message(`${libDef.outputPath} already exists, skipping`);
+          }
+        }
+      }
+
       s.start(`Writing ${outFile}`);
       await fs.mkdir(path.dirname(outFile), { recursive: true });
       await fs.writeFile(outFile, rendered, "utf-8");
