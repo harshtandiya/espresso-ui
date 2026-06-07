@@ -1,0 +1,129 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { BreadcrumbDemo } from "@/components/examples/BreadcrumbDemo.tsx";
+import { BreadcrumbMaxItemsDemo } from "@/components/examples/BreadcrumbMaxItemsDemo.tsx";
+
+const usageReact = `import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+} from "@/components/ui/Breadcrumb";
+import { FileText, FolderOpen, Home, Package } from "lucide-react";
+
+export default function App() {
+  return (
+    // nav landmark + aria-current="page" on BreadcrumbPage are built in
+    <Breadcrumb size="md" separator="slash">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#" prefix={<Home aria-hidden="true" />}>
+            Home
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#" prefix={<Package aria-hidden="true" />}>
+            Products
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage prefix={<FileText aria-hidden="true" />}>Current page</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import Breadcrumb, {
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+} from "@/components/ui/Breadcrumb.vue";
+import { FileText, Home, Package } from "@lucide/vue";
+</script>
+
+<template>
+  <Breadcrumb size="md" separator="chevron">
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">
+          <template #prefix><Home aria-hidden="true" /></template>
+          Home
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">
+          <template #prefix><Package aria-hidden="true" /></template>
+          Products
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>
+          <template #prefix><FileText aria-hidden="true" /></template>
+          Current page
+        </BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="breadcrumb"
+  num={sectionNumber("breadcrumb")}
+  label="Breadcrumb"
+  desc="Navigation trail for page hierarchy. Compound API with link, page, separator, and ellipsis parts. Set maxItems on Breadcrumb to auto-collapse middle crumbs into an ellipsis menu (hover or click to reveal). Links use 150ms hover/press feedback and 32px minimum hit targets with invisible expansion. Semantic nav with aria-current on the current page."
+  status="new"
+  code={usageReact}
+  codeFile="breadcrumb.tsx"
+  codeVue={usageVue}
+  codeVueFile="breadcrumb.vue"
+>
+  <CanvasToolbar title="Preview" meta="slash · md · full trail" />
+  <Canvas>
+    <BreadcrumbDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Separators" sub="slash · chevron">
+      <BreadcrumbDemo client:load separator="slash" />
+      <BreadcrumbDemo client:load separator="chevron" />
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="sm · md">
+      <BreadcrumbDemo client:load size="sm" />
+      <BreadcrumbDemo client:load size="md" />
+    </VariantRow>
+
+    <VariantRow label="Collapse" sub="6 items · maxItems=4 · ellipsis at pos 0 vs 1">
+      <BreadcrumbDemo client:load maxItems={4} itemCount={6} itemsBeforeCollapse={0} />
+      <BreadcrumbDemo client:load maxItems={4} itemCount={6} itemsBeforeCollapse={1} />
+    </VariantRow>
+
+    <VariantRow label="Prefix icons" sub="Home · Package · Folder · FileText per crumb">
+      <BreadcrumbDemo client:load prefix={true} separator="slash" />
+    </VariantRow>
+
+    <VariantRow label="maxItems" sub="auto-collapse · hover menu · prefix icons">
+      <BreadcrumbMaxItemsDemo client:load />
+    </VariantRow>
+  </Variants>
+</ComponentPanel>

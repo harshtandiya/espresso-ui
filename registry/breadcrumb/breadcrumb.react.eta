@@ -1,0 +1,510 @@
+import { ark } from "@ark-ui/react/factory";
+import { Menu } from "@ark-ui/react/menu";
+import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
+import { ChevronRight, MoreHorizontal } from "lucide-react";
+<% if (it.typescript) { %>import {
+  Children,
+  Fragment,
+  createContext,
+  isValidElement,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  type ReactNode,
+} from "react";
+<% } else { %>import {
+  Children,
+  Fragment,
+  createContext,
+  isValidElement,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+import { getCollapsePlan } from "<%= it.utilsAlias %>/collapse";
+
+const breadcrumbInteractiveVariants = cva(
+  "relative inline-flex cursor-pointer items-center gap-2 rounded-(--breadcrumb-item-radius) font-medium antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2 active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "min-h-(--breadcrumb-sm-min-height) py-(--breadcrumb-sm-py) px-(--breadcrumb-sm-px) [font-size:var(--breadcrumb-sm-font-size)] [&_svg]:size-(--breadcrumb-sm-icon-size)",
+        md: "min-h-(--breadcrumb-md-min-height) py-(--breadcrumb-md-py) px-(--breadcrumb-md-px) [font-size:var(--breadcrumb-md-font-size)] [&_svg]:size-(--breadcrumb-md-icon-size)",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
+
+const breadcrumbPageVariants = cva(
+  "inline-flex items-center gap-2 rounded-(--breadcrumb-item-radius) font-medium antialiased [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "min-h-(--breadcrumb-sm-min-height) py-(--breadcrumb-sm-py) px-(--breadcrumb-sm-px) [font-size:var(--breadcrumb-sm-font-size)] [&_svg]:size-(--breadcrumb-sm-icon-size)",
+        md: "min-h-(--breadcrumb-md-min-height) py-(--breadcrumb-md-py) px-(--breadcrumb-md-px) [font-size:var(--breadcrumb-md-font-size)] [&_svg]:size-(--breadcrumb-md-icon-size)",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
+
+const breadcrumbSeparatorVariants = cva(
+  "inline-flex shrink-0 items-center justify-center text-(--breadcrumb-separator-fg) [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "[font-size:var(--breadcrumb-sm-font-size)] [&_svg]:size-(--breadcrumb-sm-icon-size)",
+        md: "[font-size:var(--breadcrumb-md-font-size)] [&_svg]:size-(--breadcrumb-md-icon-size)",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
+
+const breadcrumbEllipsisVariants = cva(
+  "relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-(--breadcrumb-ellipsis-radius) text-(--breadcrumb-link-fg) antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out hover:text-(--breadcrumb-link-hover-fg) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2 active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "size-(--breadcrumb-sm-ellipsis-size) [&_svg]:size-(--breadcrumb-sm-icon-size)",
+        md: "size-(--breadcrumb-md-ellipsis-size) [&_svg]:size-(--breadcrumb-md-icon-size)",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  },
+);
+
+const breadcrumbMenuContentClass =
+  "z-50 min-w-(--breadcrumb-menu-min-width) rounded-(--breadcrumb-menu-radius) border border-(--breadcrumb-menu-border) bg-(--breadcrumb-menu-bg) p-1 text-(--breadcrumb-menu-fg) shadow-(--breadcrumb-menu-shadow) outline-none";
+
+const breadcrumbMenuItemClass =
+  "flex w-full cursor-pointer items-center gap-2 rounded-(--breadcrumb-menu-item-radius) px-(--breadcrumb-menu-item-px) py-(--breadcrumb-menu-item-py) [font-size:var(--breadcrumb-menu-item-font-size)] text-(--breadcrumb-menu-fg) outline-none data-[highlighted]:bg-(--breadcrumb-menu-item-highlight-bg) data-[highlighted]:text-(--breadcrumb-menu-item-highlight-fg) [&_svg]:size-(--breadcrumb-sm-icon-size)";
+
+<% if (it.typescript) { %>
+type BreadcrumbSize = NonNullable<VariantProps<typeof breadcrumbInteractiveVariants>["size"]>;
+type BreadcrumbSeparatorType = "slash" | "chevron";
+
+export type BreadcrumbCollapsedItem = {
+  value: string;
+  label: ReactNode;
+  href?: string;
+  prefix?: ReactNode;
+};
+
+type BreadcrumbContextValue = {
+  size: BreadcrumbSize;
+  separator: BreadcrumbSeparatorType;
+  maxItems?: number;
+  itemsBeforeCollapse: number;
+  itemsAfterCollapse?: number;
+};
+
+const BreadcrumbContext = createContext<BreadcrumbContextValue>({
+  size: "md",
+  separator: "slash",
+  itemsBeforeCollapse: 1,
+});
+
+function useBreadcrumbContext(): BreadcrumbContextValue {
+  return useContext(BreadcrumbContext);
+}
+
+export type BreadcrumbProps = ComponentPropsWithoutRef<"nav"> &
+  VariantProps<typeof breadcrumbInteractiveVariants> & {
+    separator?: BreadcrumbSeparatorType;
+    maxItems?: number;
+    itemsBeforeCollapse?: number;
+    itemsAfterCollapse?: number;
+  };
+
+export type BreadcrumbLinkProps = Omit<ComponentPropsWithoutRef<typeof ark.a>, "prefix"> & {
+  prefix?: ReactNode;
+};
+
+export type BreadcrumbPageProps = Omit<ComponentPropsWithoutRef<"span">, "prefix"> & {
+  prefix?: ReactNode;
+};
+
+export type BreadcrumbEllipsisProps = Omit<ComponentPropsWithoutRef<"button">, "prefix"> & {
+  items?: BreadcrumbCollapsedItem[];
+};
+
+type BreadcrumbPartName = "BreadcrumbItem" | "BreadcrumbLink" | "BreadcrumbPage";
+
+function getPartName(type: unknown): string | undefined {
+  if (typeof type === "function") {
+    return (type as { displayName?: string }).displayName;
+  }
+  if (typeof type === "object" && type !== null && "displayName" in type) {
+    return (type as { displayName?: string }).displayName;
+  }
+  return undefined;
+}
+
+function isBreadcrumbPart(element: unknown, name: BreadcrumbPartName): element is ReactElement {
+  return isValidElement(element) && getPartName(element.type) === name;
+}
+
+function extractCollapsedItem(element: ReactElement, index: number): BreadcrumbCollapsedItem | null {
+  const child = Children.only(element.props.children);
+  if (!isValidElement(child)) return null;
+
+  if (isBreadcrumbPart(child, "BreadcrumbLink")) {
+    const props = child.props as BreadcrumbLinkProps;
+    return {
+      value: `collapsed-link-${index}`,
+      label: props.children,
+      href: props.href,
+      prefix: props.prefix,
+    };
+  }
+
+  if (isBreadcrumbPart(child, "BreadcrumbPage")) {
+    const props = child.props as BreadcrumbPageProps;
+    return {
+      value: `collapsed-page-${index}`,
+      label: props.children,
+      prefix: props.prefix,
+    };
+  }
+
+  return null;
+}
+<% } else { %>
+const BreadcrumbContext = createContext({
+  size: "md",
+  separator: "slash",
+  itemsBeforeCollapse: 1,
+});
+
+function useBreadcrumbContext() {
+  return useContext(BreadcrumbContext);
+}
+
+function getPartName(type) {
+  if (typeof type === "function") return type.displayName;
+  if (typeof type === "object" && type !== null && "displayName" in type) return type.displayName;
+  return undefined;
+}
+
+function isBreadcrumbPart(element, name) {
+  return isValidElement(element) && getPartName(element.type) === name;
+}
+
+function extractCollapsedItem(element, index) {
+  const child = Children.only(element.props.children);
+  if (!isValidElement(child)) return null;
+
+  if (isBreadcrumbPart(child, "BreadcrumbLink")) {
+    return {
+      value: `collapsed-link-${index}`,
+      label: child.props.children,
+      href: child.props.href,
+      prefix: child.props.prefix,
+    };
+  }
+
+  if (isBreadcrumbPart(child, "BreadcrumbPage")) {
+    return {
+      value: `collapsed-page-${index}`,
+      label: child.props.children,
+      prefix: child.props.prefix,
+    };
+  }
+
+  return null;
+}
+
+<% } %>
+
+function <%= it.componentName %>({
+  className,
+  size = "md",
+  separator = "slash",
+  maxItems,
+  itemsBeforeCollapse = 1,
+  itemsAfterCollapse,
+  children,
+  ...props
+}<% if (it.typescript) { %>: BreadcrumbProps<% } %>) {
+  const contextValue = useMemo(
+    () => ({
+      size: size ?? "md",
+      separator: separator ?? "slash",
+      maxItems,
+      itemsBeforeCollapse: itemsBeforeCollapse ?? 1,
+      itemsAfterCollapse,
+    }),
+    [size, separator, maxItems, itemsBeforeCollapse, itemsAfterCollapse],
+  );
+
+  return (
+    <BreadcrumbContext.Provider value={contextValue}>
+      <nav aria-label="Breadcrumb" className={cn(className)} {...props}>
+        {children}
+      </nav>
+    </BreadcrumbContext.Provider>
+  );
+}
+
+function BreadcrumbList({
+  className,
+  children,
+  ...props
+}<% if (it.typescript) { %>: ComponentPropsWithoutRef<"ol"><% } %>) {
+  const { maxItems, itemsBeforeCollapse, itemsAfterCollapse } = useBreadcrumbContext();
+  const itemElements = Children.toArray(children).filter((child) =>
+    isBreadcrumbPart(child, "BreadcrumbItem"),
+  );
+
+  const plan =
+    maxItems != null
+      ? getCollapsePlan(
+          itemElements.length,
+          maxItems,
+          itemsBeforeCollapse,
+          itemsAfterCollapse,
+        )
+      : null;
+
+  if (!plan) {
+    return (
+      <ol
+        className={cn(
+          "flex flex-wrap items-center gap-(--breadcrumb-list-gap) text-(--breadcrumb-link-fg)",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </ol>
+    );
+  }
+
+  const beforeItems = itemElements.slice(0, plan.before);
+  const afterItems = itemElements.slice(plan.afterStart);
+  const collapsedItems = itemElements
+    .slice(plan.before, plan.afterStart)
+    .map((item, index) => extractCollapsedItem(item<% if (it.typescript) { %> as ReactElement<% } %>, index))
+    .filter(Boolean);
+
+  const segments = [
+    ...beforeItems.map((item, index) => ({ key: `before-${index}`, type: "item", item })),
+    { key: "ellipsis", type: "ellipsis", items: collapsedItems },
+    ...afterItems.map((item, index) => ({ key: `after-${index}`, type: "item", item })),
+  ];
+
+  return (
+    <ol
+      className={cn(
+        "flex flex-wrap items-center gap-(--breadcrumb-list-gap) text-(--breadcrumb-link-fg)",
+        className,
+      )}
+      {...props}
+    >
+      {segments.map((segment, index) => (
+        <Fragment key={segment.key}>
+          {index > 0 ? <BreadcrumbSeparator /> : null}
+          {segment.type === "ellipsis" ? (
+            <BreadcrumbItem>
+              <BreadcrumbEllipsis items={segment.items} />
+            </BreadcrumbItem>
+          ) : (
+            segment.item
+          )}
+        </Fragment>
+      ))}
+    </ol>
+  );
+}
+BreadcrumbList.displayName = "BreadcrumbList";
+
+function BreadcrumbItem({
+  className,
+  ...props
+}<% if (it.typescript) { %>: ComponentPropsWithoutRef<"li"><% } %>) {
+  return <li className={cn("inline-flex items-center", className)} {...props} />;
+}
+BreadcrumbItem.displayName = "BreadcrumbItem";
+
+function BreadcrumbLink({
+  className,
+  prefix,
+  children,
+  ...props
+}<% if (it.typescript) { %>: BreadcrumbLinkProps<% } %>) {
+  const { size } = useBreadcrumbContext();
+
+  return (
+    <ark.a
+      className={cn(
+        breadcrumbInteractiveVariants({ size }),
+        "text-(--breadcrumb-link-fg) hover:text-(--breadcrumb-link-hover-fg)",
+        className,
+      )}
+      {...props}
+    >
+      {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
+      {children}
+    </ark.a>
+  );
+}
+BreadcrumbLink.displayName = "BreadcrumbLink";
+
+function BreadcrumbPage({
+  className,
+  prefix,
+  children,
+  ...props
+}<% if (it.typescript) { %>: BreadcrumbPageProps<% } %>) {
+  const { size } = useBreadcrumbContext();
+
+  return (
+    <span
+      aria-current="page"
+      className={cn(
+        breadcrumbPageVariants({ size }),
+        "text-(--breadcrumb-page-fg)",
+        className,
+      )}
+      {...props}
+    >
+      {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
+      {children}
+    </span>
+  );
+}
+BreadcrumbPage.displayName = "BreadcrumbPage";
+
+function BreadcrumbSeparator({
+  className,
+  children,
+  ...props
+}<% if (it.typescript) { %>: ComponentPropsWithoutRef<"li"><% } %>) {
+  const { size, separator } = useBreadcrumbContext();
+
+  return (
+    <li
+      role="presentation"
+      aria-hidden="true"
+      className={cn(breadcrumbSeparatorVariants({ size }), className)}
+      {...props}
+    >
+      {children ?? (separator === "chevron" ? <ChevronRight aria-hidden="true" /> : "/")}
+    </li>
+  );
+}
+BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
+
+function BreadcrumbEllipsis({
+  className,
+  items,
+  ...props
+}<% if (it.typescript) { %>: BreadcrumbEllipsisProps<% } %>) {
+  const { size } = useBreadcrumbContext();
+  const [open, setOpen] = useState(false);
+  const closeTimerRef = useRef<% if (it.typescript) { %><ReturnType<typeof setTimeout> | null><% } %>(null);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current != null) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => setOpen(false), 120);
+  };
+
+  if (!items?.length) {
+    return (
+      <button
+        type="button"
+        aria-label="More pages"
+        className={cn(breadcrumbEllipsisVariants({ size }), className)}
+        {...props}
+      >
+        <MoreHorizontal aria-hidden="true" />
+      </button>
+    );
+  }
+
+  return (
+    <Menu.Root
+      open={open}
+      onOpenChange={(details) => setOpen(details.open)}
+      positioning={{ placement: "bottom-start", gutter: 4, strategy: "fixed" }}
+      closeOnSelect
+    >
+      <Menu.Trigger asChild>
+        <button
+          type="button"
+          aria-label="Show collapsed pages"
+          aria-haspopup="menu"
+          className={cn(breadcrumbEllipsisVariants({ size }), className)}
+          onMouseEnter={() => {
+            clearCloseTimer();
+            setOpen(true);
+          }}
+          onMouseLeave={scheduleClose}
+          {...props}
+        >
+          <MoreHorizontal aria-hidden="true" />
+        </button>
+      </Menu.Trigger>
+      <Menu.Positioner>
+        <Menu.Content
+          className={breadcrumbMenuContentClass}
+          onMouseEnter={clearCloseTimer}
+          onMouseLeave={scheduleClose}
+        >
+          {items.map((item) =>
+            item.href ? (
+              <Menu.Item key={item.value} value={item.value} asChild>
+                <a href={item.href} className={breadcrumbMenuItemClass}>
+                  {item.prefix ? (
+                    <span className="inline-flex shrink-0 items-center">{item.prefix}</span>
+                  ) : null}
+                  {item.label}
+                </a>
+              </Menu.Item>
+            ) : (
+              <Menu.Item key={item.value} value={item.value} className={breadcrumbMenuItemClass}>
+                {item.prefix ? (
+                  <span className="inline-flex shrink-0 items-center">{item.prefix}</span>
+                ) : null}
+                {item.label}
+              </Menu.Item>
+            ),
+          )}
+        </Menu.Content>
+      </Menu.Positioner>
+    </Menu.Root>
+  );
+}
+BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis";
+
+export {
+  <%= it.componentName %>,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+};
