@@ -1,0 +1,48 @@
+/* Breadcrumb component tokens — override these to customise breadcrumbs. */
+:root {
+  --breadcrumb-list-gap: 2px;
+  --breadcrumb-item-radius: var(--radius-md);
+  --breadcrumb-ellipsis-radius: var(--radius-lg);
+
+  /* duration-press-hover: 120–180ms for hover and press feedback */
+  --breadcrumb-transition-duration: 150ms;
+  --breadcrumb-transition-easing: ease-out;
+
+  /* ux-fitts-hit-area: invisible expansion beyond visible bounds */
+  --breadcrumb-hit-inset: -6px -8px;
+
+  --breadcrumb-link-fg: var(--color-muted-foreground);
+  --breadcrumb-link-hover-fg: var(--color-foreground);
+  --breadcrumb-page-fg: var(--color-foreground);
+  --breadcrumb-separator-fg: var(--color-muted-foreground);
+
+  /* Size: sm — ux-fitts-target-size: min 32px interactive height */
+  --breadcrumb-sm-py: 3px;
+  --breadcrumb-sm-px: 4px;
+  --breadcrumb-sm-font-size: 14px;
+  --breadcrumb-sm-icon-size: 16px;
+  --breadcrumb-sm-min-height: 32px;
+  --breadcrumb-sm-ellipsis-size: 32px;
+
+  /* Size: md */
+  --breadcrumb-md-py: 5px;
+  --breadcrumb-md-px: 5px;
+  --breadcrumb-md-font-size: 16px;
+  --breadcrumb-md-icon-size: 16px;
+  --breadcrumb-md-min-height: 32px;
+  --breadcrumb-md-ellipsis-size: 32px;
+
+  /* Collapsed items menu (ellipsis dropdown) */
+  --breadcrumb-menu-min-width: 160px;
+  --breadcrumb-menu-radius: var(--radius-md);
+  --breadcrumb-menu-border: var(--color-border);
+  --breadcrumb-menu-bg: var(--color-popover);
+  --breadcrumb-menu-fg: var(--color-popover-foreground);
+  --breadcrumb-menu-shadow: var(--shadow-md);
+  --breadcrumb-menu-item-radius: var(--radius-sm);
+  --breadcrumb-menu-item-px: 8px;
+  --breadcrumb-menu-item-py: 6px;
+  --breadcrumb-menu-item-font-size: 14px;
+  --breadcrumb-menu-item-highlight-bg: var(--color-accent);
+  --breadcrumb-menu-item-highlight-fg: var(--color-accent-foreground);
+}

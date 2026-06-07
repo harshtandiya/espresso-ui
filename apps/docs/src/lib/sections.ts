@@ -21,6 +21,7 @@ export const SECTIONS: readonly Section[] = [
   { id: "avatar", label: "Avatar", group: "components", status: "new", sub: "7 sizes" },
   { id: "avatar-group", label: "Avatar Group", group: "components", status: "new", sub: "stack" },
   { id: "badge", label: "Badge", group: "components", status: "new", sub: "5 themes" },
+  { id: "breadcrumb", label: "Breadcrumb", group: "components", status: "new", sub: "compound" },
   { id: "button", label: "Button", group: "components", status: "stable", sub: "stable" },
   { id: "label", label: "Label", group: "components", status: "stable", sub: "stable" },
 ] as const;

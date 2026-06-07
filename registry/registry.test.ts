@@ -14,6 +14,10 @@ async function loadRegistry(filePath: string): Promise<RegistryRoot> {
   return JSON.parse(raw) as RegistryRoot;
 }
 
+function isLibItem(item: RegistryRoot["items"][number]): boolean {
+  return item.type === "registry:lib";
+}
+
 function sharedItemAssertions(registry: RegistryRoot): void {
   expect(registry.$schema).toBe("https://ui.shadcn.com/schema/registry.json");
   expect(registry.homepage).toBeTypeOf("string");
@@ -28,10 +32,12 @@ function sharedItemAssertions(registry: RegistryRoot): void {
     expect(Array.isArray(item.dependencies), `${item.name}: dependencies must be array`).toBe(true);
     expect(item.files.length, `${item.name}: must have at least one file`).toBeGreaterThan(0);
 
-    expect(
-      (item.dependencies ?? []).length,
-      `${item.name}: expected at least one dependency`,
-    ).toBeGreaterThan(0);
+    if (!isLibItem(item)) {
+      expect(
+        (item.dependencies ?? []).length,
+        `${item.name}: expected at least one dependency`,
+      ).toBeGreaterThan(0);
+    }
 
     for (const file of item.files) {
       const hasEtaTags = file.content.includes("<%") || file.content.includes("%>");
@@ -58,9 +64,9 @@ describe("React registry (r/registry.json)", () => {
     sharedItemAssertions(await loadRegistry(REACT_REGISTRY));
   });
 
-  it("all items contain only .tsx files (no .vue)", async () => {
+  it("all component items contain only .tsx files (no .vue)", async () => {
     const { items } = await loadRegistry(REACT_REGISTRY);
-    for (const item of items) {
+    for (const item of items.filter((i) => !isLibItem(i))) {
       expect(
         item.files.some((f) => f.path.endsWith(".tsx")),
         `${item.name}: missing .tsx`,
@@ -87,9 +93,9 @@ describe("Vue registry (r/vue/registry.json)", () => {
     sharedItemAssertions(await loadRegistry(VUE_REGISTRY));
   });
 
-  it("all items contain only .vue files (no .tsx)", async () => {
+  it("all component items contain only .vue files (no .tsx)", async () => {
     const { items } = await loadRegistry(VUE_REGISTRY);
-    for (const item of items) {
+    for (const item of items.filter((i) => !isLibItem(i))) {
       expect(
         item.files.some((f) => f.path.endsWith(".vue")),
         `${item.name}: missing .vue`,
@@ -111,6 +117,27 @@ describe("registry parity", () => {
     const reactNames = react.items.map((i) => i.name).sort();
     const vueNames = vue.items.map((i) => i.name).sort();
     expect(reactNames).toEqual(vueNames);
+  });
+});
+
+describe("lib items", () => {
+  it("collapse lib is present and contains getCollapsePlan", async () => {
+    const { items } = await loadRegistry(REACT_REGISTRY);
+    const collapse = items.find((i) => i.name === "collapse");
+    expect(collapse).toBeDefined();
+    expect(collapse!.type).toBe("registry:lib");
+    expect(collapse!.files[0]!.path).toBe("lib/collapse.ts");
+    expect(collapse!.files[0]!.content).toContain("getCollapsePlan");
+    expect(collapse!.files[0]!.content).toContain("CollapsePlan");
+  });
+
+  it("lib items have registry:lib file type", async () => {
+    const { items } = await loadRegistry(REACT_REGISTRY);
+    for (const item of items.filter(isLibItem)) {
+      for (const file of item.files) {
+        expect(file.type, `${item.name}/${file.path}: must be registry:lib`).toBe("registry:lib");
+      }
+    }
   });
 });
 
@@ -137,6 +164,36 @@ describe("badge registry export", () => {
     expect(vue?.content).toContain('<slot name="prefix" />');
     expect(vue?.content).toContain('<slot name="suffix" />');
     expect(vue?.content).toContain("$slots.prefix");
+  });
+});
+
+describe("breadcrumb registry export", () => {
+  async function loadItem(framework: "react" | "vue") {
+    const filePath = path.join(
+      R_DIR,
+      framework === "vue" ? "vue/breadcrumb.json" : "breadcrumb.json",
+    );
+    const raw = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(raw) as RegistryRoot["items"][number];
+  }
+
+  it("React export includes compound breadcrumb parts and tokens", async () => {
+    const item = await loadItem("react");
+    const tsx = item.files.find((file) => file.path.endsWith(".tsx"));
+    const css = item.files.find((file) => file.path.endsWith(".css"));
+    expect(tsx?.content).toContain("BreadcrumbList");
+    expect(tsx?.content).toContain("BreadcrumbEllipsis");
+    expect(tsx?.content).toContain('aria-label="Breadcrumb"');
+    expect(css?.content).toContain("--breadcrumb-link-fg");
+    expect(css?.content).toContain("--breadcrumb-sm-min-height");
+  });
+
+  it("Vue export includes compound subcomponents and prefix slots", async () => {
+    const item = await loadItem("vue");
+    const vue = item.files.find((file) => file.path.endsWith(".vue"));
+    expect(vue?.content).toContain("BreadcrumbList");
+    expect(vue?.content).toContain("slots.prefix");
+    expect(vue?.content).toContain("provide(BreadcrumbKey");
   });
 });
 

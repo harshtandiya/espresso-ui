@@ -1,0 +1,15 @@
+{
+  "name": "collapse",
+  "type": "registry:lib",
+  "title": "collapse",
+  "description": "Shared collapse/overflow plan utility for components with maxItems behavior",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "lib/collapse.ts",
+      "content": "export type CollapsePlan = {\n  before: number;\n  afterStart: number;\n};\n\nexport function getCollapsePlan(\n  total: number,\n  maxItems: number,\n  itemsBeforeCollapse: number,\n  itemsAfterCollapse: number | undefined,\n): CollapsePlan | null {\n  if (total <= maxItems) return null;\n\n  const before = itemsBeforeCollapse;\n  const after = itemsAfterCollapse ?? maxItems - before;\n\n  if (after <= 0 || before + after >= total) return null;\n\n  return {\n    before,\n    afterStart: total - after,\n  };\n}\n",
+      "type": "registry:lib"
+    }
+  ]
+}

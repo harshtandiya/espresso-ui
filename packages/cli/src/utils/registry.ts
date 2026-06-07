@@ -20,10 +20,18 @@ export type ComponentDefinition = {
   >;
   slots: string[];
   emits: string[];
+  registryDependencies?: string[];
   peerDeps: {
     react: string[];
     vue: string[];
   };
+};
+
+export type LibDefinition = {
+  name: string;
+  type: "lib";
+  description: string;
+  outputPath: string;
 };
 
 /** List bundled component names from the registry manifest. */
@@ -63,4 +71,35 @@ export function templatePath(componentName: string, framework: "react" | "vue"):
 /** Resolve the component CSS token file path in the registry. */
 export function cssPath(componentName: string): string {
   return path.join(registryRoot(), componentName, `${componentName}.css`);
+}
+
+/** Resolve the lib directory in the bundled registry. */
+function libRoot(): string {
+  return path.join(registryRoot(), "_lib");
+}
+
+/** Load a lib definition from the bundled registry. */
+export async function loadLibDefinition(libName: string): Promise<LibDefinition> {
+  const defPath = path.join(libRoot(), libName, "definition.json");
+
+  let raw: string;
+  try {
+    raw = await fs.readFile(defPath, "utf-8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error(`Lib "${libName}" not found in bundled registry`);
+    }
+    throw error;
+  }
+
+  try {
+    return JSON.parse(raw) as LibDefinition;
+  } catch {
+    throw new Error(`Invalid definition.json for lib "${libName}"`);
+  }
+}
+
+/** Resolve the ETA template path for a lib item. */
+export function libTemplatePath(libName: string): string {
+  return path.join(libRoot(), libName, `${libName}.eta`);
 }
