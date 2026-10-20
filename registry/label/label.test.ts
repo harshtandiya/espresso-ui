@@ -15,6 +15,19 @@ const baseData = {
 };
 
 describe("label templates", () => {
+  it("supports label and required marker like frappe-ui FormLabel", async () => {
+    const react = await eta.renderAsync("./label.react.eta", baseData);
+    const vue = await eta.renderAsync("./label.vue.eta", baseData);
+    expect(react).toContain("label?: ReactNode");
+    expect(react).toContain("required?: boolean");
+    expect(react).toContain("(required)");
+    expect(react).toContain("--label-required-color");
+    expect(vue).toContain("label?: string");
+    expect(vue).toContain("required?: boolean");
+    expect(vue).toContain("(required)");
+    expect(vue).toContain("--label-required-color");
+  });
+
   it("renders React template", async () => {
     const result = await eta.renderAsync("./label.react.eta", baseData);
     expect(result).toMatchSnapshot();

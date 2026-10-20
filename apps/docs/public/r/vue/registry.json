@@ -161,12 +161,12 @@
       "files": [
         {
           "path": "components/ui/Label.vue",
-          "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { cn } from \"@/lib/utils\";\n\nconst props = withDefaults(\n  defineProps<{\n    disabled?: boolean;\n    class?: string;\n  }>(),\n  {\n    disabled: false,\n  },\n);\n\nconst classes = computed(() =>\n  cn(\n    \"[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed\",\n    props.class,\n  ),\n);\n</script>\n\n<template>\n  <label :data-disabled=\"disabled || undefined\" :class=\"classes\" v-bind=\"$attrs\"><slot /></label>\n</template>\n",
+          "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { cn } from \"@/lib/utils\";\n\nconst props = withDefaults(\n  defineProps<{\n    disabled?: boolean;\n    /** Text content of the label. The default slot takes precedence. */\n    label?: string;\n    /** Marks the field as required with a red asterisk and hidden text. */\n    required?: boolean;\n    class?: string;\n  }>(),\n  {\n    disabled: false,\n    label: \"\",\n    required: false,\n  },\n);\n\nconst classes = computed(() =>\n  cn(\n    \"block [font-size:var(--label-font-size)] font-(--label-font-weight) leading-tighter text-(--label-color) data-[disabled]:cursor-not-allowed data-[disabled]:text-(--label-disabled-color)\",\n    props.class,\n  ),\n);\n</script>\n\n<template>\n  <label :data-disabled=\"disabled || undefined\" :class=\"classes\" v-bind=\"$attrs\">\n    <slot>{{ props.label }}</slot>\n    <template v-if=\"required\">\n      <span class=\"select-none text-(--label-required-color)\" aria-hidden=\"true\">*</span>\n      <span class=\"sr-only\">(required)</span>\n    </template>\n  </label>\n</template>\n",
           "type": "registry:ui"
         },
         {
           "path": "components/ui/label.css",
-          "content": "/* Label component tokens */\n:root {\n  --label-font-size: 14px;\n  --label-font-weight: 500;\n  --label-color: var(--color-foreground);\n  --label-disabled-color: var(--color-muted-foreground);\n}\n",
+          "content": "/* Label component tokens — mirrors frappe-ui v1 FormLabel. */\n:root {\n  --label-font-size: 13px;\n  --label-font-weight: 420;\n  --label-color: var(--ink-gray-6);\n  --label-disabled-color: var(--ink-gray-4);\n  --label-required-color: var(--ink-red-5);\n}\n",
           "type": "registry:style"
         }
       ]

@@ -161,12 +161,12 @@
       "files": [
         {
           "path": "components/ui/Label.tsx",
-          "content": "import { forwardRef } from \"react\";\nimport type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\nexport type LabelProps = ComponentPropsWithoutRef<\"label\"> & {\n  disabled?: boolean;\n};\nexport const Label = forwardRef<HTMLLabelElement, LabelProps>(\n  ({ className, disabled, ...props }, ref) => {\n    return (\n      <label\n        ref={ref}\n        data-disabled={disabled || undefined}\n        className={cn(\n          \"[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed\",\n          className,\n        )}\n        {...props}\n      />\n    );\n  },\n);\n\nLabel.displayName = \"Label\";\n",
+          "content": "import { forwardRef } from \"react\";\nimport type { ComponentPropsWithoutRef, ReactNode } from \"react\";\nimport { cn } from \"@/lib/utils\";\nexport type LabelProps = ComponentPropsWithoutRef<\"label\"> & {\n  disabled?: boolean;\n  /** Text content of the label. Children take precedence. */\n  label?: ReactNode;\n  /** Marks the field as required with a red asterisk and hidden text. */\n  required?: boolean;\n};\nexport const Label = forwardRef<HTMLLabelElement, LabelProps>(\n  ({ className, disabled, label, required, children, ...props }, ref) => {\n    return (\n      <label\n        ref={ref}\n        data-disabled={disabled || undefined}\n        className={cn(\n          \"block [font-size:var(--label-font-size)] font-(--label-font-weight) leading-tighter text-(--label-color) data-[disabled]:cursor-not-allowed data-[disabled]:text-(--label-disabled-color)\",\n          className,\n        )}\n        {...props}\n      >\n        {children ?? label}\n        {required ? (\n          <>\n            <span className=\"select-none text-(--label-required-color)\" aria-hidden=\"true\">\n              *\n            </span>\n            <span className=\"sr-only\">(required)</span>\n          </>\n        ) : null}\n      </label>\n    );\n  },\n);\n\nLabel.displayName = \"Label\";\n",
           "type": "registry:ui"
         },
         {
           "path": "components/ui/label.css",
-          "content": "/* Label component tokens */\n:root {\n  --label-font-size: 14px;\n  --label-font-weight: 500;\n  --label-color: var(--color-foreground);\n  --label-disabled-color: var(--color-muted-foreground);\n}\n",
+          "content": "/* Label component tokens — mirrors frappe-ui v1 FormLabel. */\n:root {\n  --label-font-size: 13px;\n  --label-font-weight: 420;\n  --label-color: var(--ink-gray-6);\n  --label-disabled-color: var(--ink-gray-4);\n  --label-required-color: var(--ink-red-5);\n}\n",
           "type": "registry:style"
         }
       ]

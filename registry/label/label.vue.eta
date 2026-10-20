@@ -5,21 +5,33 @@ import { cn } from "<%= it.utilsAlias %>/utils";
 const props = withDefaults(
   defineProps<{
     disabled?: boolean;
+    /** Text content of the label. The default slot takes precedence. */
+    label?: string;
+    /** Marks the field as required with a red asterisk and hidden text. */
+    required?: boolean;
     class?: string;
   }>(),
   {
     disabled: false,
+    label: "",
+    required: false,
   },
 );
 
 const classes = computed(() =>
   cn(
-    "[font-size:var(--label-font-size)] font-(--label-font-weight) text-(--label-color) data-[disabled]:text-(--label-disabled-color) data-[disabled]:cursor-not-allowed",
+    "block [font-size:var(--label-font-size)] font-(--label-font-weight) leading-tighter text-(--label-color) data-[disabled]:cursor-not-allowed data-[disabled]:text-(--label-disabled-color)",
     props.class,
   ),
 );
 </script>
 
 <template>
-  <label :data-disabled="disabled || undefined" :class="classes" v-bind="$attrs"><slot /></label>
+  <label :data-disabled="disabled || undefined" :class="classes" v-bind="$attrs">
+    <slot>{{ props.label }}</slot>
+    <template v-if="required">
+      <span class="select-none text-(--label-required-color)" aria-hidden="true">*</span>
+      <span class="sr-only">(required)</span>
+    </template>
+  </label>
 </template>

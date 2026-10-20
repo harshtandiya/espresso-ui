@@ -1,7 +1,8 @@
-/* Label component tokens */
+/* Label component tokens — mirrors frappe-ui v1 FormLabel. */
 :root {
-  --label-font-size: 14px;
-  --label-font-weight: 500;
-  --label-color: var(--color-foreground);
-  --label-disabled-color: var(--color-muted-foreground);
+  --label-font-size: 13px;
+  --label-font-weight: 420;
+  --label-color: var(--ink-gray-6);
+  --label-disabled-color: var(--ink-gray-4);
+  --label-required-color: var(--ink-red-5);
 }

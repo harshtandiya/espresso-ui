@@ -10,7 +10,7 @@ import { Label as LabelReact } from "@/generated/react/Label.tsx";
 const usage = `import { Label } from "@/components/ui/Label";
 
 export default function App() {
-  return <Label htmlFor="email">Email address</Label>;
+  return <Label htmlFor="email" required>Email address</Label>;
 }
 `;
 ---
@@ -19,13 +19,14 @@ export default function App() {
   id="label"
   num={sectionNumber("label")}
   label="Label"
-  desc="Accessible text label for form controls. Pairs with inputs via htmlFor and supports a disabled state that dims the label and blocks pointer events."
+  desc="Form label matching frappe-ui v1 FormLabel: 13px regular text, an optional required asterisk with a hidden screen-reader note, and a disabled state."
   status="stable"
   code={usage}
 >
-  <CanvasToolbar title="Preview" meta="default · disabled" />
+  <CanvasToolbar title="Preview" meta="default · required · disabled" />
   <Canvas>
     <LabelReact client:load htmlFor="demo-email">Email address</LabelReact>
+    <LabelReact client:load htmlFor="demo-name" required>Full name</LabelReact>
     <LabelReact client:load disabled>Disabled label</LabelReact>
   </Canvas>
 
@@ -33,10 +34,15 @@ export default function App() {
     <VariantRow label="With input" sub="htmlFor association">
       <Canvas grid={false} class="label-field-canvas">
         <div class="field">
-          <LabelReact client:load htmlFor="react-name">Full name</LabelReact>
+          <LabelReact client:load htmlFor="react-name" required>Full name</LabelReact>
           <input id="react-name" type="text" placeholder="Jane Doe" class="demo-input" />
         </div>
       </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Label prop" sub="text passed as data">
+      <LabelReact client:load label="Workspace name" required />
+      <LabelReact client:load label="Slug" />
     </VariantRow>
   </Variants>
 </ComponentPanel>
@@ -56,21 +62,20 @@ export default function App() {
     max-width: 280px;
   }
   .demo-input {
-    height: 36px;
-    padding: 0 12px;
-    border: 1px solid var(--color-line);
-    border-radius: 8px;
-    background: var(--color-surface);
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--outline-gray-2);
+    border-radius: var(--radius-4);
+    background: var(--surface-base);
     font-family: var(--font-sans);
     font-size: 14px;
-    color: var(--color-ink-1);
+    color: var(--ink-gray-9);
   }
   .demo-input::placeholder {
-    color: var(--color-ink-4);
+    color: var(--ink-gray-4);
   }
   .demo-input:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    outline: var(--focus-outline-default);
   }
 
   @media (max-width: 768px) {
