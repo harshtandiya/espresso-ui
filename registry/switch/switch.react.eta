@@ -110,9 +110,13 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
     const [internalChecked, setInternalChecked] = useState(defaultChecked);
     const isChecked = isControlled ? Boolean(checked) : internalChecked;
     const describedBy =
-      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+      [
+        description && !hasError ? descriptionId : null,
+        hasError ? errorId : null,
+        ariaDescribedBy,
+      ]
         .filter(Boolean)
-        .join(" ") || ariaDescribedBy;
+        .join(" ") || undefined;
 
     const toggle = () => {
       if (disabled) return;
@@ -139,13 +143,13 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
         data-disabled={disabled ? "true" : undefined}
         data-required={required ? "true" : undefined}
         className={cn(
-          "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+          "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 transition-colors duration-100 ease-in-out aria-invalid:ring-1 aria-invalid:ring-outline-red-6 focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
           trackSizeClasses[size],
           disabled
-            ? "cursor-not-allowed bg-surface-gray-3"
+            ? "cursor-not-allowed border-outline-gray-3 bg-surface-gray-3"
             : isChecked
-              ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
-              : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+              ? "border-transparent bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+              : "border-outline-gray-4 bg-surface-gray-5 enabled:hover:border-outline-gray-5 enabled:hover:bg-surface-gray-6 active:bg-surface-gray-7",
         )}
         onClick={(event) => {
           onClick?.(event);
@@ -171,8 +175,8 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           padded && "group rounded-(--switch-padded-radius) transition-colors",
           padded &&
             !disabled &&
-            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
-          padded && disabled && "cursor-not-allowed opacity-70",
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ink-gray-8 [&:has(:focus-visible)]:ring-offset-2 [&:has(:focus-visible)]:ring-offset-surface-base [&_button:focus-visible]:ring-0 [&_button:focus-visible]:ring-offset-0",
+          padded && disabled && "cursor-not-allowed",
           padded &&
             (hasDetail
               ? size === "md"
@@ -185,7 +189,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           className,
         )}
         onClick={(event) => {
-          if (!padded || disabled) return;
+          if (disabled) return;
           const target = event.target as HTMLElement;
           if (target.closest('button[role="switch"]') || target.closest("label")) return;
           toggle();

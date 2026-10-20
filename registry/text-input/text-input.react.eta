@@ -1,4 +1,4 @@
-import { forwardRef, useId } from "react";
+import { forwardRef, useEffect, useId, useRef, useState } from "react";
 <% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
 <% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 
@@ -10,10 +10,10 @@ const sizeClasses = {
 };
 
 const paddingClasses = {
-  xs: { plain: "px-1.5", withPrefix: "ps-7 pe-1.5", withSuffix: "ps-1.5 pe-7", both: "ps-7 pe-7" },
-  sm: { plain: "px-2", withPrefix: "ps-8 pe-2", withSuffix: "ps-2 pe-8", both: "ps-8 pe-8" },
-  md: { plain: "px-2.5", withPrefix: "ps-9 pe-2.5", withSuffix: "ps-2.5 pe-9", both: "ps-9 pe-9" },
-  lg: { plain: "px-3", withPrefix: "ps-10 pe-3", withSuffix: "ps-3 pe-10", both: "ps-10 pe-10" },
+  xs: { plain: "px-1.5", withPrefix: "ps-7", withSuffix: "ps-1.5", both: "ps-7" },
+  sm: { plain: "px-2", withPrefix: "ps-8", withSuffix: "ps-2", both: "ps-8" },
+  md: { plain: "px-2.5", withPrefix: "ps-9", withSuffix: "ps-2.5", both: "ps-9" },
+  lg: { plain: "px-3", withPrefix: "ps-10", withSuffix: "ps-3", both: "ps-10" },
 };
 
 const prefixPadding = {
@@ -35,7 +35,8 @@ const variantClasses = {
     "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
   outline:
     "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
-  ghost: "border-transparent bg-transparent focus:outline-none",
+  ghost:
+    "border-transparent bg-transparent focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
 };
 
 const requiredMark = (
@@ -76,6 +77,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
     {
       className,
       id,
+      style,
       size = "sm",
       variant = "subtle",
       label,
@@ -96,10 +98,26 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
     const errorId = `${inputId}-error`;
     const hasError = Boolean(error);
     const hasLabeling = Boolean(label || description || error);
+    const suffixRef = useRef<HTMLSpanElement | null>(null);
+    const [suffixWidth, setSuffixWidth] = useState(0);
+
+    useEffect(() => {
+      const element = suffixRef.current;
+      if (!element) return;
+      const measure = () => setSuffixWidth(element.offsetWidth);
+      measure();
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
+      return () => observer.disconnect();
+    }, [suffix]);
     const describedBy =
-      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+      [
+        description && !hasError ? descriptionId : null,
+        hasError ? errorId : null,
+        ariaDescribedBy,
+      ]
         .filter(Boolean)
-        .join(" ") || ariaDescribedBy;
+        .join(" ") || undefined;
 
     const padding = prefix && suffix
       ? paddingClasses[size].both
@@ -147,8 +165,12 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
             data-state={hasError ? "invalid" : "valid"}
             data-disabled={disabled ? "true" : undefined}
             data-required={required ? "true" : undefined}
+            style={{
+              ...style,
+              paddingInlineEnd: suffixWidth ? suffixWidth + 8 : undefined,
+            }}
             className={cn(
-              "w-full border leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+              "w-full border leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-6 data-[state=invalid]:border-outline-red-6 data-[state=invalid]:focus:border-outline-red-7 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-4",
               sizeClasses[size],
               padding,
               variantClasses[variant],
@@ -157,6 +179,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           />
           {suffix ? (
             <span
+              ref={suffixRef}
               className={cn(
                 "pointer-events-none absolute inset-y-0 end-0 flex items-center",
                 suffixPadding[size],

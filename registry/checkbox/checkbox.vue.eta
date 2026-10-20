@@ -64,13 +64,21 @@ const checked = computed(() => Boolean(model.value));
 const mixed = ref(props.indeterminate);
 const describedBy = computed(
   () =>
-    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+    [
+      props.description && !hasError.value ? descriptionId.value : null,
+      hasError.value ? errorId.value : null,
+      attrs["aria-describedby"] as string | undefined,
+    ]
       .filter(Boolean)
       .join(" ") || undefined,
 );
 
 const controlAttrs = computed(() =>
-  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) => key !== "class" && key !== "style" && key !== "aria-describedby",
+    ),
+  ),
 );
 
 const rootClasses = computed(() =>
@@ -80,8 +88,8 @@ const rootClasses = computed(() =>
     props.padded && "group rounded-(--checkbox-padded-radius) transition-colors",
     props.padded &&
       !props.disabled &&
-      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
-    props.padded && props.disabled && "cursor-not-allowed opacity-70",
+      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ink-gray-8 [&:has(:focus-visible)]:ring-offset-2 [&:has(:focus-visible)]:ring-offset-surface-base [&_input:focus-visible]:ring-0 [&_input:focus-visible]:ring-offset-0",
+    props.padded && props.disabled && "cursor-not-allowed",
     props.padded && (hasDetail.value ? (props.size === "md" ? "px-3 py-2" : "px-1.5 py-1.5") : paddedSizeClasses[props.size]),
     props.class,
   ),
@@ -91,9 +99,10 @@ const inputClasses = computed(() =>
   cn(
     "peer shrink-0 appearance-none rounded-(--checkbox-radius) border bg-surface-base text-surface-base transition-colors outline-none",
     sizeClasses[props.size],
+    "checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 aria-invalid:border-outline-red-6",
     props.disabled
-      ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5"
-      : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 focus-visible:[outline:var(--focus-outline-default)]",
+      ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5 opacity-60"
+      : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
   ),
 );
 
@@ -125,7 +134,7 @@ function onChange(event: Event): void {
 }
 
 function onContainerClick(event: MouseEvent): void {
-  if (!props.padded || props.disabled) return;
+  if (props.disabled) return;
   const target = event.target as HTMLElement;
   if (target.closest('input[type="checkbox"]') || target.closest("label")) return;
   inputRef.value?.click();
@@ -187,7 +196,7 @@ defineExpose({ focus });
           {{ props.label }}
           <template v-if="props.required">
             <span
-              class="select-none [color:var(--label-required-color,var(--ink-red-5))]"
+              class="ms-0.5 select-none [color:var(--label-required-color,var(--ink-red-5))]"
               aria-hidden="true"
               >*</span
             >

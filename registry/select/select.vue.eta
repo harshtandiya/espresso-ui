@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, useId, useSlots } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, useAttrs, useId, useSlots } from "vue";
 import { ChevronDown } from "@lucide/vue";
 import { cn } from "<%= it.utilsAlias %>/utils";
 
@@ -22,10 +22,10 @@ const sizeClasses: Record<string, string> = {
 };
 
 const paddingClasses: Record<string, { plain: string; withPrefix: string }> = {
-  xs: { plain: "ps-1.5 pe-7", withPrefix: "ps-7 pe-7" },
-  sm: { plain: "ps-2 pe-8", withPrefix: "ps-8 pe-8" },
-  md: { plain: "ps-2.5 pe-9", withPrefix: "ps-9 pe-9" },
-  lg: { plain: "ps-3 pe-10", withPrefix: "ps-10 pe-10" },
+  xs: { plain: "ps-1.5", withPrefix: "ps-7" },
+  sm: { plain: "ps-2", withPrefix: "ps-8" },
+  md: { plain: "ps-2.5", withPrefix: "ps-9" },
+  lg: { plain: "ps-3", withPrefix: "ps-10" },
 };
 
 const prefixPadding: Record<string, string> = {
@@ -47,7 +47,8 @@ const variantClasses: Record<string, string> = {
     "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
   outline:
     "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
-  ghost: "border-transparent bg-transparent focus:outline-none",
+  ghost:
+    "border-transparent bg-transparent focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
 };
 
 const chevronSizeClasses: Record<string, string> = {
@@ -116,7 +117,11 @@ const encodedValue = computed(() =>
 const hasValue = computed(() => selectedIndex.value >= 0);
 const describedBy = computed(
   () =>
-    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+    [
+      props.description && !hasError.value ? descriptionId.value : null,
+      hasError.value ? errorId.value : null,
+      attrs["aria-describedby"] as string | undefined,
+    ]
       .filter(Boolean)
       .join(" ") || undefined,
 );
@@ -125,16 +130,39 @@ const paddingClass = computed(() =>
 );
 
 const controlAttrs = computed(() =>
-  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) => key !== "class" && key !== "style" && key !== "aria-describedby",
+    ),
+  ),
 );
+
+const suffixRef = ref<HTMLElement | null>(null);
+const suffixWidth = ref(0);
+let suffixObserver: ResizeObserver | undefined;
+
+onMounted(() => {
+  const element = suffixRef.value;
+  if (!element) return;
+  const measure = () => {
+    suffixWidth.value = element.offsetWidth;
+  };
+  measure();
+  suffixObserver = new ResizeObserver(measure);
+  suffixObserver.observe(element);
+});
+
+onBeforeUnmount(() => {
+  suffixObserver?.disconnect();
+});
 
 const selectClasses = computed(() =>
   cn(
-    "w-full cursor-pointer appearance-none border leading-tighter transition-colors outline-none disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5",
+    "w-full cursor-pointer appearance-none border leading-tighter transition-colors outline-none data-[state=invalid]:border-outline-red-6 data-[state=invalid]:focus:border-outline-red-7 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5",
     sizeClasses[props.size],
     paddingClass.value,
     variantClasses[props.variant],
-    hasValue.value ? "text-ink-gray-8" : "text-ink-gray-4",
+    hasValue.value ? "text-ink-gray-8" : "text-ink-gray-6",
   ),
 );
 
@@ -166,7 +194,7 @@ defineExpose({ focus });
       <template v-else>
         {{ props.label }}
         <template v-if="props.required">
-          <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+          <span class="ms-0.5 select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
           <span class="sr-only">(required)</span>
         </template>
       </template>
@@ -201,6 +229,7 @@ defineExpose({ focus });
         :data-placeholder="!hasValue ? '' : undefined"
         :data-disabled="props.disabled ? 'true' : undefined"
         :data-required="props.required ? 'true' : undefined"
+        :style="{ paddingInlineEnd: suffixWidth ? suffixWidth + 8 : undefined }"
         :class="selectClasses"
         v-bind="controlAttrs"
         @change="onChange"
@@ -218,6 +247,7 @@ defineExpose({ focus });
         </option>
       </select>
       <span
+        ref="suffixRef"
         :class="
           cn(
             'pointer-events-none absolute inset-y-0 end-0 flex items-center',

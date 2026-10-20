@@ -26,7 +26,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
         {children ?? label}
         {required ? (
           <>
-            <span className="select-none text-(--label-required-color)" aria-hidden="true">
+            <span className="ms-0.5 select-none text-(--label-required-color)" aria-hidden="true">
               *
             </span>
             <span className="sr-only">(required)</span>
@@ -59,7 +59,7 @@ export const Label = forwardRef(
         {children ?? label}
         {required ? (
           <>
-            <span className="select-none text-(--label-required-color)" aria-hidden="true">
+            <span className="ms-0.5 select-none text-(--label-required-color)" aria-hidden="true">
               *
             </span>
             <span className="sr-only">(required)</span>
@@ -107,7 +107,7 @@ const classes = computed(() =>
   <label :data-disabled="disabled || undefined" :class="classes" v-bind="$attrs">
     <slot>{{ props.label }}</slot>
     <template v-if="required">
-      <span class="select-none text-(--label-required-color)" aria-hidden="true">*</span>
+      <span class="ms-0.5 select-none text-(--label-required-color)" aria-hidden="true">*</span>
       <span class="sr-only">(required)</span>
     </template>
   </label>

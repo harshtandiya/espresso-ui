@@ -30,7 +30,7 @@ const classes = computed(() =>
   <label :data-disabled="disabled || undefined" :class="classes" v-bind="$attrs">
     <slot>{{ props.label }}</slot>
     <template v-if="required">
-      <span class="select-none text-(--label-required-color)" aria-hidden="true">*</span>
+      <span class="ms-0.5 select-none text-(--label-required-color)" aria-hidden="true">*</span>
       <span class="sr-only">(required)</span>
     </template>
   </label>

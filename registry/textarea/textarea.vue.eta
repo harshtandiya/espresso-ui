@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useId } from "vue";
+import { computed, ref, useAttrs, useId } from "vue";
 import { cn } from "<%= it.utilsAlias %>/utils";
 
 const sizeClasses: Record<string, string> = {
@@ -14,7 +14,8 @@ const variantClasses: Record<string, string> = {
     "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
   outline:
     "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
-  ghost: "border-transparent bg-transparent focus:outline-none",
+  ghost:
+    "border-transparent bg-transparent focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
 };
 
 const props = withDefaults(
@@ -55,14 +56,26 @@ const descriptionId = computed(() => `${inputId.value}-description`);
 const errorId = computed(() => `${inputId.value}-error`);
 const hasError = computed(() => Boolean(props.error));
 const hasLabeling = computed(() => Boolean(props.label || props.description || props.error));
+const attrs = useAttrs();
 const describedBy = computed(() =>
-  [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+  [
+    props.description && !hasError.value ? descriptionId.value : null,
+    hasError.value ? errorId.value : null,
+    attrs["aria-describedby"] as string | undefined,
+  ]
     .filter(Boolean)
     .join(" ") || undefined,
 );
+const controlAttrs = computed(() =>
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) => key !== "class" && key !== "aria-describedby",
+    ),
+  ),
+);
 const classes = computed(() =>
   cn(
-    "block w-full resize-y border [font-size:var(--textarea-font-size)] leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+    "block w-full resize-y border [font-size:var(--textarea-font-size)] leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-6 data-[state=invalid]:border-outline-red-6 data-[state=invalid]:focus:border-outline-red-7 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-4",
     sizeClasses[props.size],
     variantClasses[props.variant],
     !hasLabeling.value && props.class,
@@ -89,7 +102,7 @@ defineExpose({ focus });
     >
       {{ props.label }}
       <template v-if="props.required">
-        <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+        <span class="ms-0.5 select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
         <span class="sr-only">(required)</span>
       </template>
     </label>
@@ -111,7 +124,7 @@ defineExpose({ focus });
       :data-disabled="props.disabled ? 'true' : undefined"
       :data-required="props.required ? 'true' : undefined"
       :class="classes"
-      v-bind="$attrs"
+      v-bind="controlAttrs"
       @input="onInput"
     />
     <p

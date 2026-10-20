@@ -25,7 +25,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
         {children ?? label}
         {required ? (
           <>
-            <span className="select-none text-(--label-required-color)" aria-hidden="true">
+            <span className="ms-0.5 select-none text-(--label-required-color)" aria-hidden="true">
               *
             </span>
             <span className="sr-only">(required)</span>

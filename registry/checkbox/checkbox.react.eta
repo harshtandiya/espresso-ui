@@ -96,9 +96,13 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
     }, [mixed]);
 
     const describedBy =
-      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+      [
+        description && !hasError ? descriptionId : null,
+        hasError ? errorId : null,
+        ariaDescribedBy,
+      ]
         .filter(Boolean)
-        .join(" ") || ariaDescribedBy;
+        .join(" ") || undefined;
 
     return (
       <div
@@ -108,8 +112,8 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           padded && "group rounded-(--checkbox-padded-radius) transition-colors",
           padded &&
             !disabled &&
-            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
-          padded && disabled && "cursor-not-allowed opacity-70",
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ink-gray-8 [&:has(:focus-visible)]:ring-offset-2 [&:has(:focus-visible)]:ring-offset-surface-base [&_input:focus-visible]:ring-0 [&_input:focus-visible]:ring-offset-0",
+          padded && disabled && "cursor-not-allowed",
           padded &&
             (hasDetail
               ? size === "md"
@@ -119,7 +123,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           className,
         )}
         onClick={(event) => {
-          if (!padded || disabled) return;
+          if (disabled) return;
           const target = event.target as HTMLElement;
           if (target.closest('input[type="checkbox"]') || target.closest("label")) return;
           inputRef.current?.click();
@@ -148,9 +152,10 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
               className={cn(
                 "peer shrink-0 appearance-none rounded-(--checkbox-radius) border bg-surface-base text-surface-base transition-colors outline-none",
                 sizeClasses[size],
+                "checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 aria-invalid:border-outline-red-6",
                 disabled
-                  ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5"
-                  : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 focus-visible:[outline:var(--focus-outline-default)]",
+                  ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5 opacity-60"
+                  : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
               )}
               onChange={(event) => {
                 if (!isControlled) setInternalChecked(event.currentTarget.checked);

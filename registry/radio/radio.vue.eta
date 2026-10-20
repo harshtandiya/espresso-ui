@@ -77,7 +77,7 @@ const sizing = computed(() => sizeClasses[group.size.value]);
 
 const rowClasses = computed(() =>
   cn(
-    "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+    "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ink-gray-8 [&:has(:focus-visible)]:ring-offset-2 [&:has(:focus-visible)]:ring-offset-surface-base",
     isDisabled.value ? "cursor-not-allowed" : "cursor-pointer",
     group.padded.value &&
       !isDisabled.value &&

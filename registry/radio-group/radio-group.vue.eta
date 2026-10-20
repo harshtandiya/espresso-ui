@@ -128,6 +128,21 @@ function select(next: RadioValue): void {
   emit("update:modelValue", next);
 }
 
+function onKeydown(event: KeyboardEvent): void {
+  if (props.loop) return;
+  const forward = props.orientation === "vertical" ? event.key === "ArrowDown" : event.key === "ArrowRight";
+  const backward = props.orientation === "vertical" ? event.key === "ArrowUp" : event.key === "ArrowLeft";
+  if (!forward && !backward) return;
+  const radios = Array.from(
+    (event.currentTarget as HTMLElement).querySelectorAll<HTMLInputElement>('input[type="radio"]:not(:disabled)'),
+  );
+  const index = radios.indexOf(document.activeElement as HTMLInputElement);
+  if (index < 0) return;
+  if ((forward && index === radios.length - 1) || (backward && index === 0)) {
+    event.preventDefault();
+  }
+}
+
 provide(RADIO_GROUP_KEY, {
   name: groupName,
   value: currentValue,
@@ -152,7 +167,7 @@ provide(RADIO_GROUP_KEY, {
       <template v-else>
         {{ props.label }}
         <template v-if="props.required">
-          <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+          <span class="ms-0.5 select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
           <span class="sr-only">(required)</span>
         </template>
       </template>
@@ -180,6 +195,7 @@ provide(RADIO_GROUP_KEY, {
         )
       "
       v-bind="controlAttrs"
+      @keydown="onKeydown"
     >
       <slot />
     </div>

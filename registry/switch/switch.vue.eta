@@ -80,13 +80,21 @@ const hasDetail = computed(() => Boolean(hasDescription.value || props.error));
 const checked = computed(() => Boolean(model.value));
 const describedBy = computed(
   () =>
-    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+    [
+      props.description && !hasError.value ? descriptionId.value : null,
+      hasError.value ? errorId.value : null,
+      attrs["aria-describedby"] as string | undefined,
+    ]
       .filter(Boolean)
       .join(" ") || undefined,
 );
 
 const controlAttrs = computed(() =>
-  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) => key !== "class" && key !== "style" && key !== "aria-describedby",
+    ),
+  ),
 );
 
 const rootClasses = computed(() =>
@@ -95,8 +103,8 @@ const rootClasses = computed(() =>
     props.padded && "group rounded-(--switch-padded-radius) transition-colors",
     props.padded &&
       !props.disabled &&
-      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
-    props.padded && props.disabled && "cursor-not-allowed opacity-70",
+      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ink-gray-8 [&:has(:focus-visible)]:ring-offset-2 [&:has(:focus-visible)]:ring-offset-surface-base [&_button:focus-visible]:ring-0 [&_button:focus-visible]:ring-offset-0",
+    props.padded && props.disabled && "cursor-not-allowed",
     props.padded &&
       (hasDetail.value
         ? props.size === "md"
@@ -112,13 +120,13 @@ const rootClasses = computed(() =>
 
 const switchClasses = computed(() =>
   cn(
-    "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+    "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 transition-colors duration-100 ease-in-out aria-invalid:ring-1 aria-invalid:ring-outline-red-6 focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
     trackSizeClasses[props.size],
     props.disabled
-      ? "cursor-not-allowed bg-surface-gray-3"
+      ? "cursor-not-allowed border-outline-gray-3 bg-surface-gray-3"
       : checked.value
-        ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
-        : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+        ? "border-transparent bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+        : "border-outline-gray-4 bg-surface-gray-5 enabled:hover:border-outline-gray-5 enabled:hover:bg-surface-gray-6 active:bg-surface-gray-7",
   ),
 );
 
@@ -145,7 +153,7 @@ function toggle(): void {
 }
 
 function onContainerClick(event: MouseEvent): void {
-  if (!props.padded || props.disabled) return;
+  if (props.disabled) return;
   const target = event.target as HTMLElement;
   if (target.closest('button[role="switch"]') || target.closest("label")) return;
   toggle();
@@ -185,7 +193,7 @@ defineExpose({ focus });
               {{ props.label }}
               <template v-if="props.required">
                 <span
-                  class="select-none [color:var(--label-required-color,var(--ink-red-5))]"
+                  class="ms-0.5 select-none [color:var(--label-required-color,var(--ink-red-5))]"
                   aria-hidden="true"
                   >*</span
                 >

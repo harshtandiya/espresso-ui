@@ -1,5 +1,5 @@
 import { createContext, forwardRef, useId, useState } from "react";
-<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 <% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 
 <% if (it.typescript) { %>
@@ -123,13 +123,29 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
       [
         description && !hasError ? descriptionId : null,
         hasError ? errorId : null,
+        ariaDescribedBy,
       ]
         .filter(Boolean)
-        .join(" ") || ariaDescribedBy;
+        .join(" ") || undefined;
 
     const select = (next<% if (it.typescript) { %>: RadioValue<% } %>) => {
       if (!isControlled) setInternalValue(next);
       onValueChange?.(next);
+    };
+
+    const handleKeyDown = (event<% if (it.typescript) { %>: KeyboardEvent<HTMLDivElement><% } %>) => {
+      if (loop) return;
+      const forward = orientation === "vertical" ? event.key === "ArrowDown" : event.key === "ArrowRight";
+      const backward = orientation === "vertical" ? event.key === "ArrowUp" : event.key === "ArrowLeft";
+      if (!forward && !backward) return;
+      const radios = Array.from(
+        event.currentTarget.querySelectorAll<% if (it.typescript) { %><HTMLInputElement><% } %>('input[type="radio"]:not(:disabled)'),
+      );
+      const index = radios.indexOf(document.activeElement<% if (it.typescript) { %> as HTMLInputElement<% } %>);
+      if (index < 0) return;
+      if ((forward && index === radios.length - 1) || (backward && index === 0)) {
+        event.preventDefault();
+      }
     };
 
     return (
@@ -159,6 +175,7 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
           data-orientation={orientation}
           data-disabled={disabled ? "true" : undefined}
           data-loop={loop ? "true" : "false"}
+          onKeyDown={handleKeyDown}
           className={cn(
             "flex",
             stacked ? "flex-col" : "flex-row flex-wrap items-center",
