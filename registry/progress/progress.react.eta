@@ -1,0 +1,96 @@
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { useId } from "react";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const sizeClasses = {
+  sm: "h-(--progress-sm-height)",
+  md: "h-(--progress-md-height)",
+  lg: "h-(--progress-lg-height)",
+  xl: "h-(--progress-xl-height)",
+};
+
+<% if (it.typescript) { %>
+type ProgressSize = keyof typeof sizeClasses;
+
+export type ProgressProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
+  /** Current value from 0 to 100. */
+  value: number;
+  /** Height of the bar. */
+  size?: ProgressSize;
+  /** Label shown above the bar. */
+  label?: ReactNode;
+  /** `true` shows the percentage; pass content to replace it. */
+  hint?: boolean | ReactNode;
+  /** Splits the bar into whole segments. */
+  intervals?: number;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  className,
+  value,
+  size = "sm",
+  label,
+  hint,
+  intervals,
+  ...props
+}<% if (it.typescript) { %>: ProgressProps<% } %>) {
+  const labelId = useId();
+  const clamped = Math.min(Math.max(Number(value), 0), 100);
+  const showHint =
+    hint === true || (hint !== undefined && hint !== false && hint !== null);
+  const hasHeader = Boolean(label) || showHint;
+  const filledIntervals = intervals ? Math.round((clamped / 100) * intervals) : 0;
+  const barClasses = cn("transform-gpu overflow-hidden rounded-(--progress-radius)", sizeClasses[size]);
+  const ariaLabel = typeof label === "string" ? label : "Progress";
+
+  return (
+    <div className={cn("w-full space-y-2.5", className)}>
+      {hasHeader ? (
+        <div className="flex items-baseline justify-between gap-4">
+          {label ? (
+            <span id={labelId} className="text-sm font-medium text-ink-gray-8">
+              {label}
+            </span>
+          ) : (
+            <span />
+          )}
+          {showHint ? (
+            <span className="text-sm font-medium text-ink-gray-4">
+              {hint === true || hint === undefined ? `${clamped}%` : hint}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={clamped}
+        aria-label={label ? undefined : ariaLabel}
+        aria-labelledby={label ? labelId : undefined}
+        data-slot="progress"
+        data-size={size}
+        className={cn(barClasses, intervals ? "flex gap-(--progress-gap)" : "bg-surface-gray-2")}
+        {...props}
+      >
+        {intervals ? (
+          Array.from({ length: intervals }, (_, index) => (
+            <div
+              key={index}
+              className={cn(
+                "h-full w-full",
+                index < filledIntervals ? "bg-surface-gray-10" : "bg-surface-gray-2",
+              )}
+            />
+          ))
+        ) : (
+          <div
+            className="h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none"
+            style={{ transform: `translateX(${clamped - 100}%)` }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

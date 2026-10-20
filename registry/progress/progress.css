@@ -1,0 +1,11 @@
+/* Progress component tokens. */
+:root {
+  --progress-sm-height: 2px;
+  --progress-md-height: 4px;
+  --progress-lg-height: 8px;
+  --progress-xl-height: 12px;
+  --progress-radius: var(--radius-7);
+  --progress-gap: 4px;
+  --progress-transition-duration: 660ms;
+  --progress-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}

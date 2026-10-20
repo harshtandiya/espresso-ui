@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+type SpinnerSize = "xs" | "sm" | "md" | "lg";
+type SpinnerTheme = "gray" | "red";
+
+const sizeMap: Record<SpinnerSize, { px: number; thickness: number; inset: number }> = {
+  xs: { px: 12, thickness: 1.5, inset: 0.9 },
+  sm: { px: 14, thickness: 2, inset: 1.05 },
+  md: { px: 16, thickness: 2, inset: 1.2 },
+  lg: { px: 20, thickness: 2, inset: 1.5 },
+};
+
+const props = withDefaults(
+  defineProps<{
+    size?: SpinnerSize;
+    theme?: SpinnerTheme;
+    track?: boolean;
+  }>(),
+  {
+    track: false,
+  },
+);
+
+const colorClass = computed(() => {
+  if (!props.theme) return undefined;
+  return props.theme === "red" ? "text-ink-red-7" : "text-ink-gray-8";
+});
+
+const rootStyle = computed(() => {
+  if (!props.size) return undefined;
+  const dimensions = sizeMap[props.size];
+  return {
+    width: `${dimensions.px}px`,
+    height: `${dimensions.px}px`,
+    "--spinner-thickness": `${dimensions.thickness}px`,
+    "--spinner-mask-thickness": `${dimensions.thickness}px`,
+    "--spinner-inset": `${dimensions.inset}px`,
+  };
+});
+</script>
+
+<template>
+  <svg
+    width="16"
+    height="16"
+    role="status"
+    aria-label="Loading"
+    class="espresso-spinner inline-block shrink-0"
+    :class="[colorClass, { 'espresso-spinner--track': props.track }]"
+    :style="rootStyle"
+  />
+</template>

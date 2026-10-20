@@ -1,0 +1,6 @@
+<template>
+  <div
+    aria-hidden="true"
+    class="espresso-skeleton animate-pulse bg-surface-gray-3"
+  />
+</template>

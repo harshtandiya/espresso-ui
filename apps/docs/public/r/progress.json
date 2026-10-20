@@ -1,0 +1,23 @@
+{
+  "name": "progress",
+  "type": "registry:ui",
+  "title": "Progress",
+  "description": "espresso-ui Progress component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Progress.tsx",
+      "content": "import type { ComponentPropsWithoutRef, ReactNode } from \"react\";\nimport { useId } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nconst sizeClasses = {\n  sm: \"h-(--progress-sm-height)\",\n  md: \"h-(--progress-md-height)\",\n  lg: \"h-(--progress-lg-height)\",\n  xl: \"h-(--progress-xl-height)\",\n};\n\ntype ProgressSize = keyof typeof sizeClasses;\n\nexport type ProgressProps = Omit<ComponentPropsWithoutRef<\"div\">, \"children\"> & {\n  /** Current value from 0 to 100. */\n  value: number;\n  /** Height of the bar. */\n  size?: ProgressSize;\n  /** Label shown above the bar. */\n  label?: ReactNode;\n  /** `true` shows the percentage; pass content to replace it. */\n  hint?: boolean | ReactNode;\n  /** Splits the bar into whole segments. */\n  intervals?: number;\n};\n\nexport function Progress({\n  className,\n  value,\n  size = \"sm\",\n  label,\n  hint,\n  intervals,\n  ...props\n}: ProgressProps) {\n  const labelId = useId();\n  const clamped = Math.min(Math.max(Number(value), 0), 100);\n  const showHint =\n    hint === true || (hint !== undefined && hint !== false && hint !== null);\n  const hasHeader = Boolean(label) || showHint;\n  const filledIntervals = intervals ? Math.round((clamped / 100) * intervals) : 0;\n  const barClasses = cn(\"transform-gpu overflow-hidden rounded-(--progress-radius)\", sizeClasses[size]);\n  const ariaLabel = typeof label === \"string\" ? label : \"Progress\";\n\n  return (\n    <div className={cn(\"w-full space-y-2.5\", className)}>\n      {hasHeader ? (\n        <div className=\"flex items-baseline justify-between gap-4\">\n          {label ? (\n            <span id={labelId} className=\"text-sm font-medium text-ink-gray-8\">\n              {label}\n            </span>\n          ) : (\n            <span />\n          )}\n          {showHint ? (\n            <span className=\"text-sm font-medium text-ink-gray-4\">\n              {hint === true || hint === undefined ? `${clamped}%` : hint}\n            </span>\n          ) : null}\n        </div>\n      ) : null}\n      <div\n        role=\"progressbar\"\n        aria-valuemin={0}\n        aria-valuemax={100}\n        aria-valuenow={clamped}\n        aria-label={label ? undefined : ariaLabel}\n        aria-labelledby={label ? labelId : undefined}\n        data-slot=\"progress\"\n        data-size={size}\n        className={cn(barClasses, intervals ? \"flex gap-(--progress-gap)\" : \"bg-surface-gray-2\")}\n        {...props}\n      >\n        {intervals ? (\n          Array.from({ length: intervals }, (_, index) => (\n            <div\n              key={index}\n              className={cn(\n                \"h-full w-full\",\n                index < filledIntervals ? \"bg-surface-gray-10\" : \"bg-surface-gray-2\",\n              )}\n            />\n          ))\n        ) : (\n          <div\n            className=\"h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none\"\n            style={{ transform: `translateX(${clamped - 100}%)` }}\n          />\n        )}\n      </div>\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/progress.css",
+      "content": "/* Progress component tokens. */\n:root {\n  --progress-sm-height: 2px;\n  --progress-md-height: 4px;\n  --progress-lg-height: 8px;\n  --progress-xl-height: 12px;\n  --progress-radius: var(--radius-7);\n  --progress-gap: 4px;\n  --progress-transition-duration: 660ms;\n  --progress-ease: cubic-bezier(0.65, 0, 0.35, 1);\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

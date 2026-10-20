@@ -1,0 +1,123 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Skeleton as SkeletonReact } from "@/generated/react/Skeleton.tsx";
+import { SkeletonCardDemo, SkeletonTextDemo } from "@/components/examples/FeedbackDemos.tsx";
+
+const usage = `import { Skeleton } from "@/components/ui/Skeleton";
+
+export default function App() {
+  return (
+    <div className="space-y-3" aria-busy="true">
+      <Skeleton className="h-4 w-48" />
+      <Skeleton className="h-4 w-full" />
+    </div>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Skeleton from "@/components/ui/Skeleton.vue";
+\u003C/script>
+
+<template>
+  <div class="space-y-3" aria-busy="true">
+    <Skeleton class="h-4 w-48" />
+    <Skeleton class="h-4 w-full" />
+  </div>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="skeleton"
+  num={sectionNumber("skeleton")}
+  label="Skeleton"
+  desc="A prop-free placeholder block for content that is still loading. Size it with classes, compose it into cards or paragraphs, and mark the loading region with `aria-busy` when the whole area is pending."
+  status="new"
+  code={usage}
+  codeFile="skeleton.tsx"
+  codeVue={usageVue}
+  codeVueFile="skeleton.vue"
+>
+  <CanvasToolbar title="Preview" meta="card placeholder" />
+  <Canvas class="skeleton-stack">
+    <SkeletonCardDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Text" sub="paragraph rhythm">
+      <Canvas grid={false} class="skeleton-stack">
+        <SkeletonTextDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Shapes" sub="avatar · line · block">
+      <Canvas grid={false} class="skeleton-stack">
+        <div class="skeleton-shapes">
+          <SkeletonReact client:load className="size-10 rounded-full" />
+          <div class="skeleton-shape-lines">
+            <SkeletonReact client:load className="h-3.5 w-36" />
+            <SkeletonReact client:load className="h-3 w-24" />
+          </div>
+        </div>
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.skeleton-stack) {
+    width: min(100%, 340px);
+    padding: 28px 32px !important;
+  }
+  :global(.skeleton-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: 100%;
+  }
+  :global(.skeleton-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--outline-gray-2);
+    border-radius: var(--radius-5);
+    background: var(--surface-base);
+  }
+  :global(.skeleton-card-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  :global(.skeleton-text) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  :global(.skeleton-shapes) {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  :global(.skeleton-shape-lines) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.skeleton-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

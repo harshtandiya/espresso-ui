@@ -1,0 +1,124 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`error-message templates > renders React template 1`] = `
+"import type { ComponentPropsWithoutRef } from "react";
+import { cn } from "@/lib/utils";
+
+export type ErrorMessageValue =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] });
+
+export type ErrorMessageProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
+  /** One message, several lines, or an Error. */
+  message?: ErrorMessageValue | null;
+};
+
+function errorLines(value: ErrorMessageValue | null | undefined): string[] {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+export function ErrorMessage({ message, className, ...props }: ErrorMessageProps) {
+  const lines = errorLines(message);
+  if (lines.length === 0) return null;
+
+  return (
+    <div
+      role="alert"
+      className={cn("whitespace-pre-line text-sm text-ink-red-7", className)}
+      {...props}
+    >
+      {lines.map((line, index) => (
+        <p key={index}>{line}</p>
+      ))}
+    </div>
+  );
+}
+"
+`;
+
+exports[`error-message templates > renders React template without TypeScript 1`] = `
+"import { cn } from "@/lib/utils";
+
+
+function errorLines(value) {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+export function ErrorMessage({ message, className, ...props }) {
+  const lines = errorLines(message);
+  if (lines.length === 0) return null;
+
+  return (
+    <div
+      role="alert"
+      className={cn("whitespace-pre-line text-sm text-ink-red-7", className)}
+      {...props}
+    >
+      {lines.map((line, index) => (
+        <p key={index}>{line}</p>
+      ))}
+    </div>
+  );
+}
+"
+`;
+
+exports[`error-message templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed } from "vue";
+
+type ErrorMessageValue =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] });
+
+const props = defineProps<{
+  message?: ErrorMessageValue | null;
+}>();
+
+function errorLines(value?: ErrorMessageValue | null): string[] {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+const lines = computed(() => errorLines(props.message));
+</script>
+
+<template>
+  <div
+    v-if="lines.length"
+    role="alert"
+    class="whitespace-pre-line text-sm text-ink-red-7"
+  >
+    <p v-for="(line, index) in lines" :key="index">{{ line }}</p>
+  </div>
+</template>
+"
+`;

@@ -1,0 +1,23 @@
+{
+  "name": "error-message",
+  "type": "registry:ui",
+  "title": "ErrorMessage",
+  "description": "espresso-ui ErrorMessage component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/ErrorMessage.tsx",
+      "content": "import type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type ErrorMessageValue =\n  | string\n  | string[]\n  | (Error & { messages?: string | string[] });\n\nexport type ErrorMessageProps = Omit<ComponentPropsWithoutRef<\"div\">, \"children\"> & {\n  /** One message, several lines, or an Error. */\n  message?: ErrorMessageValue | null;\n};\n\nfunction errorLines(value: ErrorMessageValue | null | undefined): string[] {\n  if (!value) return [];\n  if (typeof value === \"string\") return [value];\n  if (Array.isArray(value)) return value.filter(Boolean).map(String);\n  if (value instanceof Error) {\n    const messages = value.messages;\n    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);\n    if (typeof messages === \"string\" && messages) return [messages];\n    return value.message ? [value.message] : [];\n  }\n  return [String(value)];\n}\n\nexport function ErrorMessage({ message, className, ...props }: ErrorMessageProps) {\n  const lines = errorLines(message);\n  if (lines.length === 0) return null;\n\n  return (\n    <div\n      role=\"alert\"\n      className={cn(\"whitespace-pre-line text-sm text-ink-red-7\", className)}\n      {...props}\n    >\n      {lines.map((line, index) => (\n        <p key={index}>{line}</p>\n      ))}\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/error-message.css",
+      "content": "/* ErrorMessage uses the shared red ink token. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

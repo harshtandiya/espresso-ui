@@ -1,0 +1,16 @@
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type SkeletonProps = ComponentPropsWithoutRef<"div">;
+<% } %>
+
+export function <%= it.componentName %>({ className, ...props }<% if (it.typescript) { %>: SkeletonProps<% } %>) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("espresso-skeleton animate-pulse bg-surface-gray-3", className)}
+      {...props}
+    />
+  );
+}

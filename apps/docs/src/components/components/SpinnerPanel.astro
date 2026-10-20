@@ -1,0 +1,135 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Spinner as SpinnerReact } from "@/generated/react/Spinner.tsx";
+
+const usage = `import { Spinner } from "@/components/ui/Spinner";
+
+export default function App() {
+  return (
+    <p className="flex items-center gap-2 text-sm text-ink-gray-6">
+      <Spinner size="sm" theme="gray" />
+      Loading workspaces…
+    </p>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Spinner from "@/components/ui/Spinner.vue";
+\u003C/script>
+
+<template>
+  <p class="flex items-center gap-2 text-sm text-ink-gray-6">
+    <Spinner size="sm" theme="gray" />
+    Loading workspaces…
+  </p>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="spinner"
+  num={sectionNumber("spinner")}
+  label="Spinner"
+  desc="An indeterminate loading indicator. Four sizes from 12 to 20px, a fixed gray or red color, an optional faint track, and a slowed animation when reduced motion is requested."
+  status="new"
+  code={usage}
+  codeFile="spinner.tsx"
+  codeVue={usageVue}
+  codeVueFile="spinner.vue"
+>
+  <CanvasToolbar title="Preview" meta="12 · 14 · 16 · 20px" />
+  <Canvas class="spinner-stack">
+    <div class="spinner-row">
+      <span class="spinner-item"><SpinnerReact client:load size="xs" /><span>Extra small</span></span>
+      <span class="spinner-item"><SpinnerReact client:load size="sm" /><span>Small</span></span>
+      <span class="spinner-item"><SpinnerReact client:load size="md" /><span>Medium</span></span>
+      <span class="spinner-item"><SpinnerReact client:load size="lg" /><span>Large</span></span>
+    </div>
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Themes" sub="inherit · gray · red">
+      <Canvas grid={false} class="spinner-stack">
+        <div class="spinner-row">
+          <SpinnerReact client:load size="md" />
+          <SpinnerReact client:load size="md" theme="gray" />
+          <SpinnerReact client:load size="md" theme="red" />
+        </div>
+        <p class="spinner-caption">Inherits text color · gray · red</p>
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Track" sub="faint full-circle guide">
+      <Canvas grid={false} class="spinner-stack">
+        <div class="spinner-row">
+          <SpinnerReact client:load size="md" />
+          <SpinnerReact client:load size="md" track />
+          <SpinnerReact client:load size="lg" track theme="red" />
+        </div>
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="In context" sub="loading line">
+      <Canvas grid={false} class="spinner-stack">
+        <p class="spinner-line">
+          <SpinnerReact client:load size="sm" />
+          Loading workspaces…
+        </p>
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.spinner-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.spinner-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: min(100%, 420px);
+  }
+  :global(.spinner-row) {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    color: var(--ink-gray-7);
+  }
+  :global(.spinner-item) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-gray-5);
+  }
+  :global(.spinner-caption) {
+    margin: 0;
+    font-size: 12px;
+    color: var(--ink-gray-5);
+  }
+  :global(.spinner-line) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-gray-6);
+  }
+
+  @media (max-width: 768px) {
+    :global(.spinner-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

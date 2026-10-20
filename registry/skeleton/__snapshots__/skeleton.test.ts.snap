@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`skeleton templates > renders React template 1`] = `
+"import type { ComponentPropsWithoutRef } from "react";
+import { cn } from "@/lib/utils";
+
+export type SkeletonProps = ComponentPropsWithoutRef<"div">;
+
+export function Skeleton({ className, ...props }: SkeletonProps) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("espresso-skeleton animate-pulse bg-surface-gray-3", className)}
+      {...props}
+    />
+  );
+}
+"
+`;
+
+exports[`skeleton templates > renders React template without TypeScript 1`] = `
+"import { cn } from "@/lib/utils";
+
+
+export function Skeleton({ className, ...props }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("espresso-skeleton animate-pulse bg-surface-gray-3", className)}
+      {...props}
+    />
+  );
+}
+"
+`;
+
+exports[`skeleton templates > renders Vue template 1`] = `
+"<template>
+  <div
+    aria-hidden="true"
+    class="espresso-skeleton animate-pulse bg-surface-gray-3"
+  />
+</template>
+"
+`;

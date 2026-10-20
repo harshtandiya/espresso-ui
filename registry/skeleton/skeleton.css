@@ -1,0 +1,7 @@
+/* Skeleton uses Tailwind's pulse animation; this hook keeps it calm when
+   the person prefers reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .espresso-skeleton {
+    animation-duration: 2s;
+  }
+}

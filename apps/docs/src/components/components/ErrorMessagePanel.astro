@@ -1,0 +1,73 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import { sectionNumber } from "@/lib/sections";
+import { ErrorMessageDemo } from "@/components/examples/FeedbackDemos.tsx";
+
+const usage = `import { ErrorMessage } from "@/components/ui/ErrorMessage";
+
+export default function App() {
+  return (
+    <ErrorMessage
+      message={["Name is required.", "Choose a workspace to continue."]}
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import ErrorMessage from "@/components/ui/ErrorMessage.vue";
+\u003C/script>
+
+<template>
+  <ErrorMessage
+    :message="['Name is required.', 'Choose a workspace to continue.']"
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="error-message"
+  num={sectionNumber("error-message")}
+  label="Error Message"
+  desc="Renders one or more error lines in red. Accepts a string, an array of strings, or an Error with optional `messages`; an empty value renders nothing."
+  status="new"
+  code={usage}
+  codeFile="error-message.tsx"
+  codeVue={usageVue}
+  codeVueFile="error-message.vue"
+>
+  <CanvasToolbar title="Preview" meta="string · lines · Error" />
+  <Canvas class="feedback-stack">
+    <ErrorMessageDemo client:load />
+  </Canvas>
+</ComponentPanel>
+
+<style>
+  :global(.feedback-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.feedback-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: min(100%, 460px);
+  }
+  :global(.feedback-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.feedback-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

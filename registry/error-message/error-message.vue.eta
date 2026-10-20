@@ -1,0 +1,37 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+type ErrorMessageValue =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] });
+
+const props = defineProps<{
+  message?: ErrorMessageValue | null;
+}>();
+
+function errorLines(value?: ErrorMessageValue | null): string[] {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+const lines = computed(() => errorLines(props.message));
+</script>
+
+<template>
+  <div
+    v-if="lines.length"
+    role="alert"
+    class="whitespace-pre-line text-sm text-ink-red-7"
+  >
+    <p v-for="(line, index) in lines" :key="index">{{ line }}</p>
+  </div>
+</template>

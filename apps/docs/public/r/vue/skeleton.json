@@ -1,0 +1,23 @@
+{
+  "name": "skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "espresso-ui Skeleton component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Skeleton.vue",
+      "content": "<template>\n  <div\n    aria-hidden=\"true\"\n    class=\"espresso-skeleton animate-pulse bg-surface-gray-3\"\n  />\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/skeleton.css",
+      "content": "/* Skeleton uses Tailwind's pulse animation; this hook keeps it calm when\n   the person prefers reduced motion. */\n@media (prefers-reduced-motion: reduce) {\n  .espresso-skeleton {\n    animation-duration: 2s;\n  }\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

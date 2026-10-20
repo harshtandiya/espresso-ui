@@ -1,0 +1,44 @@
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type ErrorMessageValue =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] });
+
+export type ErrorMessageProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
+  /** One message, several lines, or an Error. */
+  message?: ErrorMessageValue | null;
+};
+<% } %>
+
+function errorLines(value<% if (it.typescript) { %>: ErrorMessageValue | null | undefined<% } %>)<% if (it.typescript) { %>: string[]<% } %> {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+export function <%= it.componentName %>({ message, className, ...props }<% if (it.typescript) { %>: ErrorMessageProps<% } %>) {
+  const lines = errorLines(message);
+  if (lines.length === 0) return null;
+
+  return (
+    <div
+      role="alert"
+      className={cn("whitespace-pre-line text-sm text-ink-red-7", className)}
+      {...props}
+    >
+      {lines.map((line, index) => (
+        <p key={index}>{line}</p>
+      ))}
+    </div>
+  );
+}

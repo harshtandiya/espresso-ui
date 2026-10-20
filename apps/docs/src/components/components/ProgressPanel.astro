@@ -1,0 +1,95 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Progress as ProgressReact } from "@/generated/react/Progress.tsx";
+import { ProgressDemo } from "@/components/examples/FeedbackDemos.tsx";
+
+const usage = `import { Progress } from "@/components/ui/Progress";
+
+export default function App() {
+  return (
+    <Progress value={64} label="Uploading files" hint />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Progress from "@/components/ui/Progress.vue";
+\u003C/script>
+
+<template>
+  <Progress :value="64" label="Uploading files" hint />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="progress"
+  num={sectionNumber("progress")}
+  label="Progress"
+  desc="A determinate 0–100 bar with optional label, percentage or custom hint, four heights, and interval markers for multi-step tasks. The fill is composited and transitioned without reflowing the page."
+  status="new"
+  code={usage}
+  codeFile="progress.tsx"
+  codeVue={usageVue}
+  codeVueFile="progress.vue"
+>
+  <CanvasToolbar title="Preview" meta="label · hint · intervals" />
+  <Canvas class="progress-stack">
+    <ProgressDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="2 · 4 · 8 · 12px">
+      <Canvas grid={false} class="progress-stack">
+        <ProgressReact client:load value={40} size="sm" label="Small" hint />
+        <ProgressReact client:load value={40} size="md" label="Medium" hint />
+        <ProgressReact client:load value={40} size="lg" label="Large" hint />
+        <ProgressReact client:load value={40} size="xl" label="Extra large" hint />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Intervals" sub="whole segments only">
+      <Canvas grid={false} class="progress-stack">
+        <ProgressReact client:load value={66} label="Step 2 of 3" intervals={3} hint="2 / 3" />
+        <ProgressReact client:load value={80} label="Step 4 of 5" intervals={5} hint="4 / 5" />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.progress-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.progress-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 20px !important;
+    width: min(100%, 460px);
+  }
+  :global(.progress-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+  :global(.progress-demo-actions) {
+    display: flex;
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.progress-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

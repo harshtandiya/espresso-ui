@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+const sizeClasses: Record<string, string> = {
+  sm: "h-(--progress-sm-height)",
+  md: "h-(--progress-md-height)",
+  lg: "h-(--progress-lg-height)",
+  xl: "h-(--progress-xl-height)",
+};
+
+const props = withDefaults(
+  defineProps<{
+    value: number;
+    size?: "sm" | "md" | "lg" | "xl";
+    label?: string;
+    hint?: boolean;
+    intervals?: number;
+  }>(),
+  {
+    size: "sm",
+    label: "",
+    hint: false,
+  },
+);
+
+const slots = defineSlots<{
+  hint?: () => unknown;
+}>();
+
+const clamped = computed(() => Math.min(Math.max(Number(props.value), 0), 100));
+const showHint = computed(() => Boolean(props.hint || slots.hint));
+const hasHeader = computed(() => Boolean(props.label || showHint.value));
+const filledIntervals = computed(() =>
+  props.intervals ? Math.round((clamped.value / 100) * props.intervals) : 0,
+);
+const ariaLabel = computed(() => (props.label ? undefined : "Progress"));
+</script>
+
+<template>
+  <div class="w-full space-y-2.5">
+    <div v-if="hasHeader" class="flex items-baseline justify-between gap-4">
+      <span v-if="props.label" class="text-sm font-medium text-ink-gray-8">
+        {{ props.label }}
+      </span>
+      <span v-else />
+      <span v-if="showHint" class="text-sm font-medium text-ink-gray-4">
+        <slot name="hint">{{ clamped }}%</slot>
+      </span>
+    </div>
+    <div
+      role="progressbar"
+      :aria-valuemin="0"
+      :aria-valuemax="100"
+      :aria-valuenow="clamped"
+      :aria-label="ariaLabel"
+      data-slot="progress"
+      :data-size="props.size"
+      :class="[
+        'transform-gpu overflow-hidden rounded-(--progress-radius)',
+        sizeClasses[props.size],
+        props.intervals ? 'flex gap-(--progress-gap)' : 'bg-surface-gray-2',
+      ]"
+    >
+      <template v-if="props.intervals">
+        <div
+          v-for="index in props.intervals"
+          :key="index"
+          class="h-full w-full"
+          :class="index <= filledIntervals ? 'bg-surface-gray-10' : 'bg-surface-gray-2'"
+        />
+      </template>
+      <div
+        v-else
+        class="h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none"
+        :style="{ transform: `translateX(${clamped - 100}%)` }"
+      />
+    </div>
+  </div>
+</template>

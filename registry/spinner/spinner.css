@@ -1,0 +1,61 @@
+/* Spinner paints a rotating conic-gradient comet inside a masked ring.
+   The gradient angle is registered so it can interpolate smoothly. */
+@property --spinner-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.espresso-spinner {
+  --spinner-thickness: 14.7%;
+  --spinner-mask-thickness: 29.4%;
+  --spinner-inset: 7.5%;
+  --spinner-paint-size: calc(100% - 2 * var(--spinner-inset));
+  --spinner-track-color: transparent;
+  background-image:
+    radial-gradient(
+      calc(var(--spinner-thickness) / 2) calc(var(--spinner-thickness) / 2) at
+        calc(50% + (50% - var(--spinner-thickness) / 2) * sin(var(--spinner-angle)))
+        calc(50% - (50% - var(--spinner-thickness) / 2) * cos(var(--spinner-angle))),
+      currentColor 92%,
+      transparent
+    ),
+    conic-gradient(from var(--spinner-angle), transparent 32%, currentColor 92%, currentColor 100%),
+    linear-gradient(var(--spinner-track-color), var(--spinner-track-color));
+  background-size: var(--spinner-paint-size) var(--spinner-paint-size);
+  background-position: center;
+  background-repeat: no-repeat;
+  -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--spinner-mask-thickness)),
+      #000 calc(100% - var(--spinner-mask-thickness)),
+      #000 calc(100% - 0.5px),
+      transparent 100%
+    )
+    center / var(--spinner-paint-size) var(--spinner-paint-size) no-repeat;
+  mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--spinner-mask-thickness)),
+      #000 calc(100% - var(--spinner-mask-thickness)),
+      #000 calc(100% - 0.5px),
+      transparent 100%
+    )
+    center / var(--spinner-paint-size) var(--spinner-paint-size) no-repeat;
+  animation: espresso-spinner-rotate 0.7s linear infinite;
+}
+
+.espresso-spinner--track {
+  --spinner-track-color: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+@keyframes espresso-spinner-rotate {
+  to {
+    --spinner-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .espresso-spinner {
+    animation-duration: 1.6s;
+  }
+}

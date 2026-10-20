@@ -173,6 +173,29 @@
       ]
     },
     {
+      "name": "error-message",
+      "type": "registry:ui",
+      "title": "ErrorMessage",
+      "description": "espresso-ui ErrorMessage component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/ErrorMessage.tsx",
+          "content": "import type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type ErrorMessageValue =\n  | string\n  | string[]\n  | (Error & { messages?: string | string[] });\n\nexport type ErrorMessageProps = Omit<ComponentPropsWithoutRef<\"div\">, \"children\"> & {\n  /** One message, several lines, or an Error. */\n  message?: ErrorMessageValue | null;\n};\n\nfunction errorLines(value: ErrorMessageValue | null | undefined): string[] {\n  if (!value) return [];\n  if (typeof value === \"string\") return [value];\n  if (Array.isArray(value)) return value.filter(Boolean).map(String);\n  if (value instanceof Error) {\n    const messages = value.messages;\n    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);\n    if (typeof messages === \"string\" && messages) return [messages];\n    return value.message ? [value.message] : [];\n  }\n  return [String(value)];\n}\n\nexport function ErrorMessage({ message, className, ...props }: ErrorMessageProps) {\n  const lines = errorLines(message);\n  if (lines.length === 0) return null;\n\n  return (\n    <div\n      role=\"alert\"\n      className={cn(\"whitespace-pre-line text-sm text-ink-red-7\", className)}\n      {...props}\n    >\n      {lines.map((line, index) => (\n        <p key={index}>{line}</p>\n      ))}\n    </div>\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/error-message.css",
+          "content": "/* ErrorMessage uses the shared red ink token. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
       "name": "form-control",
       "type": "registry:ui",
       "title": "FormControl",
@@ -219,6 +242,29 @@
         {
           "path": "components/ui/label.css",
           "content": "/* Label component tokens — mirrors frappe-ui v1 FormLabel. */\n:root {\n  --label-font-size: 13px;\n  --label-font-weight: 420;\n  --label-color: var(--ink-gray-6);\n  --label-disabled-color: var(--ink-gray-4);\n  --label-required-color: var(--ink-red-5);\n}\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "espresso-ui Progress component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Progress.tsx",
+          "content": "import type { ComponentPropsWithoutRef, ReactNode } from \"react\";\nimport { useId } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nconst sizeClasses = {\n  sm: \"h-(--progress-sm-height)\",\n  md: \"h-(--progress-md-height)\",\n  lg: \"h-(--progress-lg-height)\",\n  xl: \"h-(--progress-xl-height)\",\n};\n\ntype ProgressSize = keyof typeof sizeClasses;\n\nexport type ProgressProps = Omit<ComponentPropsWithoutRef<\"div\">, \"children\"> & {\n  /** Current value from 0 to 100. */\n  value: number;\n  /** Height of the bar. */\n  size?: ProgressSize;\n  /** Label shown above the bar. */\n  label?: ReactNode;\n  /** `true` shows the percentage; pass content to replace it. */\n  hint?: boolean | ReactNode;\n  /** Splits the bar into whole segments. */\n  intervals?: number;\n};\n\nexport function Progress({\n  className,\n  value,\n  size = \"sm\",\n  label,\n  hint,\n  intervals,\n  ...props\n}: ProgressProps) {\n  const labelId = useId();\n  const clamped = Math.min(Math.max(Number(value), 0), 100);\n  const showHint =\n    hint === true || (hint !== undefined && hint !== false && hint !== null);\n  const hasHeader = Boolean(label) || showHint;\n  const filledIntervals = intervals ? Math.round((clamped / 100) * intervals) : 0;\n  const barClasses = cn(\"transform-gpu overflow-hidden rounded-(--progress-radius)\", sizeClasses[size]);\n  const ariaLabel = typeof label === \"string\" ? label : \"Progress\";\n\n  return (\n    <div className={cn(\"w-full space-y-2.5\", className)}>\n      {hasHeader ? (\n        <div className=\"flex items-baseline justify-between gap-4\">\n          {label ? (\n            <span id={labelId} className=\"text-sm font-medium text-ink-gray-8\">\n              {label}\n            </span>\n          ) : (\n            <span />\n          )}\n          {showHint ? (\n            <span className=\"text-sm font-medium text-ink-gray-4\">\n              {hint === true || hint === undefined ? `${clamped}%` : hint}\n            </span>\n          ) : null}\n        </div>\n      ) : null}\n      <div\n        role=\"progressbar\"\n        aria-valuemin={0}\n        aria-valuemax={100}\n        aria-valuenow={clamped}\n        aria-label={label ? undefined : ariaLabel}\n        aria-labelledby={label ? labelId : undefined}\n        data-slot=\"progress\"\n        data-size={size}\n        className={cn(barClasses, intervals ? \"flex gap-(--progress-gap)\" : \"bg-surface-gray-2\")}\n        {...props}\n      >\n        {intervals ? (\n          Array.from({ length: intervals }, (_, index) => (\n            <div\n              key={index}\n              className={cn(\n                \"h-full w-full\",\n                index < filledIntervals ? \"bg-surface-gray-10\" : \"bg-surface-gray-2\",\n              )}\n            />\n          ))\n        ) : (\n          <div\n            className=\"h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none\"\n            style={{ transform: `translateX(${clamped - 100}%)` }}\n          />\n        )}\n      </div>\n    </div>\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/progress.css",
+          "content": "/* Progress component tokens. */\n:root {\n  --progress-sm-height: 2px;\n  --progress-md-height: 4px;\n  --progress-lg-height: 8px;\n  --progress-xl-height: 12px;\n  --progress-radius: var(--radius-7);\n  --progress-gap: 4px;\n  --progress-transition-duration: 660ms;\n  --progress-ease: cubic-bezier(0.65, 0, 0.35, 1);\n}\n",
           "type": "registry:style"
         }
       ]
@@ -291,6 +337,52 @@
         {
           "path": "components/ui/select.css",
           "content": "/* TextInput component tokens — mirrors frappe-ui v1 control geometry. */\n:root {\n  /* Size: xs (24px) */\n  --input-xs-height: 24px;\n  --input-xs-radius: var(--radius-3);\n  --input-xs-font-size: 12px;\n\n  /* Size: sm (28px) */\n  --input-sm-height: 28px;\n  --input-sm-radius: var(--radius-4);\n  --input-sm-font-size: 14px;\n\n  /* Size: md (32px) */\n  --input-md-height: 32px;\n  --input-md-radius: var(--radius-4);\n  --input-md-font-size: 14px;\n\n  /* Size: lg (40px) */\n  --input-lg-height: 40px;\n  --input-lg-radius: var(--radius-5);\n  --input-lg-font-size: 16px;\n\n  --input-description-font-size: 13px;\n}\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "espresso-ui Skeleton component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Skeleton.tsx",
+          "content": "import type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type SkeletonProps = ComponentPropsWithoutRef<\"div\">;\n\nexport function Skeleton({ className, ...props }: SkeletonProps) {\n  return (\n    <div\n      aria-hidden=\"true\"\n      className={cn(\"espresso-skeleton animate-pulse bg-surface-gray-3\", className)}\n      {...props}\n    />\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/skeleton.css",
+          "content": "/* Skeleton uses Tailwind's pulse animation; this hook keeps it calm when\n   the person prefers reduced motion. */\n@media (prefers-reduced-motion: reduce) {\n  .espresso-skeleton {\n    animation-duration: 2s;\n  }\n}\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "espresso-ui Spinner component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Spinner.tsx",
+          "content": "import { forwardRef } from \"react\";\nimport type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nconst sizeMap = {\n  xs: { px: 12, thickness: 1.5, inset: 0.9 },\n  sm: { px: 14, thickness: 2, inset: 1.05 },\n  md: { px: 16, thickness: 2, inset: 1.2 },\n  lg: { px: 20, thickness: 2, inset: 1.5 },\n};\n\nconst colorClasses = {\n  gray: \"text-ink-gray-8\",\n  red: \"text-ink-red-7\",\n};\n\ntype SpinnerSize = keyof typeof sizeMap;\ntype SpinnerTheme = keyof typeof colorClasses;\n\nexport type SpinnerProps = Omit<ComponentPropsWithoutRef<\"svg\">, \"color\"> & {\n  /** Diameter: xs 12px, sm 14px, md 16px, lg 20px. */\n  size?: SpinnerSize;\n  /** Fixed color. Omit to inherit the current text color. */\n  theme?: SpinnerTheme;\n  /** Draws a faint full-circle track behind the arc. */\n  track?: boolean;\n};\n\nexport const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(\n  ({ className, size, theme, track = false, style, ...props }, ref) => {\n    const dimensions = size ? sizeMap[size] : undefined;\n    const spinnerStyle = dimensions\n      ? {\n          width: `${dimensions.px}px`,\n          height: `${dimensions.px}px`,\n          \"--spinner-thickness\": `${dimensions.thickness}px`,\n          \"--spinner-mask-thickness\": `${dimensions.thickness}px`,\n          \"--spinner-inset\": `${dimensions.inset}px`,\n        }\n      : {};\n    const rootStyle = { ...spinnerStyle, ...style };\n\n    return (\n      <svg\n        ref={ref}\n        width=\"16\"\n        height=\"16\"\n        role=\"status\"\n        aria-label=\"Loading\"\n        className={cn(\n          \"espresso-spinner inline-block shrink-0\",\n          theme && colorClasses[theme],\n          track && \"espresso-spinner--track\",\n          className,\n        )}\n        style={rootStyle}\n        {...props}\n      />\n    );\n  },\n);\n\nSpinner.displayName = \"Spinner\";\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/spinner.css",
+          "content": "/* Spinner paints a rotating conic-gradient comet inside a masked ring.\n   The gradient angle is registered so it can interpolate smoothly. */\n@property --spinner-angle {\n  syntax: \"<angle>\";\n  inherits: false;\n  initial-value: 0deg;\n}\n\n.espresso-spinner {\n  --spinner-thickness: 14.7%;\n  --spinner-mask-thickness: 29.4%;\n  --spinner-inset: 7.5%;\n  --spinner-paint-size: calc(100% - 2 * var(--spinner-inset));\n  --spinner-track-color: transparent;\n  background-image:\n    radial-gradient(\n      calc(var(--spinner-thickness) / 2) calc(var(--spinner-thickness) / 2) at\n        calc(50% + (50% - var(--spinner-thickness) / 2) * sin(var(--spinner-angle)))\n        calc(50% - (50% - var(--spinner-thickness) / 2) * cos(var(--spinner-angle))),\n      currentColor 92%,\n      transparent\n    ),\n    conic-gradient(from var(--spinner-angle), transparent 32%, currentColor 92%, currentColor 100%),\n    linear-gradient(var(--spinner-track-color), var(--spinner-track-color));\n  background-size: var(--spinner-paint-size) var(--spinner-paint-size);\n  background-position: center;\n  background-repeat: no-repeat;\n  -webkit-mask: radial-gradient(\n      farthest-side,\n      transparent calc(100% - var(--spinner-mask-thickness)),\n      #000 calc(100% - var(--spinner-mask-thickness)),\n      #000 calc(100% - 0.5px),\n      transparent 100%\n    )\n    center / var(--spinner-paint-size) var(--spinner-paint-size) no-repeat;\n  mask: radial-gradient(\n      farthest-side,\n      transparent calc(100% - var(--spinner-mask-thickness)),\n      #000 calc(100% - var(--spinner-mask-thickness)),\n      #000 calc(100% - 0.5px),\n      transparent 100%\n    )\n    center / var(--spinner-paint-size) var(--spinner-paint-size) no-repeat;\n  animation: espresso-spinner-rotate 0.7s linear infinite;\n}\n\n.espresso-spinner--track {\n  --spinner-track-color: color-mix(in srgb, currentColor 15%, transparent);\n}\n\n@keyframes espresso-spinner-rotate {\n  to {\n    --spinner-angle: 360deg;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .espresso-spinner {\n    animation-duration: 1.6s;\n  }\n}\n",
           "type": "registry:style"
         }
       ]

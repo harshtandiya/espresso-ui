@@ -1,0 +1,23 @@
+{
+  "name": "progress",
+  "type": "registry:ui",
+  "title": "Progress",
+  "description": "espresso-ui Progress component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Progress.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\n\nconst sizeClasses: Record<string, string> = {\n  sm: \"h-(--progress-sm-height)\",\n  md: \"h-(--progress-md-height)\",\n  lg: \"h-(--progress-lg-height)\",\n  xl: \"h-(--progress-xl-height)\",\n};\n\nconst props = withDefaults(\n  defineProps<{\n    value: number;\n    size?: \"sm\" | \"md\" | \"lg\" | \"xl\";\n    label?: string;\n    hint?: boolean;\n    intervals?: number;\n  }>(),\n  {\n    size: \"sm\",\n    label: \"\",\n    hint: false,\n  },\n);\n\nconst slots = defineSlots<{\n  hint?: () => unknown;\n}>();\n\nconst clamped = computed(() => Math.min(Math.max(Number(props.value), 0), 100));\nconst showHint = computed(() => Boolean(props.hint || slots.hint));\nconst hasHeader = computed(() => Boolean(props.label || showHint.value));\nconst filledIntervals = computed(() =>\n  props.intervals ? Math.round((clamped.value / 100) * props.intervals) : 0,\n);\nconst ariaLabel = computed(() => (props.label ? undefined : \"Progress\"));\n</script>\n\n<template>\n  <div class=\"w-full space-y-2.5\">\n    <div v-if=\"hasHeader\" class=\"flex items-baseline justify-between gap-4\">\n      <span v-if=\"props.label\" class=\"text-sm font-medium text-ink-gray-8\">\n        {{ props.label }}\n      </span>\n      <span v-else />\n      <span v-if=\"showHint\" class=\"text-sm font-medium text-ink-gray-4\">\n        <slot name=\"hint\">{{ clamped }}%</slot>\n      </span>\n    </div>\n    <div\n      role=\"progressbar\"\n      :aria-valuemin=\"0\"\n      :aria-valuemax=\"100\"\n      :aria-valuenow=\"clamped\"\n      :aria-label=\"ariaLabel\"\n      data-slot=\"progress\"\n      :data-size=\"props.size\"\n      :class=\"[\n        'transform-gpu overflow-hidden rounded-(--progress-radius)',\n        sizeClasses[props.size],\n        props.intervals ? 'flex gap-(--progress-gap)' : 'bg-surface-gray-2',\n      ]\"\n    >\n      <template v-if=\"props.intervals\">\n        <div\n          v-for=\"index in props.intervals\"\n          :key=\"index\"\n          class=\"h-full w-full\"\n          :class=\"index <= filledIntervals ? 'bg-surface-gray-10' : 'bg-surface-gray-2'\"\n        />\n      </template>\n      <div\n        v-else\n        class=\"h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none\"\n        :style=\"{ transform: `translateX(${clamped - 100}%)` }\"\n      />\n    </div>\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/progress.css",
+      "content": "/* Progress component tokens. */\n:root {\n  --progress-sm-height: 2px;\n  --progress-md-height: 4px;\n  --progress-lg-height: 8px;\n  --progress-xl-height: 12px;\n  --progress-radius: var(--radius-7);\n  --progress-gap: 4px;\n  --progress-transition-duration: 660ms;\n  --progress-ease: cubic-bezier(0.65, 0, 0.35, 1);\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

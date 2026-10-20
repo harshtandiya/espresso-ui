@@ -1,0 +1,23 @@
+{
+  "name": "skeleton",
+  "type": "registry:ui",
+  "title": "Skeleton",
+  "description": "espresso-ui Skeleton component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Skeleton.tsx",
+      "content": "import type { ComponentPropsWithoutRef } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type SkeletonProps = ComponentPropsWithoutRef<\"div\">;\n\nexport function Skeleton({ className, ...props }: SkeletonProps) {\n  return (\n    <div\n      aria-hidden=\"true\"\n      className={cn(\"espresso-skeleton animate-pulse bg-surface-gray-3\", className)}\n      {...props}\n    />\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/skeleton.css",
+      "content": "/* Skeleton uses Tailwind's pulse animation; this hook keeps it calm when\n   the person prefers reduced motion. */\n@media (prefers-reduced-motion: reduce) {\n  .espresso-skeleton {\n    animation-duration: 2s;\n  }\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

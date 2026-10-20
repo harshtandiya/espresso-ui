@@ -1,0 +1,265 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`progress templates > renders React template 1`] = `
+"import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { useId } from "react";
+import { cn } from "@/lib/utils";
+
+const sizeClasses = {
+  sm: "h-(--progress-sm-height)",
+  md: "h-(--progress-md-height)",
+  lg: "h-(--progress-lg-height)",
+  xl: "h-(--progress-xl-height)",
+};
+
+type ProgressSize = keyof typeof sizeClasses;
+
+export type ProgressProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
+  /** Current value from 0 to 100. */
+  value: number;
+  /** Height of the bar. */
+  size?: ProgressSize;
+  /** Label shown above the bar. */
+  label?: ReactNode;
+  /** \`true\` shows the percentage; pass content to replace it. */
+  hint?: boolean | ReactNode;
+  /** Splits the bar into whole segments. */
+  intervals?: number;
+};
+
+export function Progress({
+  className,
+  value,
+  size = "sm",
+  label,
+  hint,
+  intervals,
+  ...props
+}: ProgressProps) {
+  const labelId = useId();
+  const clamped = Math.min(Math.max(Number(value), 0), 100);
+  const showHint =
+    hint === true || (hint !== undefined && hint !== false && hint !== null);
+  const hasHeader = Boolean(label) || showHint;
+  const filledIntervals = intervals ? Math.round((clamped / 100) * intervals) : 0;
+  const barClasses = cn("transform-gpu overflow-hidden rounded-(--progress-radius)", sizeClasses[size]);
+  const ariaLabel = typeof label === "string" ? label : "Progress";
+
+  return (
+    <div className={cn("w-full space-y-2.5", className)}>
+      {hasHeader ? (
+        <div className="flex items-baseline justify-between gap-4">
+          {label ? (
+            <span id={labelId} className="text-sm font-medium text-ink-gray-8">
+              {label}
+            </span>
+          ) : (
+            <span />
+          )}
+          {showHint ? (
+            <span className="text-sm font-medium text-ink-gray-4">
+              {hint === true || hint === undefined ? \`\${clamped}%\` : hint}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={clamped}
+        aria-label={label ? undefined : ariaLabel}
+        aria-labelledby={label ? labelId : undefined}
+        data-slot="progress"
+        data-size={size}
+        className={cn(barClasses, intervals ? "flex gap-(--progress-gap)" : "bg-surface-gray-2")}
+        {...props}
+      >
+        {intervals ? (
+          Array.from({ length: intervals }, (_, index) => (
+            <div
+              key={index}
+              className={cn(
+                "h-full w-full",
+                index < filledIntervals ? "bg-surface-gray-10" : "bg-surface-gray-2",
+              )}
+            />
+          ))
+        ) : (
+          <div
+            className="h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none"
+            style={{ transform: \`translateX(\${clamped - 100}%)\` }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+"
+`;
+
+exports[`progress templates > renders React template without TypeScript 1`] = `
+"import { useId } from "react";
+import { cn } from "@/lib/utils";
+
+const sizeClasses = {
+  sm: "h-(--progress-sm-height)",
+  md: "h-(--progress-md-height)",
+  lg: "h-(--progress-lg-height)",
+  xl: "h-(--progress-xl-height)",
+};
+
+
+export function Progress({
+  className,
+  value,
+  size = "sm",
+  label,
+  hint,
+  intervals,
+  ...props
+}) {
+  const labelId = useId();
+  const clamped = Math.min(Math.max(Number(value), 0), 100);
+  const showHint =
+    hint === true || (hint !== undefined && hint !== false && hint !== null);
+  const hasHeader = Boolean(label) || showHint;
+  const filledIntervals = intervals ? Math.round((clamped / 100) * intervals) : 0;
+  const barClasses = cn("transform-gpu overflow-hidden rounded-(--progress-radius)", sizeClasses[size]);
+  const ariaLabel = typeof label === "string" ? label : "Progress";
+
+  return (
+    <div className={cn("w-full space-y-2.5", className)}>
+      {hasHeader ? (
+        <div className="flex items-baseline justify-between gap-4">
+          {label ? (
+            <span id={labelId} className="text-sm font-medium text-ink-gray-8">
+              {label}
+            </span>
+          ) : (
+            <span />
+          )}
+          {showHint ? (
+            <span className="text-sm font-medium text-ink-gray-4">
+              {hint === true || hint === undefined ? \`\${clamped}%\` : hint}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      <div
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={clamped}
+        aria-label={label ? undefined : ariaLabel}
+        aria-labelledby={label ? labelId : undefined}
+        data-slot="progress"
+        data-size={size}
+        className={cn(barClasses, intervals ? "flex gap-(--progress-gap)" : "bg-surface-gray-2")}
+        {...props}
+      >
+        {intervals ? (
+          Array.from({ length: intervals }, (_, index) => (
+            <div
+              key={index}
+              className={cn(
+                "h-full w-full",
+                index < filledIntervals ? "bg-surface-gray-10" : "bg-surface-gray-2",
+              )}
+            />
+          ))
+        ) : (
+          <div
+            className="h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none"
+            style={{ transform: \`translateX(\${clamped - 100}%)\` }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+"
+`;
+
+exports[`progress templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed } from "vue";
+
+const sizeClasses: Record<string, string> = {
+  sm: "h-(--progress-sm-height)",
+  md: "h-(--progress-md-height)",
+  lg: "h-(--progress-lg-height)",
+  xl: "h-(--progress-xl-height)",
+};
+
+const props = withDefaults(
+  defineProps<{
+    value: number;
+    size?: "sm" | "md" | "lg" | "xl";
+    label?: string;
+    hint?: boolean;
+    intervals?: number;
+  }>(),
+  {
+    size: "sm",
+    label: "",
+    hint: false,
+  },
+);
+
+const slots = defineSlots<{
+  hint?: () => unknown;
+}>();
+
+const clamped = computed(() => Math.min(Math.max(Number(props.value), 0), 100));
+const showHint = computed(() => Boolean(props.hint || slots.hint));
+const hasHeader = computed(() => Boolean(props.label || showHint.value));
+const filledIntervals = computed(() =>
+  props.intervals ? Math.round((clamped.value / 100) * props.intervals) : 0,
+);
+const ariaLabel = computed(() => (props.label ? undefined : "Progress"));
+</script>
+
+<template>
+  <div class="w-full space-y-2.5">
+    <div v-if="hasHeader" class="flex items-baseline justify-between gap-4">
+      <span v-if="props.label" class="text-sm font-medium text-ink-gray-8">
+        {{ props.label }}
+      </span>
+      <span v-else />
+      <span v-if="showHint" class="text-sm font-medium text-ink-gray-4">
+        <slot name="hint">{{ clamped }}%</slot>
+      </span>
+    </div>
+    <div
+      role="progressbar"
+      :aria-valuemin="0"
+      :aria-valuemax="100"
+      :aria-valuenow="clamped"
+      :aria-label="ariaLabel"
+      data-slot="progress"
+      :data-size="props.size"
+      :class="[
+        'transform-gpu overflow-hidden rounded-(--progress-radius)',
+        sizeClasses[props.size],
+        props.intervals ? 'flex gap-(--progress-gap)' : 'bg-surface-gray-2',
+      ]"
+    >
+      <template v-if="props.intervals">
+        <div
+          v-for="index in props.intervals"
+          :key="index"
+          class="h-full w-full"
+          :class="index <= filledIntervals ? 'bg-surface-gray-10' : 'bg-surface-gray-2'"
+        />
+      </template>
+      <div
+        v-else
+        class="h-full w-full bg-surface-gray-10 transition-transform [transition-duration:var(--progress-transition-duration)] [transition-timing-function:var(--progress-ease)] motion-reduce:transition-none"
+        :style="{ transform: \`translateX(\${clamped - 100}%)\` }"
+      />
+    </div>
+  </div>
+</template>
+"
+`;
