@@ -1,0 +1,112 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  SliderBasicDemo,
+  SliderNegativeDemo,
+  SliderRangeDemo,
+  SliderSizesDemo,
+} from "@/components/examples/SliderDemo.tsx";
+
+const usage = `import { useState } from "react";
+import { Slider } from "@/components/ui/Slider";
+
+export default function App() {
+  const [value, setValue] = useState([40]);
+
+  return (
+    <Slider
+      value={value}
+      onValueChange={setValue}
+      label="Volume"
+      description={\`\${value[0]}% of maximum\`}
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import { ref } from "vue";
+import Slider from "@/components/ui/Slider.vue";
+
+const value = ref([40]);
+\u003C/script>
+
+<template>
+  <Slider v-model="value" label="Volume" />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="slider"
+  num={sectionNumber("slider")}
+  label="Slider"
+  desc="A track with one or more handles for picking a number, or a range of numbers. The value is always an array: one number for a single handle, two for a range. Arrow keys move by step, Shift and Page keys move by ten steps, and Home and End jump to the ends. A negative minimum fills the track from zero so values below and above zero read differently."
+  status="new"
+  code={usage}
+  codeFile="slider.tsx"
+  codeVue={usageVue}
+  codeVueFile="slider.vue"
+>
+  <CanvasToolbar title="Preview" meta="single handle · controlled" />
+  <Canvas class="slider-stack">
+    <SliderBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Range" sub="two handles">
+      <Canvas grid={false} class="slider-stack">
+        <SliderRangeDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Negative" sub="fills from zero">
+      <Canvas grid={false} class="slider-stack">
+        <SliderNegativeDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="sm · md · disabled">
+      <Canvas grid={false} class="slider-stack">
+        <SliderSizesDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.slider-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.slider-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 20px !important;
+    width: min(100%, 380px);
+  }
+  :global(.slider-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.slider-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.slider-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

@@ -1,0 +1,226 @@
+import { useId, useRef } from "react";
+<% if (it.typescript) { %>import type { HTMLAttributes, ReactNode } from "react";
+<% } %>import { Slider as ArkSlider } from "@ark-ui/react/slider";
+import { cn } from "<%= it.utilsAlias %>/utils";
+import { ErrorMessage } from "./ErrorMessage";
+import { Label } from "./Label";
+
+<% if (it.typescript) { %>
+export type SliderSize = "sm" | "md";
+export type SliderValue = number[];
+export type SliderError =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] })
+  | null;
+
+export type SliderProps = Omit<HTMLAttributes<HTMLDivElement>, "defaultValue" | "onChange"> & {
+  /** Current value as an array. One number for a single handle, two for a range. */
+  value?: SliderValue;
+  /** Initial value for uncontrolled use. */
+  defaultValue?: SliderValue;
+  /** Called on every step of a drag. */
+  onValueChange?: (value: SliderValue) => void;
+  /** Called once when a drag ends. */
+  onValueCommit?: (value: SliderValue) => void;
+  /** Lowest value. Defaults to 0. */
+  min?: number;
+  /** Highest value. Defaults to 100. */
+  max?: number;
+  /** Step between values. Defaults to 1. */
+  step?: number;
+  /** Visual size of the track and handle. */
+  size?: SliderSize;
+  /** Disables the slider. */
+  disabled?: boolean;
+  /** Label rendered above the track. */
+  label?: ReactNode;
+  /** Helper text rendered below the track. Hidden when `error` is set. */
+  description?: ReactNode;
+  /** Error message, lines, or an Error. */
+  error?: SliderError;
+  /** Marks the field as required. */
+  required?: boolean;
+};
+<% } %>
+
+const sizeClasses = {
+  sm: {
+    control: "h-4",
+    track: "h-1",
+    thumb: "size-4",
+  },
+  md: {
+    control: "h-5",
+    track: "h-1.5",
+    thumb: "size-5",
+  },
+};
+
+function errorPresent(error<% if (it.typescript) { %>: SliderError | undefined<% } %>) {
+  if (!error) return false;
+  if (Array.isArray(error)) return error.filter(Boolean).length > 0;
+  if (error instanceof Error) return Boolean(error.message);
+  return Boolean(error);
+}
+
+export function <%= it.componentName %>({
+  value,
+  defaultValue,
+  onValueChange,
+  onValueCommit,
+  min = 0,
+  max = 100,
+  step = 1,
+  size = "sm",
+  disabled = false,
+  label,
+  description,
+  error,
+  required = false,
+  className,
+  children,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  ...props
+}<% if (it.typescript) { %>: SliderProps<% } %>) {
+  const baseId = useId().replace(/:/g, "");
+  const labelId = `${baseId}-label`;
+  const descriptionId = `${baseId}-description`;
+  const errorId = `${baseId}-error`;
+  const rootRef = useRef<% if (it.typescript) { %><HTMLDivElement><% } %>(null);
+  const hasError = errorPresent(error);
+  const hasLabeling = Boolean(label || description || hasError);
+  const values = value ?? defaultValue ?? [min];
+  const thumbCount = Math.max(1, values.length);
+  const isRange = thumbCount > 1;
+  const labelText = typeof label === "string" ? label : "";
+  const parts = isRange
+    ? thumbCount === 2
+      ? ["minimum", "maximum"]
+      : Array.from({ length: thumbCount }, (_, index) => `value ${index + 1} of ${thumbCount}`)
+    : [];
+
+  const thumbNameIds = Array.from({ length: thumbCount }, (_, index) => `${baseId}-name-${index}`);
+  const thumbNames = parts.map((part) => {
+    const text = labelText ? `${labelText} ${part}` : part;
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  });
+
+  const defaultAriaLabel = isRange
+    ? thumbNames
+    : labelText
+      ? [labelText]
+      : ["Value"];
+
+  const resolvedAriaLabelledBy =
+    ariaLabelledBy ?? (isRange ? thumbNameIds : labelText ? [labelId] : undefined);
+  const resolvedAriaLabel = ariaLabel ?? (resolvedAriaLabelledBy ? undefined : defaultAriaLabel);
+
+  const describedBy =
+    [
+      description && !hasError ? descriptionId : null,
+      hasError ? errorId : null,
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
+  const thumbClasses = cn(
+    "block rounded-full bg-surface-base shadow-md ring-1 ring-outline-gray-3 transition-shadow duration-150 ease-out hover:ring-4 hover:ring-outline-gray-3/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-gray-8 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base",
+    sizeClasses[size].thumb,
+    disabled ? "cursor-not-allowed" : "cursor-grab active:cursor-grabbing",
+  );
+
+  return (
+    <div className={cn(hasLabeling && "flex flex-col gap-1.5", hasLabeling && className)}>
+      {label ? (
+        <Label
+          id={labelId}
+          required={required}
+          onClick={() => {
+            rootRef.current?.querySelector<% if (it.typescript) { %><HTMLElement><% } %>('[role="slider"]')?.focus();
+          }}
+        >
+          {label}
+        </Label>
+      ) : null}
+      <div ref={rootRef} className={cn(!hasLabeling && className)}>
+        {isRange
+          ? thumbNames.map((name, index) => (
+              <span key={thumbNameIds[index]} id={thumbNameIds[index]} className="sr-only">
+                {name}
+              </span>
+            ))
+          : null}
+        <ArkSlider.Root
+          value={value}
+          defaultValue={value === undefined ? (defaultValue ?? [min]) : undefined}
+          onValueChange={(details) => onValueChange?.(details.value)}
+          onValueChangeEnd={(details) => onValueCommit?.(details.value)}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          invalid={hasError}
+          origin={min < 0 && max > 0 ? "center" : "start"}
+          aria-label={resolvedAriaLabel as string[] | undefined}
+          aria-labelledby={resolvedAriaLabelledBy as string[] | undefined}
+          ids={{ thumb: (index) => `${baseId}-thumb-${index}` }}
+          data-slot="slider"
+          data-size={size}
+          data-state={hasError ? "invalid" : "valid"}
+          className="w-full"
+          {...props}
+        >
+          <ArkSlider.Control
+            data-slot="control"
+            className={cn(
+              "relative flex w-full touch-none select-none items-center",
+              sizeClasses[size].control,
+            )}
+          >
+            <ArkSlider.Track
+              data-slot="track"
+              className={cn(
+                "relative w-full grow rounded-4",
+                sizeClasses[size].track,
+                disabled ? "bg-surface-gray-2" : "bg-surface-gray-3",
+              )}
+            >
+              <ArkSlider.Range
+                data-slot="range"
+                className={cn(
+                  "absolute h-full rounded-4",
+                  disabled ? "bg-surface-gray-4" : "bg-surface-gray-10",
+                )}
+              />
+            </ArkSlider.Track>
+            {Array.from({ length: thumbCount }, (_, index) => (
+              <ArkSlider.Thumb
+                key={index}
+                index={index}
+                data-slot="thumb"
+                aria-describedby={describedBy}
+                aria-invalid={hasError || undefined}
+                aria-errormessage={hasError ? errorId : undefined}
+                className={thumbClasses}
+              >
+                <ArkSlider.HiddenInput />
+              </ArkSlider.Thumb>
+            ))}
+          </ArkSlider.Control>
+        </ArkSlider.Root>
+      </div>
+      {description && !hasError ? (
+        <p
+          id={descriptionId}
+          className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+        >
+          {description}
+        </p>
+      ) : null}
+      {hasError ? <ErrorMessage id={errorId} message={error} /> : null}
+      {children}
+    </div>
+  );
+}
