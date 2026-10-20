@@ -154,8 +154,9 @@ describe("badge registry export", () => {
     const css = item.files.find((file) => file.path.endsWith(".css"));
     expect(tsx?.content).toContain("prefix?: ReactNode");
     expect(tsx?.content).toContain("suffix?: ReactNode");
-    expect(tsx?.content).toContain('theme: "default"');
-    expect(css?.content).toContain("--badge-default-outline-border");
+    expect(tsx?.content).toContain('theme: "gray"');
+    expect(tsx?.content).toContain("themeAliases");
+    expect(css?.content).toContain("--badge-lg-height");
   });
 
   it("Vue export includes prefix/suffix slots", async () => {

@@ -14,7 +14,7 @@ import { Sparkles } from "lucide-react";
 export default function App() {
   return (
     <Badge
-      theme="success"
+      theme="green"
       variant="subtle"
       prefix={<Sparkles aria-hidden="true" />}
     >
@@ -30,7 +30,7 @@ import { Sparkles } from "@lucide/vue";
 </script>
 
 <template>
-  <Badge theme="success" variant="subtle">
+  <Badge theme="green" variant="subtle">
     <template #prefix><Sparkles aria-hidden="true" /></template>
     Active
   </Badge>
@@ -42,7 +42,7 @@ import { Sparkles } from "@lucide/vue";
   id="badge"
   num={sectionNumber("badge")}
   label="Badge"
-  desc="Compact status label for counts, alerts, and metadata. Five themes and four variants at three sizes. Prefix and suffix props (React) or slots (Vue) accept icons, spinners, or any inline content."
+  desc="Compact status label matching frappe-ui v1: six themes, four variants, three sizes, and prefix/suffix adornments."
   status="new"
   code={usageReact}
   codeFile="badge.tsx"
@@ -51,32 +51,33 @@ import { Sparkles } from "@lucide/vue";
 >
   <CanvasToolbar title="Preview" meta="solid · subtle · outline · ghost" />
   <Canvas>
-    <BadgeReact client:load theme="default" variant="solid">Label</BadgeReact>
-    <BadgeReact client:load theme="success" variant="subtle">Active</BadgeReact>
-    <BadgeReact client:load theme="error" variant="outline">Failed</BadgeReact>
-    <BadgeReact client:load theme="info" variant="ghost">Draft</BadgeReact>
+    <BadgeReact client:load theme="gray" variant="solid">Label</BadgeReact>
+    <BadgeReact client:load theme="green" variant="subtle">Active</BadgeReact>
+    <BadgeReact client:load theme="red" variant="outline">Failed</BadgeReact>
+    <BadgeReact client:load theme="blue" variant="ghost">Draft</BadgeReact>
   </Canvas>
 
   <Variants>
-    <VariantRow label="Themes" sub="default · error · warning · success · info">
-      <BadgeReact client:load theme="default" variant="solid">Default</BadgeReact>
-      <BadgeReact client:load theme="error" variant="solid">Error</BadgeReact>
-      <BadgeReact client:load theme="warning" variant="solid">Warning</BadgeReact>
-      <BadgeReact client:load theme="success" variant="solid">Success</BadgeReact>
-      <BadgeReact client:load theme="info" variant="solid">Info</BadgeReact>
+    <VariantRow label="Themes" sub="gray · blue · green · amber · red · violet">
+      <BadgeReact client:load theme="gray" variant="solid">Gray</BadgeReact>
+      <BadgeReact client:load theme="blue" variant="solid">Blue</BadgeReact>
+      <BadgeReact client:load theme="green" variant="solid">Green</BadgeReact>
+      <BadgeReact client:load theme="amber" variant="solid">Amber</BadgeReact>
+      <BadgeReact client:load theme="red" variant="solid">Red</BadgeReact>
+      <BadgeReact client:load theme="violet" variant="solid">Violet</BadgeReact>
     </VariantRow>
 
     <VariantRow label="Variants" sub="solid · subtle · outline · ghost">
-      <BadgeReact client:load theme="default" variant="solid">Solid</BadgeReact>
-      <BadgeReact client:load theme="default" variant="subtle">Subtle</BadgeReact>
-      <BadgeReact client:load theme="default" variant="outline">Outline</BadgeReact>
-      <BadgeReact client:load theme="default" variant="ghost">Ghost</BadgeReact>
+      <BadgeReact client:load theme="gray" variant="solid">Solid</BadgeReact>
+      <BadgeReact client:load theme="gray" variant="subtle">Subtle</BadgeReact>
+      <BadgeReact client:load theme="gray" variant="outline">Outline</BadgeReact>
+      <BadgeReact client:load theme="gray" variant="ghost">Ghost</BadgeReact>
     </VariantRow>
 
-    <VariantRow label="Sizes" sub="sm · md · lg">
-      <BadgeReact client:load size="sm" theme="default" variant="solid">Small</BadgeReact>
-      <BadgeReact client:load size="md" theme="default" variant="solid">Medium</BadgeReact>
-      <BadgeReact client:load size="lg" theme="default" variant="solid">Large</BadgeReact>
+    <VariantRow label="Sizes" sub="16 / 20 / 24 px">
+      <BadgeReact client:load size="sm" theme="gray" variant="solid">Small</BadgeReact>
+      <BadgeReact client:load size="md" theme="gray" variant="solid">Medium</BadgeReact>
+      <BadgeReact client:load size="lg" theme="gray" variant="solid">Large</BadgeReact>
     </VariantRow>
 
     <VariantRow label="Prefix & suffix" sub="icons sized via badge tokens">

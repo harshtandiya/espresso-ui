@@ -7,15 +7,16 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex shrink-0 items-center whitespace-nowrap font-normal [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 select-none items-center gap-(--badge-gap) overflow-clip whitespace-nowrap rounded-(--badge-radius) leading-tighter [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       theme: {
-        default: "",
-        error: "",
-        warning: "",
-        success: "",
-        info: "",
+        gray: "",
+        blue: "",
+        green: "",
+        amber: "",
+        red: "",
+        violet: "",
       },
       variant: {
         solid: "",
@@ -24,63 +25,84 @@ const badgeVariants = cva(
         ghost: "bg-transparent",
       },
       size: {
-        sm: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-sm-py) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
-        md: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-md-py) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
-        lg: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-lg-py) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
+        sm: "h-(--badge-sm-height) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
+        md: "h-(--badge-md-height) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
+        lg: "h-(--badge-lg-height) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
       },
     },
     compoundVariants: [
-      { theme: "default", variant: "solid", class: "bg-(--badge-default-solid-bg) text-(--badge-default-solid-fg)" },
-      { theme: "default", variant: "subtle", class: "bg-(--badge-default-subtle-bg) text-(--badge-default-subtle-fg)" },
-      { theme: "default", variant: "outline", class: "border-(--badge-default-outline-border) text-(--badge-default-outline-fg)" },
-      { theme: "default", variant: "ghost", class: "text-(--badge-default-ghost-fg)" },
-      { theme: "error", variant: "solid", class: "bg-(--badge-error-solid-bg) text-(--badge-error-solid-fg)" },
-      { theme: "error", variant: "subtle", class: "bg-(--badge-error-subtle-bg) text-(--badge-error-subtle-fg)" },
-      { theme: "error", variant: "outline", class: "border-(--badge-error-outline-border) text-(--badge-error-outline-fg)" },
-      { theme: "error", variant: "ghost", class: "text-(--badge-error-ghost-fg)" },
-      { theme: "warning", variant: "solid", class: "bg-(--badge-warning-solid-bg) text-(--badge-warning-solid-fg)" },
-      { theme: "warning", variant: "subtle", class: "bg-(--badge-warning-subtle-bg) text-(--badge-warning-subtle-fg)" },
-      { theme: "warning", variant: "outline", class: "border-(--badge-warning-outline-border) text-(--badge-warning-outline-fg)" },
-      { theme: "warning", variant: "ghost", class: "text-(--badge-warning-ghost-fg)" },
-      { theme: "success", variant: "solid", class: "bg-(--badge-success-solid-bg) text-(--badge-success-solid-fg)" },
-      { theme: "success", variant: "subtle", class: "bg-(--badge-success-subtle-bg) text-(--badge-success-subtle-fg)" },
-      { theme: "success", variant: "outline", class: "border-(--badge-success-outline-border) text-(--badge-success-outline-fg)" },
-      { theme: "success", variant: "ghost", class: "text-(--badge-success-ghost-fg)" },
-      { theme: "info", variant: "solid", class: "bg-(--badge-info-solid-bg) text-(--badge-info-solid-fg)" },
-      { theme: "info", variant: "subtle", class: "bg-(--badge-info-subtle-bg) text-(--badge-info-subtle-fg)" },
-      { theme: "info", variant: "outline", class: "border-(--badge-info-outline-border) text-(--badge-info-outline-fg)" },
-      { theme: "info", variant: "ghost", class: "text-(--badge-info-ghost-fg)" },
+      { theme: "gray", variant: "solid", class: "bg-surface-gray-10 text-ink-base" },
+      { theme: "gray", variant: "subtle", class: "bg-surface-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "outline", class: "border-outline-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "ghost", class: "text-ink-gray-6" },
+      { theme: "blue", variant: "solid", class: "bg-surface-blue-7 text-white" },
+      { theme: "blue", variant: "subtle", class: "bg-surface-blue-2 text-ink-blue-7" },
+      { theme: "blue", variant: "outline", class: "border-outline-blue-3 text-ink-blue-7" },
+      { theme: "blue", variant: "ghost", class: "text-ink-blue-7" },
+      { theme: "green", variant: "solid", class: "bg-surface-green-7 text-white" },
+      { theme: "green", variant: "subtle", class: "bg-surface-green-2 text-ink-green-7" },
+      { theme: "green", variant: "outline", class: "border-outline-green-3 text-ink-green-7" },
+      { theme: "green", variant: "ghost", class: "text-ink-green-7" },
+      { theme: "amber", variant: "solid", class: "bg-surface-amber-7 text-white" },
+      { theme: "amber", variant: "subtle", class: "bg-surface-amber-2 text-ink-amber-7" },
+      { theme: "amber", variant: "outline", class: "border-outline-amber-3 text-ink-amber-7" },
+      { theme: "amber", variant: "ghost", class: "text-ink-amber-7" },
+      { theme: "red", variant: "solid", class: "bg-surface-red-7 text-white" },
+      { theme: "red", variant: "subtle", class: "bg-surface-red-2 text-ink-red-7" },
+      { theme: "red", variant: "outline", class: "border-outline-red-3 text-ink-red-7" },
+      { theme: "red", variant: "ghost", class: "text-ink-red-7" },
+      { theme: "violet", variant: "solid", class: "bg-surface-violet-7 text-white" },
+      { theme: "violet", variant: "subtle", class: "bg-surface-violet-2 text-ink-violet-7" },
+      { theme: "violet", variant: "outline", class: "border-outline-violet-3 text-ink-violet-7" },
+      { theme: "violet", variant: "ghost", class: "text-ink-violet-7" },
     ],
     defaultVariants: {
-      theme: "default",
-      variant: "solid",
+      theme: "gray",
+      variant: "subtle",
       size: "md",
     },
   },
 );
+
+const themeAliases = {
+  default: "gray",
+  error: "red",
+  warning: "amber",
+  success: "green",
+  info: "blue",
+} as const;
+
+type CanonicalBadgeTheme = NonNullable<VariantProps<typeof badgeVariants>["theme"]>;
+type BadgeTheme = CanonicalBadgeTheme | keyof typeof themeAliases;
+
 export type BadgeProps = Omit<ComponentPropsWithoutRef<typeof ark.span>, "prefix" | "suffix"> &
-  VariantProps<typeof badgeVariants> & {
+  Omit<VariantProps<typeof badgeVariants>, "theme"> & {
+    theme?: BadgeTheme;
+    label?: string | number;
     prefix?: ReactNode;
     suffix?: ReactNode;
   };
 export function Badge({
   className,
-  theme,
+  theme = "gray",
   variant,
   size,
+  label,
   prefix,
   suffix,
   children,
   ...props
 }: BadgeProps) {
+  const resolvedTheme = ((themeAliases as Record<string, string>)[theme] ?? theme) as CanonicalBadgeTheme;
+
   return (
     <ark.span
-      className={cn(badgeVariants({ theme, variant, size }), className)}
+      className={cn(badgeVariants({ theme: resolvedTheme, variant, size }), className)}
       {...props}
     >
-      {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
-      {children}
-      {suffix ? <span className="inline-flex shrink-0 items-center">{suffix}</span> : null}
+      {prefix ? <span className="inline-flex shrink-0 items-center justify-center">{prefix}</span> : null}
+      {children ?? label}
+      {suffix ? <span className="inline-flex shrink-0 items-center justify-center">{suffix}</span> : null}
     </ark.span>
   );
 }
@@ -93,15 +115,16 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex shrink-0 items-center whitespace-nowrap font-normal [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 select-none items-center gap-(--badge-gap) overflow-clip whitespace-nowrap rounded-(--badge-radius) leading-tighter [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       theme: {
-        default: "",
-        error: "",
-        warning: "",
-        success: "",
-        info: "",
+        gray: "",
+        blue: "",
+        green: "",
+        amber: "",
+        red: "",
+        violet: "",
       },
       variant: {
         solid: "",
@@ -110,58 +133,77 @@ const badgeVariants = cva(
         ghost: "bg-transparent",
       },
       size: {
-        sm: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-sm-py) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
-        md: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-md-py) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
-        lg: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-lg-py) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
+        sm: "h-(--badge-sm-height) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
+        md: "h-(--badge-md-height) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
+        lg: "h-(--badge-lg-height) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
       },
     },
     compoundVariants: [
-      { theme: "default", variant: "solid", class: "bg-(--badge-default-solid-bg) text-(--badge-default-solid-fg)" },
-      { theme: "default", variant: "subtle", class: "bg-(--badge-default-subtle-bg) text-(--badge-default-subtle-fg)" },
-      { theme: "default", variant: "outline", class: "border-(--badge-default-outline-border) text-(--badge-default-outline-fg)" },
-      { theme: "default", variant: "ghost", class: "text-(--badge-default-ghost-fg)" },
-      { theme: "error", variant: "solid", class: "bg-(--badge-error-solid-bg) text-(--badge-error-solid-fg)" },
-      { theme: "error", variant: "subtle", class: "bg-(--badge-error-subtle-bg) text-(--badge-error-subtle-fg)" },
-      { theme: "error", variant: "outline", class: "border-(--badge-error-outline-border) text-(--badge-error-outline-fg)" },
-      { theme: "error", variant: "ghost", class: "text-(--badge-error-ghost-fg)" },
-      { theme: "warning", variant: "solid", class: "bg-(--badge-warning-solid-bg) text-(--badge-warning-solid-fg)" },
-      { theme: "warning", variant: "subtle", class: "bg-(--badge-warning-subtle-bg) text-(--badge-warning-subtle-fg)" },
-      { theme: "warning", variant: "outline", class: "border-(--badge-warning-outline-border) text-(--badge-warning-outline-fg)" },
-      { theme: "warning", variant: "ghost", class: "text-(--badge-warning-ghost-fg)" },
-      { theme: "success", variant: "solid", class: "bg-(--badge-success-solid-bg) text-(--badge-success-solid-fg)" },
-      { theme: "success", variant: "subtle", class: "bg-(--badge-success-subtle-bg) text-(--badge-success-subtle-fg)" },
-      { theme: "success", variant: "outline", class: "border-(--badge-success-outline-border) text-(--badge-success-outline-fg)" },
-      { theme: "success", variant: "ghost", class: "text-(--badge-success-ghost-fg)" },
-      { theme: "info", variant: "solid", class: "bg-(--badge-info-solid-bg) text-(--badge-info-solid-fg)" },
-      { theme: "info", variant: "subtle", class: "bg-(--badge-info-subtle-bg) text-(--badge-info-subtle-fg)" },
-      { theme: "info", variant: "outline", class: "border-(--badge-info-outline-border) text-(--badge-info-outline-fg)" },
-      { theme: "info", variant: "ghost", class: "text-(--badge-info-ghost-fg)" },
+      { theme: "gray", variant: "solid", class: "bg-surface-gray-10 text-ink-base" },
+      { theme: "gray", variant: "subtle", class: "bg-surface-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "outline", class: "border-outline-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "ghost", class: "text-ink-gray-6" },
+      { theme: "blue", variant: "solid", class: "bg-surface-blue-7 text-white" },
+      { theme: "blue", variant: "subtle", class: "bg-surface-blue-2 text-ink-blue-7" },
+      { theme: "blue", variant: "outline", class: "border-outline-blue-3 text-ink-blue-7" },
+      { theme: "blue", variant: "ghost", class: "text-ink-blue-7" },
+      { theme: "green", variant: "solid", class: "bg-surface-green-7 text-white" },
+      { theme: "green", variant: "subtle", class: "bg-surface-green-2 text-ink-green-7" },
+      { theme: "green", variant: "outline", class: "border-outline-green-3 text-ink-green-7" },
+      { theme: "green", variant: "ghost", class: "text-ink-green-7" },
+      { theme: "amber", variant: "solid", class: "bg-surface-amber-7 text-white" },
+      { theme: "amber", variant: "subtle", class: "bg-surface-amber-2 text-ink-amber-7" },
+      { theme: "amber", variant: "outline", class: "border-outline-amber-3 text-ink-amber-7" },
+      { theme: "amber", variant: "ghost", class: "text-ink-amber-7" },
+      { theme: "red", variant: "solid", class: "bg-surface-red-7 text-white" },
+      { theme: "red", variant: "subtle", class: "bg-surface-red-2 text-ink-red-7" },
+      { theme: "red", variant: "outline", class: "border-outline-red-3 text-ink-red-7" },
+      { theme: "red", variant: "ghost", class: "text-ink-red-7" },
+      { theme: "violet", variant: "solid", class: "bg-surface-violet-7 text-white" },
+      { theme: "violet", variant: "subtle", class: "bg-surface-violet-2 text-ink-violet-7" },
+      { theme: "violet", variant: "outline", class: "border-outline-violet-3 text-ink-violet-7" },
+      { theme: "violet", variant: "ghost", class: "text-ink-violet-7" },
     ],
     defaultVariants: {
-      theme: "default",
-      variant: "solid",
+      theme: "gray",
+      variant: "subtle",
       size: "md",
     },
   },
 );
+
+const themeAliases = {
+  default: "gray",
+  error: "red",
+  warning: "amber",
+  success: "green",
+  info: "blue",
+} as const;
+
+type CanonicalBadgeTheme = NonNullable<VariantProps<typeof badgeVariants>["theme"]>;
+type BadgeTheme = CanonicalBadgeTheme | keyof typeof themeAliases;
+
 export function Badge({
   className,
-  theme,
+  theme = "gray",
   variant,
   size,
+  label,
   prefix,
   suffix,
   children,
   ...props
 }) {
+  const resolvedTheme = ((themeAliases as Record<string, string>)[theme] ?? theme) as CanonicalBadgeTheme;
+
   return (
     <ark.span
-      className={cn(badgeVariants({ theme, variant, size }), className)}
+      className={cn(badgeVariants({ theme: resolvedTheme, variant, size }), className)}
       {...props}
     >
-      {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
-      {children}
-      {suffix ? <span className="inline-flex shrink-0 items-center">{suffix}</span> : null}
+      {prefix ? <span className="inline-flex shrink-0 items-center justify-center">{prefix}</span> : null}
+      {children ?? label}
+      {suffix ? <span className="inline-flex shrink-0 items-center justify-center">{suffix}</span> : null}
     </ark.span>
   );
 }
@@ -176,16 +218,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex shrink-0 items-center whitespace-nowrap font-normal [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 select-none items-center gap-(--badge-gap) overflow-clip whitespace-nowrap rounded-(--badge-radius) leading-tighter [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
-      theme: {
-        default: "",
-        error: "",
-        warning: "",
-        success: "",
-        info: "",
-      },
+      theme: { gray: "", blue: "", green: "", amber: "", red: "", violet: "" },
       variant: {
         solid: "",
         subtle: "",
@@ -193,69 +229,86 @@ const badgeVariants = cva(
         ghost: "bg-transparent",
       },
       size: {
-        sm: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-sm-py) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
-        md: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-md-py) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
-        lg: "gap-(--badge-gap) rounded-(--badge-radius) py-(--badge-lg-py) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
+        sm: "h-(--badge-sm-height) px-(--badge-sm-px) [font-size:var(--badge-sm-font-size)] [&_svg]:size-(--badge-sm-icon-size)",
+        md: "h-(--badge-md-height) px-(--badge-md-px) [font-size:var(--badge-md-font-size)] [&_svg]:size-(--badge-md-icon-size)",
+        lg: "h-(--badge-lg-height) px-(--badge-lg-px) [font-size:var(--badge-lg-font-size)] [&_svg]:size-(--badge-lg-icon-size)",
       },
     },
     compoundVariants: [
-      { theme: "default", variant: "solid", class: "bg-(--badge-default-solid-bg) text-(--badge-default-solid-fg)" },
-      { theme: "default", variant: "subtle", class: "bg-(--badge-default-subtle-bg) text-(--badge-default-subtle-fg)" },
-      { theme: "default", variant: "outline", class: "border-(--badge-default-outline-border) text-(--badge-default-outline-fg)" },
-      { theme: "default", variant: "ghost", class: "text-(--badge-default-ghost-fg)" },
-      { theme: "error", variant: "solid", class: "bg-(--badge-error-solid-bg) text-(--badge-error-solid-fg)" },
-      { theme: "error", variant: "subtle", class: "bg-(--badge-error-subtle-bg) text-(--badge-error-subtle-fg)" },
-      { theme: "error", variant: "outline", class: "border-(--badge-error-outline-border) text-(--badge-error-outline-fg)" },
-      { theme: "error", variant: "ghost", class: "text-(--badge-error-ghost-fg)" },
-      { theme: "warning", variant: "solid", class: "bg-(--badge-warning-solid-bg) text-(--badge-warning-solid-fg)" },
-      { theme: "warning", variant: "subtle", class: "bg-(--badge-warning-subtle-bg) text-(--badge-warning-subtle-fg)" },
-      { theme: "warning", variant: "outline", class: "border-(--badge-warning-outline-border) text-(--badge-warning-outline-fg)" },
-      { theme: "warning", variant: "ghost", class: "text-(--badge-warning-ghost-fg)" },
-      { theme: "success", variant: "solid", class: "bg-(--badge-success-solid-bg) text-(--badge-success-solid-fg)" },
-      { theme: "success", variant: "subtle", class: "bg-(--badge-success-subtle-bg) text-(--badge-success-subtle-fg)" },
-      { theme: "success", variant: "outline", class: "border-(--badge-success-outline-border) text-(--badge-success-outline-fg)" },
-      { theme: "success", variant: "ghost", class: "text-(--badge-success-ghost-fg)" },
-      { theme: "info", variant: "solid", class: "bg-(--badge-info-solid-bg) text-(--badge-info-solid-fg)" },
-      { theme: "info", variant: "subtle", class: "bg-(--badge-info-subtle-bg) text-(--badge-info-subtle-fg)" },
-      { theme: "info", variant: "outline", class: "border-(--badge-info-outline-border) text-(--badge-info-outline-fg)" },
-      { theme: "info", variant: "ghost", class: "text-(--badge-info-ghost-fg)" },
+      { theme: "gray", variant: "solid", class: "bg-surface-gray-10 text-ink-base" },
+      { theme: "gray", variant: "subtle", class: "bg-surface-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "outline", class: "border-outline-gray-2 text-ink-gray-6" },
+      { theme: "gray", variant: "ghost", class: "text-ink-gray-6" },
+      { theme: "blue", variant: "solid", class: "bg-surface-blue-7 text-white" },
+      { theme: "blue", variant: "subtle", class: "bg-surface-blue-2 text-ink-blue-7" },
+      { theme: "blue", variant: "outline", class: "border-outline-blue-3 text-ink-blue-7" },
+      { theme: "blue", variant: "ghost", class: "text-ink-blue-7" },
+      { theme: "green", variant: "solid", class: "bg-surface-green-7 text-white" },
+      { theme: "green", variant: "subtle", class: "bg-surface-green-2 text-ink-green-7" },
+      { theme: "green", variant: "outline", class: "border-outline-green-3 text-ink-green-7" },
+      { theme: "green", variant: "ghost", class: "text-ink-green-7" },
+      { theme: "amber", variant: "solid", class: "bg-surface-amber-7 text-white" },
+      { theme: "amber", variant: "subtle", class: "bg-surface-amber-2 text-ink-amber-7" },
+      { theme: "amber", variant: "outline", class: "border-outline-amber-3 text-ink-amber-7" },
+      { theme: "amber", variant: "ghost", class: "text-ink-amber-7" },
+      { theme: "red", variant: "solid", class: "bg-surface-red-7 text-white" },
+      { theme: "red", variant: "subtle", class: "bg-surface-red-2 text-ink-red-7" },
+      { theme: "red", variant: "outline", class: "border-outline-red-3 text-ink-red-7" },
+      { theme: "red", variant: "ghost", class: "text-ink-red-7" },
+      { theme: "violet", variant: "solid", class: "bg-surface-violet-7 text-white" },
+      { theme: "violet", variant: "subtle", class: "bg-surface-violet-2 text-ink-violet-7" },
+      { theme: "violet", variant: "outline", class: "border-outline-violet-3 text-ink-violet-7" },
+      { theme: "violet", variant: "ghost", class: "text-ink-violet-7" },
     ],
-    defaultVariants: {
-      theme: "default",
-      variant: "solid",
-      size: "md",
-    },
+    defaultVariants: { theme: "gray", variant: "subtle", size: "md" },
   },
 );
 
-type BadgeVariants = VariantProps<typeof badgeVariants>;
+const themeAliases = {
+  default: "gray",
+  error: "red",
+  warning: "amber",
+  success: "green",
+  info: "blue",
+} as const;
+
+type CanonicalBadgeTheme = NonNullable<VariantProps<typeof badgeVariants>["theme"]>;
+type BadgeTheme = CanonicalBadgeTheme | keyof typeof themeAliases;
 
 const props = withDefaults(
   defineProps<{
-    theme?: BadgeVariants["theme"];
-    variant?: BadgeVariants["variant"];
-    size?: BadgeVariants["size"];
+    theme?: BadgeTheme;
+    variant?: VariantProps<typeof badgeVariants>["variant"];
+    size?: VariantProps<typeof badgeVariants>["size"];
+    label?: string | number;
     class?: string;
   }>(),
   {
-    theme: "default",
-    variant: "solid",
+    theme: "gray",
+    variant: "subtle",
     size: "md",
   },
 );
 
+const resolvedTheme = computed(
+  () => ((themeAliases as Record<string, string>)[props.theme] ?? props.theme) as CanonicalBadgeTheme,
+);
+
 const classes = computed(() =>
-  cn(badgeVariants({ theme: props.theme, variant: props.variant, size: props.size }), props.class),
+  cn(
+    badgeVariants({ theme: resolvedTheme.value, variant: props.variant, size: props.size }),
+    props.class,
+  ),
 );
 </script>
 
 <template>
   <component :is="ark.span" :class="classes" v-bind="$attrs">
-    <span v-if="$slots.prefix" class="inline-flex shrink-0 items-center">
+    <span v-if="$slots.prefix" class="inline-flex shrink-0 items-center justify-center">
       <slot name="prefix" />
     </span>
-    <slot />
-    <span v-if="$slots.suffix" class="inline-flex shrink-0 items-center">
+    <slot>{{ props.label }}</slot>
+    <span v-if="$slots.suffix" class="inline-flex shrink-0 items-center justify-center">
       <slot name="suffix" />
     </span>
   </component>
