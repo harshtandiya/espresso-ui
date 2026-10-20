@@ -1,0 +1,758 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`keyboard shortcut templates > renders React template 1`] = `
+"import { Fragment, useMemo } from "react";
+import type { ReactNode } from "react";
+import {
+  ArrowBigRightDash,
+  ArrowBigUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Command,
+  CornerDownLeft,
+  Delete,
+  Option,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type KeyboardShortcutProps = {
+  /** Shortcut combo, e.g. \`"Mod+Shift+K"\`. \`Mod\` is Cmd on macOS, Ctrl elsewhere. */
+  combo?: string;
+  /** Draw the keys as background chips. */
+  bg?: boolean;
+  /** Draw \`+\` between keys. \`"auto"\` only puts it between two text keys. */
+  showPlus?: boolean | "auto";
+  /** Alternative combos shown after a \`/\`. */
+  altCombos?: string[];
+  /** Draw icons for the arrow, Enter, Backspace and Delete keys. */
+  useIcons?: boolean;
+  /** Content shown when no \`combo\` is given. */
+  children?: ReactNode;
+  /** Class applied to the root element. */
+  className?: string;
+};
+
+type ShortcutPart = {
+  type: "cmd" | "ctrl" | "shift" | "alt" | "key";
+  display: string;
+  spell: string;
+  icon: "command" | "shift" | "alt" | "up" | "down" | "left" | "right" | "enter" | "backspace" | "delete" | null;
+};
+
+const iconMap = {
+  command: Command,
+  shift: ArrowBigUp,
+  alt: Option,
+  up: ArrowUp,
+  down: ArrowDown,
+  left: ArrowLeft,
+  right: ArrowRight,
+  enter: CornerDownLeft,
+  backspace: Delete,
+  delete: ArrowBigRightDash,
+};
+
+const namedKeys: Record<string, { display: string; spell: string; icon: ShortcutPart["icon"] }> = {
+  enter: { display: "↵", spell: "Enter", icon: "enter" },
+  return: { display: "↵", spell: "Enter", icon: "enter" },
+  escape: { display: "Esc", spell: "Escape", icon: null },
+  esc: { display: "Esc", spell: "Escape", icon: null },
+  backspace: { display: "⌫", spell: "Backspace", icon: "backspace" },
+  delete: { display: "⌦", spell: "Delete", icon: "delete" },
+  del: { display: "⌦", spell: "Delete", icon: "delete" },
+  tab: { display: "Tab", spell: "Tab", icon: null },
+  space: { display: "Space", spell: "Space", icon: null },
+  up: { display: "↑", spell: "Up", icon: "up" },
+  arrowup: { display: "↑", spell: "Up", icon: "up" },
+  down: { display: "↓", spell: "Down", icon: "down" },
+  arrowdown: { display: "↓", spell: "Down", icon: "down" },
+  left: { display: "←", spell: "Left", icon: "left" },
+  arrowleft: { display: "←", spell: "Left", icon: "left" },
+  right: { display: "→", spell: "Right", icon: "right" },
+  arrowright: { display: "→", spell: "Right", icon: "right" },
+};
+
+function isMacPlatform() {
+  if (typeof navigator === "undefined") return false;
+  const platform =
+    (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ??
+    navigator.platform ??
+    navigator.userAgent;
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}
+
+function parseCombo(combo: string, isMac: boolean): ShortcutPart[] {
+  const parts: ShortcutPart[] = [];
+  const tokens = combo
+    .split("+")
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  for (const token of tokens) {
+    const lower = token.toLowerCase();
+    if (lower === "mod") {
+      parts.push(
+        isMac
+          ? { type: "cmd", display: "⌘", spell: "Command", icon: "command" }
+          : { type: "ctrl", display: "Ctrl", spell: "Control", icon: null },
+      );
+      continue;
+    }
+    if (lower === "cmd" || lower === "command" || lower === "meta") {
+      parts.push({ type: "cmd", display: "⌘", spell: "Command", icon: "command" });
+      continue;
+    }
+    if (lower === "ctrl" || lower === "control") {
+      parts.push({ type: "ctrl", display: "Ctrl", spell: "Control", icon: null });
+      continue;
+    }
+    if (lower === "shift") {
+      parts.push({ type: "shift", display: "⇧", spell: "Shift", icon: "shift" });
+      continue;
+    }
+    if (lower === "alt" || lower === "option" || lower === "opt") {
+      parts.push({ type: "alt", display: "⌥", spell: "Alt", icon: "alt" });
+      continue;
+    }
+    const named = namedKeys[lower];
+    if (named) {
+      parts.push({ type: "key", ...named });
+      continue;
+    }
+    const display = token.length === 1 ? token.toUpperCase() : token;
+    parts.push({ type: "key", display, spell: display, icon: null });
+  }
+
+  return parts;
+}
+
+function spellOut(parts: ShortcutPart[]) {
+  return parts.map((part) => part.spell).join(" plus ");
+}
+
+export function KeyboardShortcut({
+  combo,
+  bg = false,
+  showPlus = "auto",
+  altCombos = [],
+  useIcons = true,
+  children,
+  className,
+  ...props
+}: KeyboardShortcutProps) {
+  const isMac = isMacPlatform();
+  const parts = useMemo(() => (combo ? parseCombo(combo, isMac) : []), [combo, isMac]);
+  const altParts = useMemo(
+    () => altCombos.map((alt) => parseCombo(alt, isMac)),
+    [altCombos, isMac],
+  );
+
+  const uniqueAltParts = useMemo(() => {
+    const seen = new Set([parts.map((part) => part.display).join("+")]);
+    return altParts.filter((alt) => {
+      const key = alt.map((part) => part.display).join("+");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [altParts, parts]);
+
+  const plusAfter = parts.slice(0, -1).map((part, index) => {
+    if (showPlus === "auto") {
+      const next = parts[index + 1];
+      const partDrawsIcon = part.icon !== null || part.type === "cmd" || part.type === "shift" || part.type === "alt";
+      const nextDrawsIcon = next.icon !== null || next.type === "cmd" || next.type === "shift" || next.type === "alt";
+      return !(partDrawsIcon || nextDrawsIcon);
+    }
+    return showPlus;
+  });
+
+  const ariaLabel = parts.length
+    ? \`Shortcut \${[spellOut(parts), ...uniqueAltParts.map((alt) => spellOut(alt))].join(", or ")}\`
+    : undefined;
+
+  function renderPart(part: ShortcutPart, mode: "plain" | "chip") {
+    const Icon = part.icon ? iconMap[part.icon] : null;
+    const isModifier = part.type === "cmd" || part.type === "shift" || part.type === "alt";
+    const showIcon = Boolean(Icon) && (isModifier || useIcons);
+
+    if (mode === "chip") {
+      const chipIcon = part.type === "cmd" ? "command" : useIcons ? part.icon : null;
+      const ChipIcon = chipIcon ? iconMap[chipIcon] : null;
+      return (
+        <kbd
+          data-slot="key"
+          data-key-type={part.type}
+          className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-4 bg-surface-gray-2 px-1.5 text-xs-medium text-ink-gray-7"
+        >
+          {ChipIcon ? <ChipIcon aria-hidden="true" className="size-3" /> : part.display}
+        </kbd>
+      );
+    }
+
+    return (
+      <span data-slot="key" data-key-type={part.type}>
+        {showIcon && Icon ? (
+          <Icon aria-hidden="true" className="size-3" />
+        ) : (
+          <span className="leading-none uppercase">{part.display}</span>
+        )}
+      </span>
+    );
+  }
+
+  if (!parts.length) {
+    return (
+      <span
+        data-slot="keyboard-shortcut"
+        className={cn("inline-flex items-center gap-0.5 text-sm text-ink-gray-5", className)}
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      data-slot="keyboard-shortcut"
+      data-bg={bg ? "true" : undefined}
+      aria-label={ariaLabel}
+      role={ariaLabel ? "img" : undefined}
+      className={cn("inline-flex items-center gap-0.5", !bg && "text-sm text-ink-gray-5", className)}
+      {...props}
+    >
+      {parts.map((part, index) => (
+        <Fragment key={\`\${part.type}-\${part.display}-\${index}\`}>
+          {renderPart(part, bg ? "chip" : "plain")}
+          {plusAfter[index] ? (
+            <span
+              data-slot="separator"
+              aria-hidden="true"
+              className="font-mono text-[10px] leading-none opacity-60"
+            >
+              +
+            </span>
+          ) : null}
+        </Fragment>
+      ))}
+      {uniqueAltParts.length ? (
+        <span data-slot="alt-combos" className="ms-1 inline-flex items-center gap-1.5">
+          {uniqueAltParts.map((alt, altIndex) => (
+            <Fragment key={\`alt-\${altIndex}\`}>
+              <span aria-hidden="true" className="text-xs text-ink-gray-4">
+                /
+              </span>
+              <span className="inline-flex items-center gap-0.5">
+                {alt.map((part, index) => (
+                  <Fragment key={\`\${part.type}-\${part.display}-\${index}\`}>
+                    {renderPart(part, bg ? "chip" : "plain")}
+                  </Fragment>
+                ))}
+              </span>
+            </Fragment>
+          ))}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+"
+`;
+
+exports[`keyboard shortcut templates > renders React template without TypeScript 1`] = `
+"import { Fragment, useMemo } from "react";
+import {
+  ArrowBigRightDash,
+  ArrowBigUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Command,
+  CornerDownLeft,
+  Delete,
+  Option,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+
+const iconMap = {
+  command: Command,
+  shift: ArrowBigUp,
+  alt: Option,
+  up: ArrowUp,
+  down: ArrowDown,
+  left: ArrowLeft,
+  right: ArrowRight,
+  enter: CornerDownLeft,
+  backspace: Delete,
+  delete: ArrowBigRightDash,
+};
+
+const namedKeys: Record<string, { display: string; spell: string; icon: ShortcutPart["icon"] }> = {
+  enter: { display: "↵", spell: "Enter", icon: "enter" },
+  return: { display: "↵", spell: "Enter", icon: "enter" },
+  escape: { display: "Esc", spell: "Escape", icon: null },
+  esc: { display: "Esc", spell: "Escape", icon: null },
+  backspace: { display: "⌫", spell: "Backspace", icon: "backspace" },
+  delete: { display: "⌦", spell: "Delete", icon: "delete" },
+  del: { display: "⌦", spell: "Delete", icon: "delete" },
+  tab: { display: "Tab", spell: "Tab", icon: null },
+  space: { display: "Space", spell: "Space", icon: null },
+  up: { display: "↑", spell: "Up", icon: "up" },
+  arrowup: { display: "↑", spell: "Up", icon: "up" },
+  down: { display: "↓", spell: "Down", icon: "down" },
+  arrowdown: { display: "↓", spell: "Down", icon: "down" },
+  left: { display: "←", spell: "Left", icon: "left" },
+  arrowleft: { display: "←", spell: "Left", icon: "left" },
+  right: { display: "→", spell: "Right", icon: "right" },
+  arrowright: { display: "→", spell: "Right", icon: "right" },
+};
+
+function isMacPlatform() {
+  if (typeof navigator === "undefined") return false;
+  const platform =
+    (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ??
+    navigator.platform ??
+    navigator.userAgent;
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}
+
+function parseCombo(combo, isMac) {
+  const parts: ShortcutPart[] = [];
+  const tokens = combo
+    .split("+")
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  for (const token of tokens) {
+    const lower = token.toLowerCase();
+    if (lower === "mod") {
+      parts.push(
+        isMac
+          ? { type: "cmd", display: "⌘", spell: "Command", icon: "command" }
+          : { type: "ctrl", display: "Ctrl", spell: "Control", icon: null },
+      );
+      continue;
+    }
+    if (lower === "cmd" || lower === "command" || lower === "meta") {
+      parts.push({ type: "cmd", display: "⌘", spell: "Command", icon: "command" });
+      continue;
+    }
+    if (lower === "ctrl" || lower === "control") {
+      parts.push({ type: "ctrl", display: "Ctrl", spell: "Control", icon: null });
+      continue;
+    }
+    if (lower === "shift") {
+      parts.push({ type: "shift", display: "⇧", spell: "Shift", icon: "shift" });
+      continue;
+    }
+    if (lower === "alt" || lower === "option" || lower === "opt") {
+      parts.push({ type: "alt", display: "⌥", spell: "Alt", icon: "alt" });
+      continue;
+    }
+    const named = namedKeys[lower];
+    if (named) {
+      parts.push({ type: "key", ...named });
+      continue;
+    }
+    const display = token.length === 1 ? token.toUpperCase() : token;
+    parts.push({ type: "key", display, spell: display, icon: null });
+  }
+
+  return parts;
+}
+
+function spellOut(parts) {
+  return parts.map((part) => part.spell).join(" plus ");
+}
+
+export function KeyboardShortcut({
+  combo,
+  bg = false,
+  showPlus = "auto",
+  altCombos = [],
+  useIcons = true,
+  children,
+  className,
+  ...props
+}) {
+  const isMac = isMacPlatform();
+  const parts = useMemo(() => (combo ? parseCombo(combo, isMac) : []), [combo, isMac]);
+  const altParts = useMemo(
+    () => altCombos.map((alt) => parseCombo(alt, isMac)),
+    [altCombos, isMac],
+  );
+
+  const uniqueAltParts = useMemo(() => {
+    const seen = new Set([parts.map((part) => part.display).join("+")]);
+    return altParts.filter((alt) => {
+      const key = alt.map((part) => part.display).join("+");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [altParts, parts]);
+
+  const plusAfter = parts.slice(0, -1).map((part, index) => {
+    if (showPlus === "auto") {
+      const next = parts[index + 1];
+      const partDrawsIcon = part.icon !== null || part.type === "cmd" || part.type === "shift" || part.type === "alt";
+      const nextDrawsIcon = next.icon !== null || next.type === "cmd" || next.type === "shift" || next.type === "alt";
+      return !(partDrawsIcon || nextDrawsIcon);
+    }
+    return showPlus;
+  });
+
+  const ariaLabel = parts.length
+    ? \`Shortcut \${[spellOut(parts), ...uniqueAltParts.map((alt) => spellOut(alt))].join(", or ")}\`
+    : undefined;
+
+  function renderPart(part, mode) {
+    const Icon = part.icon ? iconMap[part.icon] : null;
+    const isModifier = part.type === "cmd" || part.type === "shift" || part.type === "alt";
+    const showIcon = Boolean(Icon) && (isModifier || useIcons);
+
+    if (mode === "chip") {
+      const chipIcon = part.type === "cmd" ? "command" : useIcons ? part.icon : null;
+      const ChipIcon = chipIcon ? iconMap[chipIcon] : null;
+      return (
+        <kbd
+          data-slot="key"
+          data-key-type={part.type}
+          className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-4 bg-surface-gray-2 px-1.5 text-xs-medium text-ink-gray-7"
+        >
+          {ChipIcon ? <ChipIcon aria-hidden="true" className="size-3" /> : part.display}
+        </kbd>
+      );
+    }
+
+    return (
+      <span data-slot="key" data-key-type={part.type}>
+        {showIcon && Icon ? (
+          <Icon aria-hidden="true" className="size-3" />
+        ) : (
+          <span className="leading-none uppercase">{part.display}</span>
+        )}
+      </span>
+    );
+  }
+
+  if (!parts.length) {
+    return (
+      <span
+        data-slot="keyboard-shortcut"
+        className={cn("inline-flex items-center gap-0.5 text-sm text-ink-gray-5", className)}
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      data-slot="keyboard-shortcut"
+      data-bg={bg ? "true" : undefined}
+      aria-label={ariaLabel}
+      role={ariaLabel ? "img" : undefined}
+      className={cn("inline-flex items-center gap-0.5", !bg && "text-sm text-ink-gray-5", className)}
+      {...props}
+    >
+      {parts.map((part, index) => (
+        <Fragment key={\`\${part.type}-\${part.display}-\${index}\`}>
+          {renderPart(part, bg ? "chip" : "plain")}
+          {plusAfter[index] ? (
+            <span
+              data-slot="separator"
+              aria-hidden="true"
+              className="font-mono text-[10px] leading-none opacity-60"
+            >
+              +
+            </span>
+          ) : null}
+        </Fragment>
+      ))}
+      {uniqueAltParts.length ? (
+        <span data-slot="alt-combos" className="ms-1 inline-flex items-center gap-1.5">
+          {uniqueAltParts.map((alt, altIndex) => (
+            <Fragment key={\`alt-\${altIndex}\`}>
+              <span aria-hidden="true" className="text-xs text-ink-gray-4">
+                /
+              </span>
+              <span className="inline-flex items-center gap-0.5">
+                {alt.map((part, index) => (
+                  <Fragment key={\`\${part.type}-\${part.display}-\${index}\`}>
+                    {renderPart(part, bg ? "chip" : "plain")}
+                  </Fragment>
+                ))}
+              </span>
+            </Fragment>
+          ))}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+"
+`;
+
+exports[`keyboard shortcut templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed } from "vue";
+import {
+  ArrowBigRightDash,
+  ArrowBigUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Command,
+  CornerDownLeft,
+  Delete,
+  Option,
+} from "@lucide/vue";
+import { cn } from "@/lib/utils";
+
+type ShortcutPart = {
+  type: "cmd" | "ctrl" | "shift" | "alt" | "key";
+  display: string;
+  spell: string;
+  icon:
+    | "command"
+    | "shift"
+    | "alt"
+    | "up"
+    | "down"
+    | "left"
+    | "right"
+    | "enter"
+    | "backspace"
+    | "delete"
+    | null;
+};
+
+const props = withDefaults(
+  defineProps<{
+    combo?: string;
+    bg?: boolean;
+    showPlus?: boolean | "auto";
+    altCombos?: string[];
+    useIcons?: boolean;
+    class?: string;
+  }>(),
+  {
+    bg: false,
+    showPlus: "auto",
+    altCombos: () => [],
+    useIcons: true,
+  },
+);
+
+const iconMap = {
+  command: Command,
+  shift: ArrowBigUp,
+  alt: Option,
+  up: ArrowUp,
+  down: ArrowDown,
+  left: ArrowLeft,
+  right: ArrowRight,
+  enter: CornerDownLeft,
+  backspace: Delete,
+  delete: ArrowBigRightDash,
+};
+
+const namedKeys: Record<string, { display: string; spell: string; icon: ShortcutPart["icon"] }> = {
+  enter: { display: "↵", spell: "Enter", icon: "enter" },
+  return: { display: "↵", spell: "Enter", icon: "enter" },
+  escape: { display: "Esc", spell: "Escape", icon: null },
+  esc: { display: "Esc", spell: "Escape", icon: null },
+  backspace: { display: "⌫", spell: "Backspace", icon: "backspace" },
+  delete: { display: "⌦", spell: "Delete", icon: "delete" },
+  del: { display: "⌦", spell: "Delete", icon: "delete" },
+  tab: { display: "Tab", spell: "Tab", icon: null },
+  space: { display: "Space", spell: "Space", icon: null },
+  up: { display: "↑", spell: "Up", icon: "up" },
+  arrowup: { display: "↑", spell: "Up", icon: "up" },
+  down: { display: "↓", spell: "Down", icon: "down" },
+  arrowdown: { display: "↓", spell: "Down", icon: "down" },
+  left: { display: "←", spell: "Left", icon: "left" },
+  arrowleft: { display: "←", spell: "Left", icon: "left" },
+  right: { display: "→", spell: "Right", icon: "right" },
+  arrowright: { display: "→", spell: "Right", icon: "right" },
+};
+
+function isMacPlatform() {
+  if (typeof navigator === "undefined") return false;
+  const platform =
+    (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ??
+    navigator.platform ??
+    navigator.userAgent;
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}
+
+function parseCombo(combo: string, isMac: boolean): ShortcutPart[] {
+  const parts: ShortcutPart[] = [];
+  const tokens = combo
+    .split("+")
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  for (const token of tokens) {
+    const lower = token.toLowerCase();
+    if (lower === "mod") {
+      parts.push(
+        isMac
+          ? { type: "cmd", display: "⌘", spell: "Command", icon: "command" }
+          : { type: "ctrl", display: "Ctrl", spell: "Control", icon: null },
+      );
+      continue;
+    }
+    if (lower === "cmd" || lower === "command" || lower === "meta") {
+      parts.push({ type: "cmd", display: "⌘", spell: "Command", icon: "command" });
+      continue;
+    }
+    if (lower === "ctrl" || lower === "control") {
+      parts.push({ type: "ctrl", display: "Ctrl", spell: "Control", icon: null });
+      continue;
+    }
+    if (lower === "shift") {
+      parts.push({ type: "shift", display: "⇧", spell: "Shift", icon: "shift" });
+      continue;
+    }
+    if (lower === "alt" || lower === "option" || lower === "opt") {
+      parts.push({ type: "alt", display: "⌥", spell: "Alt", icon: "alt" });
+      continue;
+    }
+    const named = namedKeys[lower];
+    if (named) {
+      parts.push({ type: "key", ...named });
+      continue;
+    }
+    const display = token.length === 1 ? token.toUpperCase() : token;
+    parts.push({ type: "key", display, spell: display, icon: null });
+  }
+
+  return parts;
+}
+
+function spellOut(parts: ShortcutPart[]) {
+  return parts.map((part) => part.spell).join(" plus ");
+}
+
+const isMac = isMacPlatform();
+const parts = computed(() => (props.combo ? parseCombo(props.combo, isMac) : []));
+const altParts = computed(() => props.altCombos.map((alt) => parseCombo(alt, isMac)));
+
+const uniqueAltParts = computed(() => {
+  const seen = new Set([parts.value.map((part) => part.display).join("+")]);
+  return altParts.value.filter((alt) => {
+    const key = alt.map((part) => part.display).join("+");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+});
+
+const plusAfter = computed(() =>
+  parts.value.slice(0, -1).map((part, index) => {
+    if (props.showPlus === "auto") {
+      const next = parts.value[index + 1];
+      const partDrawsIcon =
+        part.icon !== null || part.type === "cmd" || part.type === "shift" || part.type === "alt";
+      const nextDrawsIcon =
+        next.icon !== null || next.type === "cmd" || next.type === "shift" || next.type === "alt";
+      return !(partDrawsIcon || nextDrawsIcon);
+    }
+    return props.showPlus;
+  }),
+);
+
+const ariaLabel = computed(() =>
+  parts.value.length
+    ? \`Shortcut \${[spellOut(parts.value), ...uniqueAltParts.value.map((alt) => spellOut(alt))].join(", or ")}\`
+    : undefined,
+);
+
+function iconFor(part: ShortcutPart) {
+  const isModifier = part.type === "cmd" || part.type === "shift" || part.type === "alt";
+  if (!part.icon) return null;
+  if (!isModifier && !props.useIcons) return null;
+  return iconMap[part.icon];
+}
+
+function chipIconFor(part: ShortcutPart) {
+  if (part.type === "cmd") return iconMap.command;
+  if (!props.useIcons) return null;
+  return part.icon ? iconMap[part.icon] : null;
+}
+</script>
+
+<template>
+  <span
+    v-if="!parts.length"
+    data-slot="keyboard-shortcut"
+    :class="cn('inline-flex items-center gap-0.5 text-sm text-ink-gray-5', props.class)"
+  >
+    <slot />
+  </span>
+  <span
+    v-else
+    data-slot="keyboard-shortcut"
+    :data-bg="props.bg ? 'true' : undefined"
+    :aria-label="ariaLabel"
+    :role="ariaLabel ? 'img' : undefined"
+    :class="cn('inline-flex items-center gap-0.5', !props.bg && 'text-sm text-ink-gray-5', props.class)"
+  >
+    <template v-for="(part, index) in parts" :key="\`\${part.type}-\${part.display}-\${index}\`">
+      <kbd
+        v-if="props.bg"
+        data-slot="key"
+        :data-key-type="part.type"
+        class="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-4 bg-surface-gray-2 px-1.5 text-xs-medium text-ink-gray-7"
+      >
+        <component :is="chipIconFor(part)" v-if="chipIconFor(part)" aria-hidden="true" class="size-3" />
+        <template v-else>{{ part.display }}</template>
+      </kbd>
+      <span v-else data-slot="key" :data-key-type="part.type">
+        <component :is="iconFor(part)" v-if="iconFor(part)" aria-hidden="true" class="size-3" />
+        <span v-else class="leading-none uppercase">{{ part.display }}</span>
+      </span>
+      <span
+        v-if="plusAfter[index]"
+        data-slot="separator"
+        aria-hidden="true"
+        class="font-mono text-[10px] leading-none opacity-60"
+        >+</span
+      >
+    </template>
+
+    <span v-if="uniqueAltParts.length" data-slot="alt-combos" class="ms-1 inline-flex items-center gap-1.5">
+      <template v-for="(alt, altIndex) in uniqueAltParts" :key="\`alt-\${altIndex}\`">
+        <span aria-hidden="true" class="text-xs text-ink-gray-4">/</span>
+        <span class="inline-flex items-center gap-0.5">
+          <template v-for="(part, index) in alt" :key="\`\${part.type}-\${part.display}-\${index}\`">
+            <kbd
+              v-if="props.bg"
+              data-slot="key"
+              :data-key-type="part.type"
+              class="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-4 bg-surface-gray-2 px-1.5 text-xs-medium text-ink-gray-7"
+            >
+              <component :is="chipIconFor(part)" v-if="chipIconFor(part)" aria-hidden="true" class="size-3" />
+              <template v-else>{{ part.display }}</template>
+            </kbd>
+            <span v-else data-slot="key" :data-key-type="part.type">
+              <component :is="iconFor(part)" v-if="iconFor(part)" aria-hidden="true" class="size-3" />
+              <span v-else class="leading-none uppercase">{{ part.display }}</span>
+            </span>
+          </template>
+        </span>
+      </template>
+    </span>
+  </span>
+</template>
+"
+`;

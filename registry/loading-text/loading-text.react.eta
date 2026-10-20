@@ -1,0 +1,27 @@
+import type { HTMLAttributes } from "react";
+import { Spinner } from "./Spinner";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type LoadingTextProps = HTMLAttributes<HTMLDivElement> & {
+  /** Text shown next to the spinner. */
+  text?: string;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  text = "Loading...",
+  className,
+  ...props
+}<% if (it.typescript) { %>: LoadingTextProps<% } %>) {
+  return (
+    <div
+      data-slot="loading-text"
+      className={cn("flex items-center text-base text-ink-gray-4", className)}
+      {...props}
+    >
+      <Spinner size="xs" className="-ml-1 mr-2" />
+      {text}
+    </div>
+  );
+}

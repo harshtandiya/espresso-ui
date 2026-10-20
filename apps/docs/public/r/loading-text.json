@@ -1,0 +1,25 @@
+{
+  "name": "loading-text",
+  "type": "registry:ui",
+  "title": "LoadingText",
+  "description": "espresso-ui LoadingText component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "spinner"
+  ],
+  "files": [
+    {
+      "path": "components/ui/LoadingText.tsx",
+      "content": "import type { HTMLAttributes } from \"react\";\nimport { Spinner } from \"./Spinner\";\nimport { cn } from \"@/lib/utils\";\n\nexport type LoadingTextProps = HTMLAttributes<HTMLDivElement> & {\n  /** Text shown next to the spinner. */\n  text?: string;\n};\n\nexport function LoadingText({\n  text = \"Loading...\",\n  className,\n  ...props\n}: LoadingTextProps) {\n  return (\n    <div\n      data-slot=\"loading-text\"\n      className={cn(\"flex items-center text-base text-ink-gray-4\", className)}\n      {...props}\n    >\n      <Spinner size=\"xs\" className=\"-ml-1 mr-2\" />\n      {text}\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/loading-text.css",
+      "content": "/* The spinner sits on the text baseline; the negative start margin pulls it\n   into the line so the row reads as one line of text. */\n[data-slot=\"loading-text\"] {\n  line-height: 1;\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

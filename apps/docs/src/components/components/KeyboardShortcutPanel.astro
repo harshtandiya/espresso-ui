@@ -1,0 +1,93 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  KeyboardShortcutAltDemo,
+  KeyboardShortcutChipDemo,
+  KeyboardShortcutPlainDemo,
+} from "@/components/examples/KeyboardShortcutDemo.tsx";
+
+const usage = `import { KeyboardShortcut } from "@/components/ui/KeyboardShortcut";
+
+export default function App() {
+  return <KeyboardShortcut combo="Mod+Shift+K" />;
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import KeyboardShortcut from "@/components/ui/KeyboardShortcut.vue";
+\u003C/script>
+
+<template>
+  <KeyboardShortcut combo="Mod+Shift+K" />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="keyboard-shortcut"
+  num={sectionNumber("keyboard-shortcut")}
+  label="Keyboard Shortcut"
+  desc="Renders a key combination. `Mod` resolves to Command on macOS and Control everywhere else, and the shortcut is named for screen readers, so the keys are never read twice. `bg` draws the keys as chips; `altCombos` lists equivalent shortcuts after a slash."
+  status="new"
+  code={usage}
+  codeFile="keyboard-shortcut.tsx"
+  codeVue={usageVue}
+  codeVueFile="keyboard-shortcut.vue"
+>
+  <CanvasToolbar title="Preview" meta="combos · icons" />
+  <Canvas class="shortcut-stack">
+    <KeyboardShortcutPlainDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Chips" sub="background keys">
+      <Canvas grid={false} class="shortcut-stack">
+        <KeyboardShortcutChipDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Alternatives" sub="alt combos">
+      <Canvas grid={false} class="shortcut-stack">
+        <KeyboardShortcutAltDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.shortcut-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.shortcut-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    width: min(100%, 320px);
+  }
+  :global(.shortcut-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.shortcut-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.shortcut-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

@@ -66,6 +66,20 @@ export const SECTIONS: readonly Section[] = [
     status: "new",
     sub: "value picker",
   },
+  {
+    id: "keyboard-shortcut",
+    label: "Keyboard Shortcut",
+    group: "components",
+    status: "new",
+    sub: "key combos",
+  },
+  {
+    id: "loading-text",
+    label: "Loading Text",
+    group: "components",
+    status: "new",
+    sub: "spinner + text",
+  },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */

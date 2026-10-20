@@ -1,0 +1,5 @@
+/* The spinner sits on the text baseline; the negative start margin pulls it
+   into the line so the row reads as one line of text. */
+[data-slot="loading-text"] {
+  line-height: 1;
+}

@@ -1,0 +1,25 @@
+{
+  "name": "loading-text",
+  "type": "registry:ui",
+  "title": "LoadingText",
+  "description": "espresso-ui LoadingText component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "spinner"
+  ],
+  "files": [
+    {
+      "path": "components/ui/LoadingText.vue",
+      "content": "<script setup lang=\"ts\">\nimport { cn } from \"@/lib/utils\";\nimport Spinner from \"./Spinner.vue\";\n\nconst props = withDefaults(\n  defineProps<{\n    text?: string;\n    class?: string;\n  }>(),\n  {\n    text: \"Loading...\",\n  },\n);\n</script>\n\n<template>\n  <div data-slot=\"loading-text\" :class=\"cn('flex items-center text-base text-ink-gray-4', props.class)\">\n    <Spinner size=\"xs\" class=\"-ml-1 mr-2\" />\n    {{ props.text }}\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/loading-text.css",
+      "content": "/* The spinner sits on the text baseline; the negative start margin pulls it\n   into the line so the row reads as one line of text. */\n[data-slot=\"loading-text\"] {\n  line-height: 1;\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

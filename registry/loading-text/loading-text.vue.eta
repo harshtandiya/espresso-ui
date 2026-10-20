@@ -1,0 +1,21 @@
+<script setup lang="ts">
+import { cn } from "<%= it.utilsAlias %>/utils";
+import Spinner from "./Spinner.vue";
+
+const props = withDefaults(
+  defineProps<{
+    text?: string;
+    class?: string;
+  }>(),
+  {
+    text: "Loading...",
+  },
+);
+</script>
+
+<template>
+  <div data-slot="loading-text" :class="cn('flex items-center text-base text-ink-gray-4', props.class)">
+    <Spinner size="xs" class="-ml-1 mr-2" />
+    {{ props.text }}
+  </div>
+</template>

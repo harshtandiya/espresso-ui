@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`loading text templates > renders React template 1`] = `
+"import type { HTMLAttributes } from "react";
+import { Spinner } from "./Spinner";
+import { cn } from "@/lib/utils";
+
+export type LoadingTextProps = HTMLAttributes<HTMLDivElement> & {
+  /** Text shown next to the spinner. */
+  text?: string;
+};
+
+export function LoadingText({
+  text = "Loading...",
+  className,
+  ...props
+}: LoadingTextProps) {
+  return (
+    <div
+      data-slot="loading-text"
+      className={cn("flex items-center text-base text-ink-gray-4", className)}
+      {...props}
+    >
+      <Spinner size="xs" className="-ml-1 mr-2" />
+      {text}
+    </div>
+  );
+}
+"
+`;
+
+exports[`loading text templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { cn } from "@/lib/utils";
+import Spinner from "./Spinner.vue";
+
+const props = withDefaults(
+  defineProps<{
+    text?: string;
+    class?: string;
+  }>(),
+  {
+    text: "Loading...",
+  },
+);
+</script>
+
+<template>
+  <div data-slot="loading-text" :class="cn('flex items-center text-base text-ink-gray-4', props.class)">
+    <Spinner size="xs" class="-ml-1 mr-2" />
+    {{ props.text }}
+  </div>
+</template>
+"
+`;

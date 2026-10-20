@@ -1,0 +1,4 @@
+/* Key chips keep their own baseline so a row of them reads as one line. */
+[data-slot="keyboard-shortcut"] kbd {
+  font-family: inherit;
+}
