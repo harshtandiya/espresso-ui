@@ -1,11 +1,11 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
 import { User } from "lucide-react";
 <% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
 <% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 
 const avatarFaceVariants = cva(
-  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  "inline-flex shrink-0 items-center justify-center overflow-hidden font-medium",
   {
     variants: {
       size: {
@@ -33,10 +33,19 @@ const avatarFaceVariants = cva(
     ],
     defaultVariants: {
       size: "md",
-      shape: "squircle",
+      shape: "circle",
     },
   },
 );
+
+const avatarThemeClasses = {
+  gray: "bg-surface-gray-2 text-ink-gray-5",
+  blue: "bg-surface-blue-2 text-ink-blue-7",
+  green: "bg-surface-green-2 text-ink-green-7",
+  amber: "bg-surface-amber-2 text-ink-amber-7",
+  red: "bg-surface-red-2 text-ink-red-7",
+  violet: "bg-surface-violet-2 text-ink-violet-7",
+} as const;
 
 const fallbackIconSizeClasses = {
   xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
@@ -48,20 +57,44 @@ const fallbackIconSizeClasses = {
   "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
 } as const;
 
+const indicatorShellClasses = {
+  xs: "-mr-[.1rem] -mb-[.1rem] size-2",
+  sm: "-mr-[.1rem] -mb-[.1rem] size-[9px]",
+  md: "-mr-[.1rem] -mb-[.1rem] size-2.5",
+  lg: "-mr-[.1rem] -mb-[.1rem] size-3",
+  xl: "-mr-[.1rem] -mb-[.1rem] size-3",
+  "2xl": "-mr-[.1rem] -mb-[.1rem] size-3.5",
+  "3xl": "-mr-[.2rem] -mb-[.2rem] size-4",
+} as const;
+
 <% if (it.typescript) { %>
 type AvatarSize = NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>;
-type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]> | "square";
+type AvatarTheme = keyof typeof avatarThemeClasses;
 
 export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
+  /** Image URL used for the avatar. */
+  image?: string;
+  /** Full name used for the fallback initial and the accessible label. */
+  label?: string;
+  /** Visual colour theme used for the fallback. */
+  theme?: AvatarTheme;
+  /** @deprecated Use `image`. */
   src?: string;
+  /** @deprecated Use `label`. */
   alt?: string;
+  /** @deprecated Use `label`. */
   fallback?: string;
   size?: AvatarSize;
   shape?: AvatarShape;
-  /** Icon rendered inside the avatar status badge shell. */
+  /** Optional content shown at the bottom-right of the avatar. */
+  indicator?: ReactNode;
+  /** @deprecated Use `indicator`. */
   status?: ReactNode;
-  /** Optional classes applied to the status badge shell (e.g. tinted backgrounds). */
+  /** Optional classes applied to the indicator shell. */
   statusClassName?: string;
+  /** Custom fallback content shown instead of the initial. */
+  children?: ReactNode;
 };
 <% } %>
 
@@ -69,57 +102,76 @@ export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTML
   (
     {
       className,
+      image,
+      label,
+      theme = "gray",
       src = "",
       alt = "",
       fallback = "",
       size = "md",
-      shape = "squircle",
+      shape = "circle",
+      indicator,
       status,
       statusClassName,
+      children,
       ...props
     },
     ref,
   ) => {
     const [imageError, setImageError] = useState(false);
-    const showImage = Boolean(src) && !imageError;
-    const initials = fallback.trim().slice(0, 2).toUpperCase();
-    const label = alt || initials || "User avatar";
+    const imageSrc = image ?? src;
+    const displayLabel = label ?? fallback ?? alt;
+    const accessibleLabel = displayLabel || "User avatar";
+    const initial = displayLabel.trim().slice(0, 1).toUpperCase();
+    const showImage = Boolean(imageSrc) && !imageError;
+    const shapeVariant = shape === "square" ? "squircle" : shape;
+    const indicatorContent = indicator ?? status;
+
+    useEffect(() => {
+      setImageError(false);
+    }, [imageSrc]);
 
     return (
       <span
         ref={ref}
         role="img"
-        aria-label={label}
+        aria-label={accessibleLabel}
         data-size={size}
         data-shape={shape}
+        data-theme={theme}
         className={cn("relative inline-flex shrink-0 select-none", className)}
         {...props}
       >
-        <span className={avatarFaceVariants({ size, shape })}>
+        <span className={cn(avatarFaceVariants({ size, shape: shapeVariant }), !showImage && avatarThemeClasses[theme])}>
           {showImage ? (
             <img
-              src={src}
+              src={imageSrc}
               alt=""
               className="size-full object-cover"
               onError={() => {
                 setImageError(true);
               }}
             />
-          ) : initials ? (
-            <span aria-hidden="true">{initials}</span>
+          ) : children ? (
+            <span className={cn("inline-flex items-center justify-center", fallbackIconSizeClasses[size])}>
+              {children}
+            </span>
+          ) : initial ? (
+            <span aria-hidden="true">{initial}</span>
           ) : (
-            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+            <User className={cn(fallbackIconSizeClasses[size], "text-current")} aria-hidden="true" />
           )}
         </span>
-        {status ? (
+        {indicatorContent ? (
           <span
             aria-hidden="true"
             className={cn(
-              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)] [&_svg]:size-(--avatar-status-icon-size)",
+              "absolute bottom-0 right-0 grid place-items-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              indicatorShellClasses[size],
               statusClassName,
             )}
           >
-            {status}
+            <span className="grid size-full place-items-center">{indicatorContent}</span>
           </span>
         ) : null}
       </span>

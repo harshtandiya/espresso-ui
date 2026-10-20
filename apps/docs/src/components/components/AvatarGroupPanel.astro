@@ -8,25 +8,25 @@ import { sectionNumber } from "@/lib/sections";
 import { AvatarGroup as AvatarGroupReact } from "@/generated/react/AvatarGroup.tsx";
 
 const stackItems = [
-  { src: "https://i.pravatar.cc/96?img=1", alt: "Member 1" },
-  { fallback: "AB" },
-  { fallback: "CD" },
-  { src: "https://i.pravatar.cc/96?img=5", alt: "Member 4" },
-  { fallback: "EF" },
+  { image: "https://i.pravatar.cc/96?img=1", label: "Member 1" },
+  { label: "Alice Brown", theme: "blue" as const },
+  { label: "Carol Diaz", theme: "green" as const },
+  { image: "https://i.pravatar.cc/96?img=5", label: "Member 4" },
+  { label: "Eve Fraser", theme: "amber" as const },
 ];
 
 const overflowItems = [
-  { fallback: "01" },
-  { fallback: "02" },
-  { fallback: "03" },
-  { fallback: "04" },
-  { fallback: "05" },
-  { fallback: "06" },
-  { fallback: "07" },
-  { fallback: "08" },
+  { label: "Olivia Martin", theme: "blue" as const },
+  { label: "Noah Wilson", theme: "green" as const },
+  { label: "Ava Thompson", theme: "amber" as const },
+  { label: "Liam Davis", theme: "red" as const },
+  { label: "Sophia Moore", theme: "violet" as const },
+  { label: "Mason Clark", theme: "gray" as const },
+  { label: "Isabella Lewis", theme: "blue" as const },
+  { label: "Lucas Walker", theme: "green" as const },
 ];
 
-const contentItems = [{}, { fallback: "AB" }, { src: "https://i.pravatar.cc/96?img=8", alt: "Photo" }];
+const contentItems = [{}, { label: "Alice Brown", theme: "violet" as const }, { image: "https://i.pravatar.cc/96?img=8", label: "Photo" }];
 
 const usageReact = `import { AvatarGroup } from "@/components/ui/AvatarGroup";
 
@@ -38,11 +38,11 @@ export default function App() {
       count={8}
       showCount
       items={[
-        { fallback: "A" },
-        { fallback: "B" },
-        { fallback: "C" },
-        { fallback: "D" },
-        { fallback: "E" },
+        { label: "Alice Brown", theme: "blue" },
+        { label: "Carol Diaz", theme: "green" },
+        { label: "Eve Fraser", theme: "amber" },
+        { label: "Liam Davis", theme: "red" },
+        { label: "Mia Wong", theme: "violet" },
       ]}
     />
   );
@@ -53,11 +53,11 @@ const usageVue = `<script setup>
 import AvatarGroup from "@/components/ui/AvatarGroup.vue";
 
 const items = [
-  { fallback: "A" },
-  { fallback: "B" },
-  { fallback: "C" },
-  { fallback: "D" },
-  { fallback: "E" },
+  { label: "Alice Brown", theme: "blue" },
+  { label: "Carol Diaz", theme: "green" },
+  { label: "Eve Fraser", theme: "amber" },
+  { label: "Liam Davis", theme: "red" },
+  { label: "Mia Wong", theme: "violet" },
 ];
 </script>
 

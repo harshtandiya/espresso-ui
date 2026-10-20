@@ -40,6 +40,9 @@ const ringClass =
 type AvatarGroupSize = keyof typeof overlapClasses;
 
 export type AvatarGroupItem = {
+  image?: string;
+  label?: string;
+  theme?: "gray" | "blue" | "green" | "amber" | "red" | "violet";
   src?: string;
   alt?: string;
   fallback?: string;
@@ -71,10 +74,10 @@ export function AvatarGroup({
       <div className="inline-flex items-center">
         {visibleItems.map((item, index) => (
           <Avatar
-            key={\`\${item.src ?? item.fallback ?? "avatar"}-\${index}\`}
-            src={item.src}
-            alt={item.alt}
-            fallback={item.fallback}
+            key={\`\${item.image ?? item.src ?? item.label ?? item.fallback ?? "avatar"}-\${index}\`}
+            image={item.image ?? item.src}
+            label={item.label ?? item.fallback ?? item.alt}
+            theme={item.theme}
             size={size}
             shape="circle"
             className={cn(ringClass, index > 0 && overlapClasses[size])}
@@ -162,10 +165,10 @@ export function AvatarGroup({
       <div className="inline-flex items-center">
         {visibleItems.map((item, index) => (
           <Avatar
-            key={\`\${item.src ?? item.fallback ?? "avatar"}-\${index}\`}
-            src={item.src}
-            alt={item.alt}
-            fallback={item.fallback}
+            key={\`\${item.image ?? item.src ?? item.label ?? item.fallback ?? "avatar"}-\${index}\`}
+            image={item.image ?? item.src}
+            label={item.label ?? item.fallback ?? item.alt}
+            theme={item.theme}
             size={size}
             shape="circle"
             className={cn(ringClass, index > 0 && overlapClasses[size])}
@@ -207,6 +210,9 @@ import { cn } from "@/lib/utils";
 type AvatarGroupSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 
 export type AvatarGroupItem = {
+  image?: string;
+  label?: string;
+  theme?: "gray" | "blue" | "green" | "amber" | "red" | "violet";
   src?: string;
   alt?: string;
   fallback?: string;
@@ -276,10 +282,10 @@ const rootClass = computed(() => cn("inline-flex items-center gap-3", props.clas
     <div class="inline-flex items-center">
       <Avatar
         v-for="(item, index) in visibleItems"
-        :key="\`\${item.src ?? item.fallback ?? 'avatar'}-\${index}\`"
-        :src="item.src"
-        :alt="item.alt"
-        :fallback="item.fallback"
+        :key="\`\${item.image ?? item.src ?? item.label ?? item.fallback ?? 'avatar'}-\${index}\`"
+        :image="item.image ?? item.src"
+        :label="item.label ?? item.fallback ?? item.alt"
+        :theme="item.theme"
         :size="props.size"
         shape="circle"
         :class="cn(ringClass, index > 0 ? overlapClasses[props.size] : undefined)"

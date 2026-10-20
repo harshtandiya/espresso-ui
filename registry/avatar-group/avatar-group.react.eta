@@ -38,6 +38,9 @@ const ringClass =
 type AvatarGroupSize = keyof typeof overlapClasses;
 
 export type AvatarGroupItem = {
+  image?: string;
+  label?: string;
+  theme?: "gray" | "blue" | "green" | "amber" | "red" | "violet";
   src?: string;
   alt?: string;
   fallback?: string;
@@ -70,10 +73,10 @@ export function <%= it.componentName %>({
       <div className="inline-flex items-center">
         {visibleItems.map((item, index) => (
           <Avatar
-            key={`${item.src ?? item.fallback ?? "avatar"}-${index}`}
-            src={item.src}
-            alt={item.alt}
-            fallback={item.fallback}
+            key={`${item.image ?? item.src ?? item.label ?? item.fallback ?? "avatar"}-${index}`}
+            image={item.image ?? item.src}
+            label={item.label ?? item.fallback ?? item.alt}
+            theme={item.theme}
             size={size}
             shape="circle"
             className={cn(ringClass, index > 0 && overlapClasses[size])}

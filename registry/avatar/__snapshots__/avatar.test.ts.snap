@@ -1,14 +1,14 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`avatar templates > renders React template 1`] = `
-"import { forwardRef, useState } from "react";
+"import { forwardRef, useEffect, useState } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { User } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const avatarFaceVariants = cva(
-  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  "inline-flex shrink-0 items-center justify-center overflow-hidden font-medium",
   {
     variants: {
       size: {
@@ -36,10 +36,19 @@ const avatarFaceVariants = cva(
     ],
     defaultVariants: {
       size: "md",
-      shape: "squircle",
+      shape: "circle",
     },
   },
 );
+
+const avatarThemeClasses = {
+  gray: "bg-surface-gray-2 text-ink-gray-5",
+  blue: "bg-surface-blue-2 text-ink-blue-7",
+  green: "bg-surface-green-2 text-ink-green-7",
+  amber: "bg-surface-amber-2 text-ink-amber-7",
+  red: "bg-surface-red-2 text-ink-red-7",
+  violet: "bg-surface-violet-2 text-ink-violet-7",
+} as const;
 
 const fallbackIconSizeClasses = {
   xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
@@ -51,76 +60,119 @@ const fallbackIconSizeClasses = {
   "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
 } as const;
 
+const indicatorShellClasses = {
+  xs: "-mr-[.1rem] -mb-[.1rem] size-2",
+  sm: "-mr-[.1rem] -mb-[.1rem] size-[9px]",
+  md: "-mr-[.1rem] -mb-[.1rem] size-2.5",
+  lg: "-mr-[.1rem] -mb-[.1rem] size-3",
+  xl: "-mr-[.1rem] -mb-[.1rem] size-3",
+  "2xl": "-mr-[.1rem] -mb-[.1rem] size-3.5",
+  "3xl": "-mr-[.2rem] -mb-[.2rem] size-4",
+} as const;
+
 type AvatarSize = NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>;
-type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]> | "square";
+type AvatarTheme = keyof typeof avatarThemeClasses;
 
 export type AvatarProps = Omit<ComponentPropsWithoutRef<"span">, "children"> & {
+  /** Image URL used for the avatar. */
+  image?: string;
+  /** Full name used for the fallback initial and the accessible label. */
+  label?: string;
+  /** Visual colour theme used for the fallback. */
+  theme?: AvatarTheme;
+  /** @deprecated Use \`image\`. */
   src?: string;
+  /** @deprecated Use \`label\`. */
   alt?: string;
+  /** @deprecated Use \`label\`. */
   fallback?: string;
   size?: AvatarSize;
   shape?: AvatarShape;
-  /** Icon rendered inside the avatar status badge shell. */
+  /** Optional content shown at the bottom-right of the avatar. */
+  indicator?: ReactNode;
+  /** @deprecated Use \`indicator\`. */
   status?: ReactNode;
-  /** Optional classes applied to the status badge shell (e.g. tinted backgrounds). */
+  /** Optional classes applied to the indicator shell. */
   statusClassName?: string;
+  /** Custom fallback content shown instead of the initial. */
+  children?: ReactNode;
 };
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
   (
     {
       className,
+      image,
+      label,
+      theme = "gray",
       src = "",
       alt = "",
       fallback = "",
       size = "md",
-      shape = "squircle",
+      shape = "circle",
+      indicator,
       status,
       statusClassName,
+      children,
       ...props
     },
     ref,
   ) => {
     const [imageError, setImageError] = useState(false);
-    const showImage = Boolean(src) && !imageError;
-    const initials = fallback.trim().slice(0, 2).toUpperCase();
-    const label = alt || initials || "User avatar";
+    const imageSrc = image ?? src;
+    const displayLabel = label ?? fallback ?? alt;
+    const accessibleLabel = displayLabel || "User avatar";
+    const initial = displayLabel.trim().slice(0, 1).toUpperCase();
+    const showImage = Boolean(imageSrc) && !imageError;
+    const shapeVariant = shape === "square" ? "squircle" : shape;
+    const indicatorContent = indicator ?? status;
+
+    useEffect(() => {
+      setImageError(false);
+    }, [imageSrc]);
 
     return (
       <span
         ref={ref}
         role="img"
-        aria-label={label}
+        aria-label={accessibleLabel}
         data-size={size}
         data-shape={shape}
+        data-theme={theme}
         className={cn("relative inline-flex shrink-0 select-none", className)}
         {...props}
       >
-        <span className={avatarFaceVariants({ size, shape })}>
+        <span className={cn(avatarFaceVariants({ size, shape: shapeVariant }), !showImage && avatarThemeClasses[theme])}>
           {showImage ? (
             <img
-              src={src}
+              src={imageSrc}
               alt=""
               className="size-full object-cover"
               onError={() => {
                 setImageError(true);
               }}
             />
-          ) : initials ? (
-            <span aria-hidden="true">{initials}</span>
+          ) : children ? (
+            <span className={cn("inline-flex items-center justify-center", fallbackIconSizeClasses[size])}>
+              {children}
+            </span>
+          ) : initial ? (
+            <span aria-hidden="true">{initial}</span>
           ) : (
-            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+            <User className={cn(fallbackIconSizeClasses[size], "text-current")} aria-hidden="true" />
           )}
         </span>
-        {status ? (
+        {indicatorContent ? (
           <span
             aria-hidden="true"
             className={cn(
-              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)] [&_svg]:size-(--avatar-status-icon-size)",
+              "absolute bottom-0 right-0 grid place-items-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              indicatorShellClasses[size],
               statusClassName,
             )}
           >
-            {status}
+            <span className="grid size-full place-items-center">{indicatorContent}</span>
           </span>
         ) : null}
       </span>
@@ -133,13 +185,13 @@ Avatar.displayName = "Avatar";
 `;
 
 exports[`avatar templates > renders React template without TypeScript 1`] = `
-"import { forwardRef, useState } from "react";
+"import { forwardRef, useEffect, useState } from "react";
 import { cva } from "class-variance-authority";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const avatarFaceVariants = cva(
-  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  "inline-flex shrink-0 items-center justify-center overflow-hidden font-medium",
   {
     variants: {
       size: {
@@ -167,10 +219,19 @@ const avatarFaceVariants = cva(
     ],
     defaultVariants: {
       size: "md",
-      shape: "squircle",
+      shape: "circle",
     },
   },
 );
+
+const avatarThemeClasses = {
+  gray: "bg-surface-gray-2 text-ink-gray-5",
+  blue: "bg-surface-blue-2 text-ink-blue-7",
+  green: "bg-surface-green-2 text-ink-green-7",
+  amber: "bg-surface-amber-2 text-ink-amber-7",
+  red: "bg-surface-red-2 text-ink-red-7",
+  violet: "bg-surface-violet-2 text-ink-violet-7",
+} as const;
 
 const fallbackIconSizeClasses = {
   xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
@@ -182,62 +243,91 @@ const fallbackIconSizeClasses = {
   "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
 } as const;
 
+const indicatorShellClasses = {
+  xs: "-mr-[.1rem] -mb-[.1rem] size-2",
+  sm: "-mr-[.1rem] -mb-[.1rem] size-[9px]",
+  md: "-mr-[.1rem] -mb-[.1rem] size-2.5",
+  lg: "-mr-[.1rem] -mb-[.1rem] size-3",
+  xl: "-mr-[.1rem] -mb-[.1rem] size-3",
+  "2xl": "-mr-[.1rem] -mb-[.1rem] size-3.5",
+  "3xl": "-mr-[.2rem] -mb-[.2rem] size-4",
+} as const;
+
 
 export const Avatar = forwardRef(
   (
     {
       className,
+      image,
+      label,
+      theme = "gray",
       src = "",
       alt = "",
       fallback = "",
       size = "md",
-      shape = "squircle",
+      shape = "circle",
+      indicator,
       status,
       statusClassName,
+      children,
       ...props
     },
     ref,
   ) => {
     const [imageError, setImageError] = useState(false);
-    const showImage = Boolean(src) && !imageError;
-    const initials = fallback.trim().slice(0, 2).toUpperCase();
-    const label = alt || initials || "User avatar";
+    const imageSrc = image ?? src;
+    const displayLabel = label ?? fallback ?? alt;
+    const accessibleLabel = displayLabel || "User avatar";
+    const initial = displayLabel.trim().slice(0, 1).toUpperCase();
+    const showImage = Boolean(imageSrc) && !imageError;
+    const shapeVariant = shape === "square" ? "squircle" : shape;
+    const indicatorContent = indicator ?? status;
+
+    useEffect(() => {
+      setImageError(false);
+    }, [imageSrc]);
 
     return (
       <span
         ref={ref}
         role="img"
-        aria-label={label}
+        aria-label={accessibleLabel}
         data-size={size}
         data-shape={shape}
+        data-theme={theme}
         className={cn("relative inline-flex shrink-0 select-none", className)}
         {...props}
       >
-        <span className={avatarFaceVariants({ size, shape })}>
+        <span className={cn(avatarFaceVariants({ size, shape: shapeVariant }), !showImage && avatarThemeClasses[theme])}>
           {showImage ? (
             <img
-              src={src}
+              src={imageSrc}
               alt=""
               className="size-full object-cover"
               onError={() => {
                 setImageError(true);
               }}
             />
-          ) : initials ? (
-            <span aria-hidden="true">{initials}</span>
+          ) : children ? (
+            <span className={cn("inline-flex items-center justify-center", fallbackIconSizeClasses[size])}>
+              {children}
+            </span>
+          ) : initial ? (
+            <span aria-hidden="true">{initial}</span>
           ) : (
-            <User className={cn(fallbackIconSizeClasses[size], "text-(--color-muted-foreground)")} aria-hidden="true" />
+            <User className={cn(fallbackIconSizeClasses[size], "text-current")} aria-hidden="true" />
           )}
         </span>
-        {status ? (
+        {indicatorContent ? (
           <span
             aria-hidden="true"
             className={cn(
-              "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)] [&_svg]:size-(--avatar-status-icon-size)",
+              "absolute bottom-0 right-0 grid place-items-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+              indicatorShellClasses[size],
               statusClassName,
             )}
           >
-            {status}
+            <span className="grid size-full place-items-center">{indicatorContent}</span>
           </span>
         ) : null}
       </span>
@@ -251,13 +341,13 @@ Avatar.displayName = "Avatar";
 
 exports[`avatar templates > renders Vue template 1`] = `
 "<script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { cva, type VariantProps } from "class-variance-authority";
 import { User } from "@lucide/vue";
 import { cn } from "@/lib/utils";
 
 const avatarFaceVariants = cva(
-  "inline-flex shrink-0 items-center justify-center overflow-hidden bg-(--avatar-bg) font-medium text-(--avatar-fg)",
+  "inline-flex shrink-0 items-center justify-center overflow-hidden font-medium",
   {
     variants: {
       size: {
@@ -285,14 +375,21 @@ const avatarFaceVariants = cva(
     ],
     defaultVariants: {
       size: "md",
-      shape: "squircle",
+      shape: "circle",
     },
   },
 );
 
-type AvatarVariants = VariantProps<typeof avatarFaceVariants>;
+const avatarThemeClasses = {
+  gray: "bg-surface-gray-2 text-ink-gray-5",
+  blue: "bg-surface-blue-2 text-ink-blue-7",
+  green: "bg-surface-green-2 text-ink-green-7",
+  amber: "bg-surface-amber-2 text-ink-amber-7",
+  red: "bg-surface-red-2 text-ink-red-7",
+  violet: "bg-surface-violet-2 text-ink-violet-7",
+};
 
-const fallbackIconSizeClasses: Record<NonNullable<AvatarVariants["size"]>, string> = {
+const fallbackIconSizeClasses: Record<NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>, string> = {
   xs: "[width:var(--avatar-xs-icon-size)] [height:var(--avatar-xs-icon-size)]",
   sm: "[width:var(--avatar-sm-icon-size)] [height:var(--avatar-sm-icon-size)]",
   md: "[width:var(--avatar-md-icon-size)] [height:var(--avatar-md-icon-size)]",
@@ -302,70 +399,118 @@ const fallbackIconSizeClasses: Record<NonNullable<AvatarVariants["size"]>, strin
   "3xl": "[width:var(--avatar-3xl-icon-size)] [height:var(--avatar-3xl-icon-size)]",
 };
 
+const indicatorShellClasses: Record<NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>, string> = {
+  xs: "-mr-[.1rem] -mb-[.1rem] size-2",
+  sm: "-mr-[.1rem] -mb-[.1rem] size-[9px]",
+  md: "-mr-[.1rem] -mb-[.1rem] size-2.5",
+  lg: "-mr-[.1rem] -mb-[.1rem] size-3",
+  xl: "-mr-[.1rem] -mb-[.1rem] size-3",
+  "2xl": "-mr-[.1rem] -mb-[.1rem] size-3.5",
+  "3xl": "-mr-[.2rem] -mb-[.2rem] size-4",
+};
+
+type AvatarSize = NonNullable<VariantProps<typeof avatarFaceVariants>["size"]>;
+type AvatarShape = NonNullable<VariantProps<typeof avatarFaceVariants>["shape"]> | "square";
+type AvatarTheme = keyof typeof avatarThemeClasses;
+
 const props = withDefaults(
   defineProps<{
+    /** Image URL used for the avatar. */
+    image?: string;
+    /** Full name used for the fallback initial and the accessible label. */
+    label?: string;
+    /** Visual colour theme used for the fallback. */
+    theme?: AvatarTheme;
+    /** @deprecated Use \`image\`. */
     src?: string;
+    /** @deprecated Use \`label\`. */
     alt?: string;
+    /** @deprecated Use \`label\`. */
     fallback?: string;
-    size?: AvatarVariants["size"];
-    shape?: AvatarVariants["shape"];
-    class?: string;
+    size?: AvatarSize;
+    shape?: AvatarShape;
+    /** Optional classes applied to the indicator shell. */
     statusClass?: string;
+    class?: string;
   }>(),
   {
+    image: "",
+    label: "",
+    theme: "gray",
     src: "",
     alt: "",
     fallback: "",
     size: "md",
-    shape: "squircle",
+    shape: "circle",
     statusClass: "",
   },
 );
 
 const imageError = ref(false);
-const faceClasses = computed(() => avatarFaceVariants({ size: props.size, shape: props.shape }));
+const imageSrc = computed(() => props.image || props.src);
+const displayLabel = computed(() => props.label || props.fallback || props.alt);
+const accessibleLabel = computed(() => displayLabel.value || "User avatar");
+const initial = computed(() => displayLabel.value.trim().slice(0, 1).toUpperCase());
+const showImage = computed(() => Boolean(imageSrc.value) && !imageError.value);
+const shapeVariant = computed(() => (props.shape === "square" ? "squircle" : props.shape));
+
 const rootClasses = computed(() => cn("relative inline-flex shrink-0 select-none", props.class));
-const statusBadgeClasses = computed(() =>
+const faceClasses = computed(() =>
   cn(
-    "absolute bottom-0 right-0 flex size-(--avatar-status-size) translate-x-1/4 translate-y-1/4 items-center justify-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)] [&_svg]:size-(--avatar-status-icon-size)",
+    avatarFaceVariants({ size: props.size, shape: shapeVariant.value }),
+    !showImage.value && avatarThemeClasses[props.theme],
+  ),
+);
+const indicatorClasses = computed(() =>
+  cn(
+    "absolute bottom-0 right-0 grid place-items-center rounded-full bg-(--avatar-status-bg) [box-shadow:0_0_0_var(--avatar-status-ring-width)_var(--avatar-status-ring)]",
+    indicatorShellClasses[props.size],
     props.statusClass,
   ),
 );
-const showImage = computed(() => Boolean(props.src) && !imageError.value);
-const initials = computed(() => props.fallback.trim().slice(0, 2).toUpperCase());
-const label = computed(() => props.alt || initials.value || "User avatar");
 
-function onImageError(): void {
-  imageError.value = true;
-}
+watch(imageSrc, () => {
+  imageError.value = false;
+});
 </script>
 
 <template>
   <span
     role="img"
-    :aria-label="label"
+    :aria-label="accessibleLabel"
     :data-size="props.size"
     :data-shape="props.shape"
+    :data-theme="props.theme"
     :class="rootClasses"
     v-bind="$attrs"
   >
     <span :class="faceClasses">
       <img
         v-if="showImage"
-        :src="props.src"
+        :src="imageSrc"
         alt=""
         class="size-full object-cover"
-        @error="onImageError"
+        @error="imageError = true"
       />
-      <span v-else-if="initials" aria-hidden="true">{{ initials }}</span>
+      <span
+        v-else-if="$slots.default"
+        :class="cn('inline-flex items-center justify-center', fallbackIconSizeClasses[props.size])"
+      >
+        <slot />
+      </span>
+      <span v-else-if="initial" aria-hidden="true">{{ initial }}</span>
       <User
         v-else
-        :class="cn(fallbackIconSizeClasses[props.size!], 'text-(--color-muted-foreground)')"
+        :class="cn(fallbackIconSizeClasses[props.size], 'text-current')"
         aria-hidden="true"
       />
     </span>
-    <span v-if="$slots.status" aria-hidden="true" :class="statusBadgeClasses">
-      <slot name="status" />
+    <span v-if="$slots.indicator || $slots.status" aria-hidden="true" :class="indicatorClasses">
+      <span class="grid size-full place-items-center">
+        <slot name="indicator">
+          <slot name="status" />
+        </slot>
+      </span>
     </span>
   </span>
 </template>

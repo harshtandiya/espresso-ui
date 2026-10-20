@@ -1,6 +1,13 @@
 export const avatarDef = {
   name: "avatar",
   props: {
+    image: { type: "string", default: "" },
+    label: { type: "string", default: "" },
+    theme: {
+      type: "string",
+      values: ["gray", "blue", "green", "amber", "red", "violet"],
+      default: "gray",
+    },
     src: { type: "string", default: "" },
     alt: { type: "string", default: "" },
     fallback: { type: "string", default: "" },
@@ -11,11 +18,11 @@ export const avatarDef = {
     },
     shape: {
       type: "string",
-      values: ["squircle", "circle"],
-      default: "squircle",
+      values: ["circle", "square", "squircle"],
+      default: "circle",
     },
   },
-  slots: ["status"],
+  slots: ["default", "indicator", "status"],
   emits: [],
   peerDeps: {
     react: ["clsx", "tailwind-merge", "class-variance-authority", "lucide-react"],

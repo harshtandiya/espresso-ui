@@ -14,11 +14,12 @@ import { Circle } from "lucide-react";
 export default function App() {
   return (
     <Avatar
-      fallback="JD"
+      label="Jane Cooper"
       size="md"
+      theme="blue"
       shape="circle"
-      status={
-        <Circle className="size-(--avatar-status-icon-size) fill-green-500 text-green-500" />
+      indicator={
+        <Circle className="size-full fill-green-500 text-green-500" />
       }
     />
   );
@@ -31,9 +32,9 @@ import { Circle } from "@lucide/vue";
 </script>
 
 <template>
-  <Avatar fallback="JD" size="md" shape="circle">
-    <template #status>
-      <Circle class="size-(--avatar-status-icon-size) fill-green-500 text-green-500" />
+  <Avatar label="Jane Cooper" size="md" theme="blue" shape="circle">
+    <template #indicator>
+      <Circle class="size-full fill-green-500 text-green-500" />
     </template>
   </Avatar>
 </template>
@@ -44,55 +45,64 @@ import { Circle } from "@lucide/vue";
   id="avatar"
   num={sectionNumber("avatar")}
   label="Avatar"
-  desc="User avatar with image, initials, or icon fallback. Seven sizes and squircle or circle shape. Pass an icon to the status prop (React) or status slot (Vue); Avatar renders the positioned badge shell."
+  desc="User or workspace avatar matching frappe-ui v1: image with initial fallback, six themes, seven sizes, circle or square shape, and an indicator slot."
   status="new"
   code={usageReact}
   codeFile="avatar.tsx"
   codeVue={usageVue}
   codeVueFile="avatar.vue"
 >
-  <CanvasToolbar title="Preview" meta="initials · icon · image" />
+  <CanvasToolbar title="Preview" meta="initials · image · indicator" />
   <Canvas>
-    <AvatarReact client:load fallback="JD" size="md" />
-    <AvatarReact client:load size="md" />
+    <AvatarReact client:load label="Jane Cooper" size="md" theme="blue" />
+    <AvatarReact client:load label="Growth" size="md" theme="green" shape="square" />
     <AvatarReact
       client:load
-      src="https://i.pravatar.cc/96?img=12"
-      alt="Demo user"
+      image="https://i.pravatar.cc/96?img=12"
+      label="Demo user"
       size="md"
     />
   </Canvas>
 
   <Variants>
-    <VariantRow label="Shapes" sub="squircle vs circle">
-      <AvatarReact client:load fallback="SQ" size="lg" shape="squircle" />
-      <AvatarReact client:load fallback="CI" size="lg" shape="circle" />
+    <VariantRow label="Themes" sub="gray · blue · green · amber · red · violet">
+      <AvatarReact client:load label="Gray" theme="gray" size="lg" />
+      <AvatarReact client:load label="Blue" theme="blue" size="lg" />
+      <AvatarReact client:load label="Green" theme="green" size="lg" />
+      <AvatarReact client:load label="Amber" theme="amber" size="lg" />
+      <AvatarReact client:load label="Red" theme="red" size="lg" />
+      <AvatarReact client:load label="Violet" theme="violet" size="lg" />
+    </VariantRow>
+
+    <VariantRow label="Shapes" sub="circle vs square">
+      <AvatarReact client:load label="Circle" size="lg" shape="circle" />
+      <AvatarReact client:load label="Square" size="lg" shape="square" />
     </VariantRow>
 
     <VariantRow label="Sizes" sub="xs → 3xl">
       <Canvas grid={false} class="avatar-size-row">
-        <AvatarReact client:load size="xs" />
-        <AvatarReact client:load size="sm" />
-        <AvatarReact client:load size="md" />
-        <AvatarReact client:load size="lg" />
-        <AvatarReact client:load size="xl" />
-        <AvatarReact client:load size="2xl" />
-        <AvatarReact client:load size="3xl" />
+        <AvatarReact client:load size="xs" label="A" />
+        <AvatarReact client:load size="sm" label="B" />
+        <AvatarReact client:load size="md" label="C" />
+        <AvatarReact client:load size="lg" label="D" />
+        <AvatarReact client:load size="xl" label="E" />
+        <AvatarReact client:load size="2xl" label="F" />
+        <AvatarReact client:load size="3xl" label="G" />
       </Canvas>
     </VariantRow>
 
-    <VariantRow label="Content" sub="image · initials · icon">
+    <VariantRow label="Content" sub="image · initial · icon">
       <AvatarReact
         client:load
-        src="https://i.pravatar.cc/96?img=32"
-        alt="Photo avatar"
+        image="https://i.pravatar.cc/96?img=32"
+        label="Photo avatar"
         size="xl"
       />
-      <AvatarReact client:load fallback="AB" size="xl" />
+      <AvatarReact client:load label="Jane Cooper" size="xl" theme="violet" />
       <AvatarReact client:load size="xl" />
     </VariantRow>
 
-    <VariantRow label="Status" sub="icon only — badge shell is built in">
+    <VariantRow label="Indicator" sub="slot content fills the positioned shell">
       <Canvas grid={false} class="avatar-status-row">
         <AvatarStatusRow client:load />
       </Canvas>

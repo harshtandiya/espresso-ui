@@ -9,14 +9,14 @@
   --avatar-2xl-size: 40px;
   --avatar-3xl-size: 46px;
 
-  /* Per-size squircle radii */
+  /* Per-size square radii (frappe-ui v1) */
   --avatar-xs-radius: 4px;
   --avatar-sm-radius: 5px;
   --avatar-md-radius: 5px;
   --avatar-lg-radius: 6px;
   --avatar-xl-radius: 6px;
   --avatar-2xl-radius: 8px;
-  --avatar-3xl-radius: 8px;
+  --avatar-3xl-radius: 10px;
 
   /* Per-size initials font sizes */
   --avatar-xs-font-size: 11px;
@@ -37,13 +37,12 @@
   --avatar-3xl-icon-size: 24px;
 
   /* Surfaces */
-  --avatar-bg: var(--color-muted);
-  --avatar-fg: var(--color-muted-foreground);
+  --avatar-bg: var(--surface-gray-2);
+  --avatar-fg: var(--ink-gray-5);
 
-  /* Status badge shell — slot/prop content is the icon only */
-  --avatar-status-size: 10px;
+  /* Indicator shell — slot content fills the shell */
   --avatar-status-icon-size: 6px;
-  --avatar-status-bg: var(--color-background);
-  --avatar-status-ring: var(--color-background);
+  --avatar-status-bg: var(--surface-base);
+  --avatar-status-ring: var(--surface-base);
   --avatar-status-ring-width: 2px;
 }

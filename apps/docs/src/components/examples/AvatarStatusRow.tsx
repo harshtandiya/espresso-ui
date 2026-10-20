@@ -10,17 +10,17 @@ import {
 export function AvatarStatusRow() {
   return (
     <>
-      <Avatar fallback="A" size="lg" shape="circle" status={<LiveStatusIcon />} />
-      <Avatar fallback="B" size="lg" shape="circle" status={<AwayStatusIcon />} />
-      <Avatar fallback="C" size="lg" shape="circle" status={<SleepStatusIcon />} />
+      <Avatar label="A" size="lg" shape="circle" indicator={<LiveStatusIcon />} />
+      <Avatar label="B" size="lg" shape="circle" indicator={<AwayStatusIcon />} />
+      <Avatar label="C" size="lg" shape="circle" indicator={<SleepStatusIcon />} />
       <Avatar
-        fallback="D"
+        label="D"
         size="lg"
         shape="circle"
-        status={<PinnedStatusIcon />}
-        statusClassName="bg-(--color-info)"
+        indicator={<PinnedStatusIcon />}
+        statusClassName="bg-surface-blue-6"
       />
-      <Avatar fallback="E" size="lg" shape="circle" status={<PinStatusIcon />} />
+      <Avatar label="E" size="lg" shape="circle" indicator={<PinStatusIcon />} />
     </>
   );
 }
