@@ -1,0 +1,134 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { TextInput as TextInputReact } from "@/generated/react/TextInput.tsx";
+
+const usage = `import { TextInput } from "@/components/ui/TextInput";
+
+export default function App() {
+  return (
+    <TextInput
+      label="Email address"
+      type="email"
+      placeholder="you@example.com"
+      description="We'll only use this for account notices."
+      required
+    />
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import TextInput from "@/components/ui/TextInput.vue";
+import { ref } from "vue";
+
+const email = ref("");
+</script>
+
+<template>
+  <TextInput
+    v-model="email"
+    label="Email address"
+    type="email"
+    placeholder="you@example.com"
+    description="We'll only use this for account notices."
+    required
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="text-input"
+  num={sectionNumber("text-input")}
+  label="Text Input"
+  desc="Single-line input matching frappe-ui v1: 24 / 28 / 32 / 40px sizes, subtle / outline / ghost variants, built-in label, description, error, required marker, and prefix or suffix content."
+  status="new"
+  code={usage}
+  codeFile="text-input.tsx"
+  codeVue={usageVue}
+  codeVueFile="text-input.vue"
+>
+  <CanvasToolbar title="Preview" meta="label · description · required" />
+  <Canvas>
+    <TextInputReact
+      client:load
+      label="Workspace name"
+      placeholder="Acme Inc."
+      description="Shown in the sidebar and invites."
+      required
+    />
+    <TextInputReact
+      client:load
+      label="Email"
+      type="email"
+      placeholder="you@example.com"
+      error="Enter a valid email address."
+    />
+    <TextInputReact client:load label="Slug" defaultValue="acme" suffix=".frappe.cloud" />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="24 / 28 / 32 / 40 px">
+      <Canvas grid={false} class="input-stack">
+        <TextInputReact client:load size="xs" placeholder="Extra small" />
+        <TextInputReact client:load size="sm" placeholder="Small" />
+        <TextInputReact client:load size="md" placeholder="Medium" />
+        <TextInputReact client:load size="lg" placeholder="Large" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Variants" sub="subtle · outline · ghost">
+      <Canvas grid={false} class="input-stack">
+        <TextInputReact client:load variant="subtle" placeholder="Subtle" />
+        <TextInputReact client:load variant="outline" placeholder="Outline" />
+        <TextInputReact client:load variant="ghost" placeholder="Ghost" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="input-stack">
+        <TextInputReact client:load label="Default" placeholder="Type here" />
+        <TextInputReact client:load label="Disabled" defaultValue="Read only" disabled />
+        <TextInputReact
+          client:load
+          label="With error"
+          defaultValue="not-an-email"
+          error="Enter a valid email address."
+        />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Affixes" sub="prefix and suffix content">
+      <Canvas grid={false} class="input-stack">
+        <TextInputReact client:load label="Amount" placeholder="0.00" prefix="$" suffix="USD" />
+        <TextInputReact client:load label="Subdomain" defaultValue="acme" suffix=".frappe.cloud" />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.input-stack) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: 100%;
+    padding: 28px 32px !important;
+  }
+
+  @media (max-width: 768px) {
+    :global(.input-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

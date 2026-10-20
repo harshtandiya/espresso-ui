@@ -1,0 +1,133 @@
+<script setup lang="ts">
+import { computed, ref, useId } from "vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const sizeClasses: Record<string, string> = {
+  xs: "min-h-(--textarea-xs-min-height) rounded-(--input-xs-radius) px-1.5 py-1",
+  sm: "min-h-(--textarea-sm-min-height) rounded-(--input-sm-radius) px-2 py-1.5",
+  md: "min-h-(--textarea-md-min-height) rounded-(--input-md-radius) px-2.5 py-1.5",
+  lg: "min-h-(--textarea-lg-min-height) rounded-(--input-lg-radius) px-3 py-1.5",
+};
+
+const variantClasses: Record<string, string> = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string;
+    size?: "xs" | "sm" | "md" | "lg";
+    variant?: "subtle" | "outline" | "ghost";
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
+    rows?: number;
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    modelValue: "",
+    size: "sm",
+    variant: "subtle",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+    disabled: false,
+    rows: 3,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
+
+const fallbackId = useId();
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+const inputId = computed(() => props.id || fallbackId);
+const descriptionId = computed(() => `${inputId.value}-description`);
+const errorId = computed(() => `${inputId.value}-error`);
+const hasError = computed(() => Boolean(props.error));
+const hasLabeling = computed(() => Boolean(props.label || props.description || props.error));
+const describedBy = computed(() =>
+  [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+    .filter(Boolean)
+    .join(" ") || undefined,
+);
+const classes = computed(() =>
+  cn(
+    "block w-full resize-y border [font-size:var(--textarea-font-size)] leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+    sizeClasses[props.size],
+    variantClasses[props.variant],
+    !hasLabeling.value && props.class,
+  ),
+);
+
+function onInput(event: Event): void {
+  emit("update:modelValue", (event.target as HTMLTextAreaElement).value);
+}
+
+function focus(options?: FocusOptions): void {
+  textareaRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <div :class="cn(hasLabeling && 'flex flex-col gap-1.5', hasLabeling && props.class)">
+    <label
+      v-if="props.label"
+      :for="inputId"
+      class="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+    >
+      {{ props.label }}
+      <template v-if="props.required">
+        <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+        <span class="sr-only">(required)</span>
+      </template>
+    </label>
+    <textarea
+      ref="textareaRef"
+      :id="inputId"
+      :value="props.modelValue"
+      :rows="props.rows"
+      :required="props.required"
+      :disabled="props.disabled"
+      :aria-required="props.required || undefined"
+      :aria-invalid="hasError || undefined"
+      :aria-errormessage="hasError ? errorId : undefined"
+      :aria-describedby="describedBy"
+      data-slot="control"
+      :data-size="props.size"
+      :data-variant="props.variant"
+      :data-state="hasError ? 'invalid' : 'valid'"
+      :data-disabled="props.disabled ? 'true' : undefined"
+      :data-required="props.required ? 'true' : undefined"
+      :class="classes"
+      v-bind="$attrs"
+      @input="onInput"
+    />
+    <p
+      v-if="props.description && !hasError"
+      :id="descriptionId"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+    >
+      {{ props.description }}
+    </p>
+    <p
+      v-if="hasError"
+      :id="errorId"
+      role="alert"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+    >
+      {{ props.error }}
+    </p>
+  </div>
+</template>

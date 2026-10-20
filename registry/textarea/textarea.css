@@ -1,0 +1,15 @@
+/* Textarea component tokens — mirrors frappe-ui v1 textarea geometry. */
+:root {
+  --input-xs-radius: var(--radius-3);
+  --input-sm-radius: var(--radius-4);
+  --input-md-radius: var(--radius-4);
+  --input-lg-radius: var(--radius-5);
+
+  --textarea-xs-min-height: 32px;
+  --textarea-sm-min-height: 36px;
+  --textarea-md-min-height: 40px;
+  --textarea-lg-min-height: 44px;
+  --textarea-font-size: 13px;
+
+  --input-description-font-size: 13px;
+}

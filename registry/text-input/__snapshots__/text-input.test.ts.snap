@@ -1,0 +1,559 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`text-input templates > renders React template 1`] = `
+"import { forwardRef, useId } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+const sizeClasses = {
+  xs: "h-(--input-xs-height) rounded-(--input-xs-radius) [font-size:var(--input-xs-font-size)]",
+  sm: "h-(--input-sm-height) rounded-(--input-sm-radius) [font-size:var(--input-sm-font-size)]",
+  md: "h-(--input-md-height) rounded-(--input-md-radius) [font-size:var(--input-md-font-size)]",
+  lg: "h-(--input-lg-height) rounded-(--input-lg-radius) [font-size:var(--input-lg-font-size)]",
+};
+
+const paddingClasses = {
+  xs: { plain: "px-1.5", withPrefix: "ps-7 pe-1.5", withSuffix: "ps-1.5 pe-7", both: "ps-7 pe-7" },
+  sm: { plain: "px-2", withPrefix: "ps-8 pe-2", withSuffix: "ps-2 pe-8", both: "ps-8 pe-8" },
+  md: { plain: "px-2.5", withPrefix: "ps-9 pe-2.5", withSuffix: "ps-2.5 pe-9", both: "ps-9 pe-9" },
+  lg: { plain: "px-3", withPrefix: "ps-10 pe-3", withSuffix: "ps-3 pe-10", both: "ps-10 pe-10" },
+};
+
+const prefixPadding = {
+  xs: "ps-1.5",
+  sm: "ps-2",
+  md: "ps-2.5",
+  lg: "ps-3",
+};
+
+const suffixPadding = {
+  xs: "pe-1.5",
+  sm: "pe-2",
+  md: "pe-2.5",
+  lg: "pe-3",
+};
+
+const variantClasses = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+type TextInputSize = keyof typeof sizeClasses;
+type TextInputVariant = keyof typeof variantClasses;
+
+export type TextInputProps = Omit<ComponentPropsWithoutRef<"input">, "size" | "prefix"> & {
+  /** Visual size of the input. */
+  size?: TextInputSize;
+  /** Surface treatment of the input. */
+  variant?: TextInputVariant;
+  /** Label rendered above the input. */
+  label?: ReactNode;
+  /** Helper text rendered below the input. Hidden when \`error\` is set. */
+  description?: ReactNode;
+  /** Error message; marks the input invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Content rendered at the start of the input. */
+  prefix?: ReactNode;
+  /** Content rendered at the end of the input. */
+  suffix?: ReactNode;
+};
+
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      variant = "subtle",
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      prefix,
+      suffix,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = \`\${inputId}-description\`;
+    const errorId = \`\${inputId}-error\`;
+    const hasError = Boolean(error);
+    const hasLabeling = Boolean(label || description || error);
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const padding = prefix && suffix
+      ? paddingClasses[size].both
+      : prefix
+        ? paddingClasses[size].withPrefix
+        : suffix
+          ? paddingClasses[size].withSuffix
+          : paddingClasses[size].plain;
+
+    return (
+      <div className={cn(hasLabeling && "flex flex-col gap-1.5", hasLabeling && className)}>
+        {label ? (
+          <label
+            htmlFor={inputId}
+            className="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+          >
+            {label}
+            {required ? requiredMark : null}
+          </label>
+        ) : null}
+        <div className={cn("relative flex items-center", !hasLabeling && className)}>
+          {prefix ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute inset-y-0 start-0 flex items-center",
+                prefixPadding[size],
+                disabled ? "text-ink-gray-5" : "text-ink-gray-8",
+              )}
+            >
+              {prefix}
+            </span>
+          ) : null}
+          <input
+            ref={ref}
+            id={inputId}
+            required={required}
+            disabled={disabled}
+            aria-required={required || undefined}
+            aria-invalid={hasError || undefined}
+            aria-errormessage={hasError ? errorId : undefined}
+            aria-describedby={describedBy}
+            data-slot="control"
+            data-size={size}
+            data-variant={variant}
+            data-state={hasError ? "invalid" : "valid"}
+            data-disabled={disabled ? "true" : undefined}
+            data-required={required ? "true" : undefined}
+            className={cn(
+              "w-full border leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+              sizeClasses[size],
+              padding,
+              variantClasses[variant],
+            )}
+            {...props}
+          />
+          {suffix ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute inset-y-0 end-0 flex items-center",
+                suffixPadding[size],
+                disabled ? "text-ink-gray-5" : "text-ink-gray-8",
+              )}
+            >
+              {suffix}
+            </span>
+          ) : null}
+        </div>
+        {description && !hasError ? (
+          <p
+            id={descriptionId}
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+          >
+            {description}
+          </p>
+        ) : null}
+        {hasError ? (
+          <p
+            id={errorId}
+            role="alert"
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+          >
+            {error}
+          </p>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+TextInput.displayName = "TextInput";
+"
+`;
+
+exports[`text-input templates > renders React template without TypeScript 1`] = `
+"import { forwardRef, useId } from "react";
+import { cn } from "@/lib/utils";
+
+const sizeClasses = {
+  xs: "h-(--input-xs-height) rounded-(--input-xs-radius) [font-size:var(--input-xs-font-size)]",
+  sm: "h-(--input-sm-height) rounded-(--input-sm-radius) [font-size:var(--input-sm-font-size)]",
+  md: "h-(--input-md-height) rounded-(--input-md-radius) [font-size:var(--input-md-font-size)]",
+  lg: "h-(--input-lg-height) rounded-(--input-lg-radius) [font-size:var(--input-lg-font-size)]",
+};
+
+const paddingClasses = {
+  xs: { plain: "px-1.5", withPrefix: "ps-7 pe-1.5", withSuffix: "ps-1.5 pe-7", both: "ps-7 pe-7" },
+  sm: { plain: "px-2", withPrefix: "ps-8 pe-2", withSuffix: "ps-2 pe-8", both: "ps-8 pe-8" },
+  md: { plain: "px-2.5", withPrefix: "ps-9 pe-2.5", withSuffix: "ps-2.5 pe-9", both: "ps-9 pe-9" },
+  lg: { plain: "px-3", withPrefix: "ps-10 pe-3", withSuffix: "ps-3 pe-10", both: "ps-10 pe-10" },
+};
+
+const prefixPadding = {
+  xs: "ps-1.5",
+  sm: "ps-2",
+  md: "ps-2.5",
+  lg: "ps-3",
+};
+
+const suffixPadding = {
+  xs: "pe-1.5",
+  sm: "pe-2",
+  md: "pe-2.5",
+  lg: "pe-3",
+};
+
+const variantClasses = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+
+export const TextInput = forwardRef(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      variant = "subtle",
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      prefix,
+      suffix,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = \`\${inputId}-description\`;
+    const errorId = \`\${inputId}-error\`;
+    const hasError = Boolean(error);
+    const hasLabeling = Boolean(label || description || error);
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const padding = prefix && suffix
+      ? paddingClasses[size].both
+      : prefix
+        ? paddingClasses[size].withPrefix
+        : suffix
+          ? paddingClasses[size].withSuffix
+          : paddingClasses[size].plain;
+
+    return (
+      <div className={cn(hasLabeling && "flex flex-col gap-1.5", hasLabeling && className)}>
+        {label ? (
+          <label
+            htmlFor={inputId}
+            className="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+          >
+            {label}
+            {required ? requiredMark : null}
+          </label>
+        ) : null}
+        <div className={cn("relative flex items-center", !hasLabeling && className)}>
+          {prefix ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute inset-y-0 start-0 flex items-center",
+                prefixPadding[size],
+                disabled ? "text-ink-gray-5" : "text-ink-gray-8",
+              )}
+            >
+              {prefix}
+            </span>
+          ) : null}
+          <input
+            ref={ref}
+            id={inputId}
+            required={required}
+            disabled={disabled}
+            aria-required={required || undefined}
+            aria-invalid={hasError || undefined}
+            aria-errormessage={hasError ? errorId : undefined}
+            aria-describedby={describedBy}
+            data-slot="control"
+            data-size={size}
+            data-variant={variant}
+            data-state={hasError ? "invalid" : "valid"}
+            data-disabled={disabled ? "true" : undefined}
+            data-required={required ? "true" : undefined}
+            className={cn(
+              "w-full border leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+              sizeClasses[size],
+              padding,
+              variantClasses[variant],
+            )}
+            {...props}
+          />
+          {suffix ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute inset-y-0 end-0 flex items-center",
+                suffixPadding[size],
+                disabled ? "text-ink-gray-5" : "text-ink-gray-8",
+              )}
+            >
+              {suffix}
+            </span>
+          ) : null}
+        </div>
+        {description && !hasError ? (
+          <p
+            id={descriptionId}
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+          >
+            {description}
+          </p>
+        ) : null}
+        {hasError ? (
+          <p
+            id={errorId}
+            role="alert"
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+          >
+            {error}
+          </p>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+TextInput.displayName = "TextInput";
+"
+`;
+
+exports[`text-input templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, ref, useId, useSlots } from "vue";
+import { cn } from "@/lib/utils";
+
+const sizeClasses: Record<string, string> = {
+  xs: "h-(--input-xs-height) rounded-(--input-xs-radius) [font-size:var(--input-xs-font-size)]",
+  sm: "h-(--input-sm-height) rounded-(--input-sm-radius) [font-size:var(--input-sm-font-size)]",
+  md: "h-(--input-md-height) rounded-(--input-md-radius) [font-size:var(--input-md-font-size)]",
+  lg: "h-(--input-lg-height) rounded-(--input-lg-radius) [font-size:var(--input-lg-font-size)]",
+};
+
+const prefixPadding: Record<string, string> = {
+  xs: "ps-1.5",
+  sm: "ps-2",
+  md: "ps-2.5",
+  lg: "ps-3",
+};
+
+const suffixPadding: Record<string, string> = {
+  xs: "pe-1.5",
+  sm: "pe-2",
+  md: "pe-2.5",
+  lg: "pe-3",
+};
+
+const paddingClasses: Record<string, { plain: string; prefix: string; suffix: string; both: string }> = {
+  xs: { plain: "px-1.5", prefix: "ps-7 pe-1.5", suffix: "ps-1.5 pe-7", both: "ps-7 pe-7" },
+  sm: { plain: "px-2", prefix: "ps-8 pe-2", suffix: "ps-2 pe-8", both: "ps-8 pe-8" },
+  md: { plain: "px-2.5", prefix: "ps-9 pe-2.5", suffix: "ps-2.5 pe-9", both: "ps-9 pe-9" },
+  lg: { plain: "px-3", prefix: "ps-10 pe-3", suffix: "ps-3 pe-10", both: "ps-10 pe-10" },
+};
+
+const variantClasses: Record<string, string> = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | number;
+    type?: string;
+    size?: "xs" | "sm" | "md" | "lg";
+    variant?: "subtle" | "outline" | "ghost";
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    modelValue: "",
+    type: "text",
+    size: "sm",
+    variant: "subtle",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+    disabled: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
+
+const slots = useSlots();
+const fallbackId = useId();
+const inputId = computed(() => props.id || fallbackId);
+const descriptionId = computed(() => \`\${inputId.value}-description\`);
+const errorId = computed(() => \`\${inputId.value}-error\`);
+const hasError = computed(() => Boolean(props.error));
+const hasLabeling = computed(() => Boolean(props.label || props.description || props.error));
+const describedBy = computed(() =>
+  [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+    .filter(Boolean)
+    .join(" ") || undefined,
+);
+const paddingClass = computed(() => {
+  const padding = paddingClasses[props.size];
+  const hasPrefix = Boolean(slots.prefix);
+  const hasSuffix = Boolean(slots.suffix);
+  if (hasPrefix && hasSuffix) return padding.both;
+  if (hasPrefix) return padding.prefix;
+  if (hasSuffix) return padding.suffix;
+  return padding.plain;
+});
+const controlClasses = computed(() =>
+  cn(
+    "w-full border leading-tighter text-ink-gray-8 transition-colors outline-none placeholder:text-ink-gray-4 disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5 disabled:placeholder:text-ink-gray-3",
+    sizeClasses[props.size],
+    paddingClass.value,
+    variantClasses[props.variant],
+    !hasLabeling.value && props.class,
+  ),
+);
+
+const inputRef = ref<HTMLInputElement | null>(null);
+
+function onInput(event: Event): void {
+  emit("update:modelValue", (event.target as HTMLInputElement).value);
+}
+
+function focus(options?: FocusOptions): void {
+  inputRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <div :class="cn(hasLabeling && 'flex flex-col gap-1.5', hasLabeling && props.class)">
+    <label
+      v-if="props.label"
+      :for="inputId"
+      class="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+    >
+      {{ props.label }}
+      <template v-if="props.required">
+        <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+        <span class="sr-only">(required)</span>
+      </template>
+    </label>
+    <div :class="cn('relative flex items-center', !hasLabeling && props.class)">
+      <span
+        v-if="$slots.prefix"
+        :class="cn(
+          'pointer-events-none absolute inset-y-0 start-0 flex items-center',
+          prefixPadding[props.size],
+          props.disabled ? 'text-ink-gray-5' : 'text-ink-gray-8',
+        )"
+      >
+        <slot name="prefix" />
+      </span>
+      <input
+        ref="inputRef"
+        :id="inputId"
+        :type="props.type"
+        :value="props.modelValue"
+        :required="props.required"
+        :disabled="props.disabled"
+        :aria-required="props.required || undefined"
+        :aria-invalid="hasError || undefined"
+        :aria-errormessage="hasError ? errorId : undefined"
+        :aria-describedby="describedBy"
+        data-slot="control"
+        :data-size="props.size"
+        :data-variant="props.variant"
+        :data-state="hasError ? 'invalid' : 'valid'"
+        :data-disabled="props.disabled ? 'true' : undefined"
+        :data-required="props.required ? 'true' : undefined"
+        :class="controlClasses"
+        v-bind="$attrs"
+        @input="onInput"
+      />
+      <span
+        v-if="$slots.suffix"
+        :class="cn(
+          'pointer-events-none absolute inset-y-0 end-0 flex items-center',
+          suffixPadding[props.size],
+          props.disabled ? 'text-ink-gray-5' : 'text-ink-gray-8',
+        )"
+      >
+        <slot name="suffix" />
+      </span>
+    </div>
+    <p
+      v-if="props.description && !hasError"
+      :id="descriptionId"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+    >
+      {{ props.description }}
+    </p>
+    <p
+      v-if="hasError"
+      :id="errorId"
+      role="alert"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+    >
+      {{ props.error }}
+    </p>
+  </div>
+</template>
+"
+`;

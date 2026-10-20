@@ -1,0 +1,123 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Textarea as TextareaReact } from "@/generated/react/Textarea.tsx";
+
+const usage = `import { Textarea } from "@/components/ui/Textarea";
+
+export default function App() {
+  return (
+    <Textarea
+      label="Description"
+      placeholder="Add context for your team…"
+      description="Markdown is supported."
+      rows={4}
+    />
+  );
+}
+`;
+
+const usageVue = `<script setup>
+import Textarea from "@/components/ui/Textarea.vue";
+import { ref } from "vue";
+
+const description = ref("");
+</script>
+
+<template>
+  <Textarea
+    v-model="description"
+    label="Description"
+    placeholder="Add context for your team…"
+    description="Markdown is supported."
+    :rows="4"
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="textarea"
+  num={sectionNumber("textarea")}
+  label="Textarea"
+  desc="Multi-line input matching frappe-ui v1: four min-heights, subtle / outline / ghost variants, built-in label, description, error, required marker, and a 13px text style."
+  status="new"
+  code={usage}
+  codeFile="textarea.tsx"
+  codeVue={usageVue}
+  codeVueFile="textarea.vue"
+>
+  <CanvasToolbar title="Preview" meta="label · description · rows" />
+  <Canvas>
+    <TextareaReact
+      client:load
+      label="Description"
+      placeholder="Add context for your team…"
+      description="Markdown is supported."
+    />
+    <TextareaReact
+      client:load
+      label="Note"
+      defaultValue="A short note."
+      error="This field is required."
+      required
+    />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="min 32 / 36 / 40 / 44 px">
+      <Canvas grid={false} class="textarea-stack">
+        <TextareaReact client:load size="xs" placeholder="Extra small" rows={2} />
+        <TextareaReact client:load size="sm" placeholder="Small" rows={2} />
+        <TextareaReact client:load size="md" placeholder="Medium" rows={2} />
+        <TextareaReact client:load size="lg" placeholder="Large" rows={2} />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Variants" sub="subtle · outline · ghost">
+      <Canvas grid={false} class="textarea-stack">
+        <TextareaReact client:load variant="subtle" placeholder="Subtle" />
+        <TextareaReact client:load variant="outline" placeholder="Outline" />
+        <TextareaReact client:load variant="ghost" placeholder="Ghost" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="textarea-stack">
+        <TextareaReact client:load label="Default" placeholder="Type here" />
+        <TextareaReact client:load label="Disabled" defaultValue="Read only" disabled />
+        <TextareaReact
+          client:load
+          label="With error"
+          defaultValue="Too short"
+          error="Use at least 20 characters."
+        />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.textarea-stack) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: 100%;
+    padding: 28px 32px !important;
+  }
+
+  @media (max-width: 768px) {
+    :global(.textarea-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>
