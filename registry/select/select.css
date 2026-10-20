@@ -1,0 +1,24 @@
+/* TextInput component tokens — mirrors frappe-ui v1 control geometry. */
+:root {
+  /* Size: xs (24px) */
+  --input-xs-height: 24px;
+  --input-xs-radius: var(--radius-3);
+  --input-xs-font-size: 12px;
+
+  /* Size: sm (28px) */
+  --input-sm-height: 28px;
+  --input-sm-radius: var(--radius-4);
+  --input-sm-font-size: 14px;
+
+  /* Size: md (32px) */
+  --input-md-height: 32px;
+  --input-md-radius: var(--radius-4);
+  --input-md-font-size: 14px;
+
+  /* Size: lg (40px) */
+  --input-lg-height: 40px;
+  --input-lg-radius: var(--radius-5);
+  --input-lg-font-size: 16px;
+
+  --input-description-font-size: 13px;
+}

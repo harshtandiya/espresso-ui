@@ -1,0 +1,256 @@
+import { forwardRef, useId, useState } from "react";
+import { ChevronDown } from "lucide-react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+const sizeClasses = {
+  xs: "h-(--input-xs-height) rounded-(--input-xs-radius) [font-size:var(--input-xs-font-size)]",
+  sm: "h-(--input-sm-height) rounded-(--input-sm-radius) [font-size:var(--input-sm-font-size)]",
+  md: "h-(--input-md-height) rounded-(--input-md-radius) [font-size:var(--input-md-font-size)]",
+  lg: "h-(--input-lg-height) rounded-(--input-lg-radius) [font-size:var(--input-lg-font-size)]",
+};
+
+const paddingClasses = {
+  xs: { plain: "ps-1.5 pe-7", withPrefix: "ps-7 pe-7" },
+  sm: { plain: "ps-2 pe-8", withPrefix: "ps-8 pe-8" },
+  md: { plain: "ps-2.5 pe-9", withPrefix: "ps-9 pe-9" },
+  lg: { plain: "ps-3 pe-10", withPrefix: "ps-10 pe-10" },
+};
+
+const prefixPadding = {
+  xs: "ps-1.5",
+  sm: "ps-2",
+  md: "ps-2.5",
+  lg: "ps-3",
+};
+
+const suffixPadding = {
+  xs: "pe-1.5",
+  sm: "pe-2",
+  md: "pe-2.5",
+  lg: "pe-3",
+};
+
+const variantClasses = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const chevronSizeClasses = {
+  xs: "size-3",
+  sm: "size-3.5",
+  md: "size-4",
+  lg: "size-4",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+<% if (it.typescript) { %>
+type SelectSize = keyof typeof sizeClasses;
+type SelectVariant = keyof typeof variantClasses;
+export type SelectValue = string | number;
+export type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+export type SelectProps = Omit<
+  ComponentPropsWithoutRef<"select">,
+  "size" | "value" | "defaultValue"
+> & {
+  /** Visual size of the select. */
+  size?: SelectSize;
+  /** Surface treatment of the select. */
+  variant?: SelectVariant;
+  /** Options as strings or `{ label, value, disabled }` objects. */
+  options?: SelectOption[];
+  /** Selected value. Omit for uncontrolled use. */
+  value?: SelectValue | null;
+  /** Initial value for uncontrolled use. */
+  defaultValue?: SelectValue | null;
+  /** Called with the selected value, or `null` when the placeholder is chosen. */
+  onValueChange?: (value: SelectValue | null) => void;
+  /** Text shown when no option is selected. */
+  placeholder?: string;
+  /** Fallback text when there are no options. */
+  emptyText?: string;
+  /** Label rendered above the select. */
+  label?: ReactNode;
+  /** Helper text rendered below the select. Hidden when `error` is set. */
+  description?: ReactNode;
+  /** Error message; marks the select invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Content rendered at the start of the select. */
+  prefix?: ReactNode;
+  /** Content rendered at the end of the select. Replaces the default chevron. */
+  suffix?: ReactNode;
+};
+<% } %>
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLSelectElement, SelectProps><% } %>(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      variant = "subtle",
+      options = [],
+      value,
+      defaultValue,
+      onValueChange,
+      placeholder = "Select option",
+      emptyText = "No options",
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      prefix,
+      suffix,
+      onChange,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const selectId = id ?? generatedId;
+    const descriptionId = `${selectId}-description`;
+    const errorId = `${selectId}-error`;
+    const hasError = Boolean(error);
+    const hasLabeling = Boolean(label || description || error);
+    const isControlled = value !== undefined;
+    const [internalValue, setInternalValue] = useState(defaultValue ?? null);
+    const currentValue = isControlled ? value : internalValue;
+
+    const normalizedOptions = options
+      .map((option) => (typeof option === "string" ? { label: option, value: option } : option))
+      .filter((option) => option.value !== undefined && option.value !== null);
+
+    const selectedIndex = normalizedOptions.findIndex((option) => option.value === currentValue);
+    const encodedValue = selectedIndex >= 0 ? String(selectedIndex) : "";
+    const hasValue = selectedIndex >= 0;
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+    const padding = prefix ? paddingClasses[size].withPrefix : paddingClasses[size].plain;
+
+    return (
+      <div className={cn(hasLabeling && "flex flex-col gap-1.5", hasLabeling && className)}>
+        {label ? (
+          <label
+            htmlFor={selectId}
+            className="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+          >
+            {label}
+            {required ? requiredMark : null}
+          </label>
+        ) : null}
+        <div className={cn("relative flex items-center", !hasLabeling && className)}>
+          {prefix ? (
+            <span
+              className={cn(
+                "pointer-events-none absolute inset-y-0 start-0 flex items-center",
+                prefixPadding[size],
+                disabled ? "text-ink-gray-5" : "text-ink-gray-8",
+              )}
+            >
+              {prefix}
+            </span>
+          ) : null}
+          <select
+            ref={ref}
+            id={selectId}
+            value={encodedValue}
+            required={required}
+            disabled={disabled}
+            aria-required={required || undefined}
+            aria-invalid={hasError || undefined}
+            aria-errormessage={hasError ? errorId : undefined}
+            aria-describedby={describedBy}
+            data-slot="control"
+            data-size={size}
+            data-variant={variant}
+            data-state={hasError ? "invalid" : "valid"}
+            data-placeholder={!hasValue ? "" : undefined}
+            data-disabled={disabled ? "true" : undefined}
+            data-required={required ? "true" : undefined}
+            className={cn(
+              "w-full cursor-pointer appearance-none border leading-tighter transition-colors outline-none disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5",
+              sizeClasses[size],
+              padding,
+              variantClasses[variant],
+              hasValue ? "text-ink-gray-8" : "text-ink-gray-4",
+            )}
+            onChange={(event) => {
+              const index = Number(event.currentTarget.value);
+              const next =
+                event.currentTarget.value === "" || Number.isNaN(index)
+                  ? null
+                  : (normalizedOptions[index]?.value ?? null);
+              if (!isControlled) setInternalValue(next);
+              onValueChange?.(next);
+              onChange?.(event);
+            }}
+            {...props}
+          >
+            <option value="" disabled={required}>
+              {normalizedOptions.length === 0 ? emptyText : placeholder}
+            </option>
+            {normalizedOptions.map((option, index) => (
+              <option key={`${option.value}-${index}`} value={String(index)} disabled={option.disabled}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span
+            className={cn(
+              "pointer-events-none absolute inset-y-0 end-0 flex items-center",
+              suffixPadding[size],
+              disabled ? "text-ink-gray-5" : "text-ink-gray-7",
+            )}
+          >
+            {suffix ?? (
+              <ChevronDown aria-hidden="true" className={chevronSizeClasses[size]} />
+            )}
+          </span>
+        </div>
+        {description && !hasError ? (
+          <p
+            id={descriptionId}
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+          >
+            {description}
+          </p>
+        ) : null}
+        {hasError ? (
+          <p
+            id={errorId}
+            role="alert"
+            className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+          >
+            {error}
+          </p>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";

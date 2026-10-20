@@ -1,0 +1,171 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Select as SelectReact } from "@/generated/react/Select.tsx";
+
+const products = [
+  { label: "Frappe", value: "frappe" },
+  { label: "ERPNext", value: "erpnext" },
+  { label: "Espresso", value: "espresso" },
+  { label: "Archived workspace", value: "archived", disabled: true },
+];
+
+const usage = `import { Select } from "@/components/ui/Select";
+
+const options = [
+  { label: "Frappe", value: "frappe" },
+  { label: "ERPNext", value: "erpnext" },
+  { label: "Espresso", value: "espresso" },
+];
+
+export default function App() {
+  return (
+    <Select
+      label="Workspace"
+      options={options}
+      defaultValue="frappe"
+      description="Choose the workspace to open."
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Select from "@/components/ui/Select.vue";
+import { ref } from "vue";
+
+const options = ["Frappe", "ERPNext", "Espresso"];
+const workspace = ref("Frappe");
+\u003C/script>
+
+<template>
+  <Select
+    v-model="workspace"
+    label="Workspace"
+    :options="options"
+    description="Choose the workspace to open."
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="select"
+  num={sectionNumber("select")}
+  label="Select"
+  desc="Native select matching frappe-ui v1: the 24 / 28 / 32 / 40px input scale, subtle / outline / ghost variants, string or object options, built-in label, description, error, required marker, and prefix or custom suffix content."
+  status="new"
+  code={usage}
+  codeFile="select.tsx"
+  codeVue={usageVue}
+  codeVueFile="select.vue"
+>
+  <CanvasToolbar title="Preview" meta="label · options · description" />
+  <Canvas class="select-stack">
+    <SelectReact
+      client:load
+      label="Workspace"
+      options={products}
+      defaultValue="frappe"
+      description="Choose the workspace to open."
+    />
+    <SelectReact
+      client:load
+      label="Plan"
+      options={["Starter", "Growth", "Enterprise"]}
+      placeholder="Choose a plan"
+      required
+    />
+    <SelectReact
+      client:load
+      label="Region"
+      options={products}
+      defaultValue="erpnext"
+      error="This region is not available on your plan."
+    />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="24 / 28 / 32 / 40 px">
+      <Canvas grid={false} class="select-stack">
+        <SelectReact client:load size="xs" options={products} defaultValue="frappe" />
+        <SelectReact client:load size="sm" options={products} defaultValue="frappe" />
+        <SelectReact client:load size="md" options={products} defaultValue="frappe" />
+        <SelectReact client:load size="lg" options={products} defaultValue="frappe" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Variants" sub="subtle · outline · ghost">
+      <Canvas grid={false} class="select-stack">
+        <SelectReact client:load variant="subtle" options={products} defaultValue="frappe" />
+        <SelectReact client:load variant="outline" options={products} defaultValue="frappe" />
+        <SelectReact client:load variant="ghost" options={products} defaultValue="frappe" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="select-stack">
+        <SelectReact client:load label="Default" options={products} defaultValue="frappe" />
+        <SelectReact
+          client:load
+          label="Disabled"
+          options={products}
+          defaultValue="erpnext"
+          disabled
+        />
+        <SelectReact
+          client:load
+          label="With error"
+          options={products}
+          error="Choose a workspace to continue."
+          required
+        />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Affixes" sub="prefix and suffix content">
+      <Canvas grid={false} class="select-stack">
+        <SelectReact
+          client:load
+          label="Environment"
+          options={["Production", "Staging", "Local"]}
+          defaultValue="Production"
+          prefix="env"
+        />
+        <SelectReact
+          client:load
+          label="Currency"
+          options={["USD", "EUR", "INR"]}
+          defaultValue="USD"
+          suffix="⌄"
+        />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.select-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.select-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: min(100%, 420px);
+  }
+
+  @media (max-width: 768px) {
+    :global(.select-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

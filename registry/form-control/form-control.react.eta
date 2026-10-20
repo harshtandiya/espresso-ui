@@ -1,0 +1,113 @@
+import { forwardRef, useRef } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { TextInput } from "./TextInput";
+import { Textarea } from "./Textarea";
+import { Select } from "./Select";
+import { Checkbox } from "./Checkbox";
+
+<% if (it.typescript) { %>
+type FormControlType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "search"
+  | "tel"
+  | "url"
+  | "textarea"
+  | "select"
+  | "checkbox";
+
+type FormControlSize = "xs" | "sm" | "md" | "lg";
+type FormControlVariant = "subtle" | "outline" | "ghost";
+type SelectValue = string | number;
+type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+export type FormControlProps = Omit<ComponentPropsWithoutRef<"input">, "size" | "type"> & {
+  /** Which control to render. */
+  type?: FormControlType;
+  /** Visual size of the control. */
+  size?: FormControlSize;
+  /** Surface treatment; ignored by checkbox. */
+  variant?: FormControlVariant;
+  /** Label rendered above the control. */
+  label?: ReactNode;
+  /** Helper text rendered below the control. Hidden when `error` is set. */
+  description?: ReactNode;
+  /** Error message; marks the control invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Rows for `type="textarea"`. */
+  rows?: number;
+  /** Options for `type="select"`. */
+  options?: SelectOption[];
+  /** Called when the selected value changes for `type="select"`. */
+  onValueChange?: (value: SelectValue | null) => void;
+};
+<% } %>
+
+type ControlElement =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement
+  | HTMLButtonElement;
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLElement, FormControlProps><% } %>(
+  ({ type = "text", size = "sm", variant = "subtle", options, rows, onValueChange, ...props }, ref) => {
+    const controlRef = useRef<ControlElement | null>(null);
+<% if (it.typescript) { %>    const rest = props as Record<string, unknown>;
+<% } else { %>    const rest = props;
+<% } %>
+    const setControlRef = (node: ControlElement | null) => {
+      controlRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    };
+
+    if (type === "textarea") {
+      return (
+        <Textarea
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          rows={rows}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "select") {
+      return (
+        <Select
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          options={options}
+          onValueChange={onValueChange}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "checkbox") {
+      return (
+        <Checkbox
+          ref={setControlRef}
+          size={size === "lg" ? "md" : size}
+          {...rest}
+        />
+      );
+    }
+
+    return <TextInput ref={setControlRef} type={type} size={size} variant={variant} {...rest} />;
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";

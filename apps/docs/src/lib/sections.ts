@@ -32,8 +32,16 @@ export const SECTIONS: readonly Section[] = [
     sub: "4 sizes",
   },
   { id: "textarea", label: "Textarea", group: "components", status: "new", sub: "4 sizes" },
+  { id: "select", label: "Select", group: "components", status: "new", sub: "4 sizes" },
   { id: "checkbox", label: "Checkbox", group: "components", status: "new", sub: "3 sizes" },
   { id: "switch", label: "Switch", group: "components", status: "new", sub: "3 sizes" },
+  {
+    id: "form-control",
+    label: "Form Control",
+    group: "components",
+    status: "new",
+    sub: "dispatcher",
+  },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */

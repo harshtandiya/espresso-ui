@@ -1,0 +1,28 @@
+{
+  "name": "form-control",
+  "type": "registry:ui",
+  "title": "FormControl",
+  "description": "espresso-ui FormControl component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "text-input",
+    "textarea",
+    "select",
+    "checkbox"
+  ],
+  "files": [
+    {
+      "path": "components/ui/FormControl.tsx",
+      "content": "import { forwardRef, useRef } from \"react\";\nimport type { ComponentPropsWithoutRef, ReactNode } from \"react\";\nimport { TextInput } from \"./TextInput\";\nimport { Textarea } from \"./Textarea\";\nimport { Select } from \"./Select\";\nimport { Checkbox } from \"./Checkbox\";\n\ntype FormControlType =\n  | \"text\"\n  | \"email\"\n  | \"password\"\n  | \"number\"\n  | \"search\"\n  | \"tel\"\n  | \"url\"\n  | \"textarea\"\n  | \"select\"\n  | \"checkbox\";\n\ntype FormControlSize = \"xs\" | \"sm\" | \"md\" | \"lg\";\ntype FormControlVariant = \"subtle\" | \"outline\" | \"ghost\";\ntype SelectValue = string | number;\ntype SelectOption =\n  | string\n  | {\n      label: string;\n      value: SelectValue;\n      disabled?: boolean;\n    };\n\nexport type FormControlProps = Omit<ComponentPropsWithoutRef<\"input\">, \"size\" | \"type\"> & {\n  /** Which control to render. */\n  type?: FormControlType;\n  /** Visual size of the control. */\n  size?: FormControlSize;\n  /** Surface treatment; ignored by checkbox. */\n  variant?: FormControlVariant;\n  /** Label rendered above the control. */\n  label?: ReactNode;\n  /** Helper text rendered below the control. Hidden when `error` is set. */\n  description?: ReactNode;\n  /** Error message; marks the control invalid. */\n  error?: ReactNode;\n  /** Marks the field as required and renders an asterisk. */\n  required?: boolean;\n  /** Rows for `type=\"textarea\"`. */\n  rows?: number;\n  /** Options for `type=\"select\"`. */\n  options?: SelectOption[];\n  /** Called when the selected value changes for `type=\"select\"`. */\n  onValueChange?: (value: SelectValue | null) => void;\n};\n\ntype ControlElement =\n  | HTMLInputElement\n  | HTMLTextAreaElement\n  | HTMLSelectElement\n  | HTMLButtonElement;\n\nexport const FormControl = forwardRef<HTMLElement, FormControlProps>(\n  ({ type = \"text\", size = \"sm\", variant = \"subtle\", options, rows, onValueChange, ...props }, ref) => {\n    const controlRef = useRef<ControlElement | null>(null);\n    const rest = props as Record<string, unknown>;\n    const setControlRef = (node: ControlElement | null) => {\n      controlRef.current = node;\n      if (typeof ref === \"function\") ref(node);\n      else if (ref) ref.current = node;\n    };\n\n    if (type === \"textarea\") {\n      return (\n        <Textarea\n          ref={setControlRef}\n          size={size}\n          variant={variant}\n          rows={rows}\n          {...rest}\n        />\n      );\n    }\n\n    if (type === \"select\") {\n      return (\n        <Select\n          ref={setControlRef}\n          size={size}\n          variant={variant}\n          options={options}\n          onValueChange={onValueChange}\n          {...rest}\n        />\n      );\n    }\n\n    if (type === \"checkbox\") {\n      return (\n        <Checkbox\n          ref={setControlRef}\n          size={size === \"lg\" ? \"md\" : size}\n          {...rest}\n        />\n      );\n    }\n\n    return <TextInput ref={setControlRef} type={type} size={size} variant={variant} {...rest} />;\n  },\n);\n\nFormControl.displayName = \"FormControl\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/form-control.css",
+      "content": "/* FormControl inherits the control tokens from the component it dispatches to. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

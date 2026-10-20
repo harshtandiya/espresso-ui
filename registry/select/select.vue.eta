@@ -1,0 +1,250 @@
+<script setup lang="ts">
+import { computed, ref, useAttrs, useId, useSlots } from "vue";
+import { ChevronDown } from "@lucide/vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+defineOptions({ inheritAttrs: false });
+
+type SelectValue = string | number;
+type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+const sizeClasses: Record<string, string> = {
+  xs: "h-(--input-xs-height) rounded-(--input-xs-radius) [font-size:var(--input-xs-font-size)]",
+  sm: "h-(--input-sm-height) rounded-(--input-sm-radius) [font-size:var(--input-sm-font-size)]",
+  md: "h-(--input-md-height) rounded-(--input-md-radius) [font-size:var(--input-md-font-size)]",
+  lg: "h-(--input-lg-height) rounded-(--input-lg-radius) [font-size:var(--input-lg-font-size)]",
+};
+
+const paddingClasses: Record<string, { plain: string; withPrefix: string }> = {
+  xs: { plain: "ps-1.5 pe-7", withPrefix: "ps-7 pe-7" },
+  sm: { plain: "ps-2 pe-8", withPrefix: "ps-8 pe-8" },
+  md: { plain: "ps-2.5 pe-9", withPrefix: "ps-9 pe-9" },
+  lg: { plain: "ps-3 pe-10", withPrefix: "ps-10 pe-10" },
+};
+
+const prefixPadding: Record<string, string> = {
+  xs: "ps-1.5",
+  sm: "ps-2",
+  md: "ps-2.5",
+  lg: "ps-3",
+};
+
+const suffixPadding: Record<string, string> = {
+  xs: "pe-1.5",
+  sm: "pe-2",
+  md: "pe-2.5",
+  lg: "pe-3",
+};
+
+const variantClasses: Record<string, string> = {
+  subtle:
+    "border-surface-gray-2 bg-surface-gray-2 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  outline:
+    "border-outline-gray-2 bg-surface-base hover:border-outline-gray-3 hover:shadow-sm focus:border-outline-gray-4 focus:bg-surface-base focus:shadow-sm",
+  ghost: "border-transparent bg-transparent focus:outline-none",
+};
+
+const chevronSizeClasses: Record<string, string> = {
+  xs: "size-3",
+  sm: "size-3.5",
+  md: "size-4",
+  lg: "size-4",
+};
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: SelectValue | null;
+    options?: SelectOption[];
+    size?: "xs" | "sm" | "md" | "lg";
+    variant?: "subtle" | "outline" | "ghost";
+    placeholder?: string;
+    emptyText?: string;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    options: () => [],
+    size: "sm",
+    variant: "subtle",
+    placeholder: "Select option",
+    emptyText: "No options",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+    disabled: false,
+  },
+);
+
+const model = defineModel<SelectValue | null>();
+const attrs = useAttrs();
+const slots = useSlots();
+const fallbackId = useId();
+const selectRef = ref<HTMLSelectElement | null>(null);
+const selectId = computed(() => props.id || fallbackId);
+const descriptionId = computed(() => `${selectId.value}-description`);
+const errorId = computed(() => `${selectId.value}-error`);
+const hasError = computed(() => Boolean(props.error));
+const hasLabel = computed(() => Boolean(props.label || slots.label));
+const hasDescription = computed(() => Boolean(props.description || slots.description));
+const hasLabeling = computed(() => Boolean(hasLabel.value || hasDescription.value || hasError.value));
+const currentValue = computed(() => model.value ?? null);
+
+const normalizedOptions = computed(() =>
+  props.options
+    .map((option) => (typeof option === "string" ? { label: option, value: option } : option))
+    .filter((option) => option.value !== undefined && option.value !== null),
+);
+
+const selectedIndex = computed(() =>
+  normalizedOptions.value.findIndex((option) => option.value === currentValue.value),
+);
+const encodedValue = computed(() =>
+  selectedIndex.value >= 0 ? String(selectedIndex.value) : "",
+);
+const hasValue = computed(() => selectedIndex.value >= 0);
+const describedBy = computed(
+  () =>
+    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+      .filter(Boolean)
+      .join(" ") || undefined,
+);
+const paddingClass = computed(() =>
+  slots.prefix ? paddingClasses[props.size].withPrefix : paddingClasses[props.size].plain,
+);
+
+const controlAttrs = computed(() =>
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+);
+
+const selectClasses = computed(() =>
+  cn(
+    "w-full cursor-pointer appearance-none border leading-tighter transition-colors outline-none disabled:cursor-not-allowed disabled:border-surface-gray-2 disabled:bg-surface-gray-1 disabled:text-ink-gray-5",
+    sizeClasses[props.size],
+    paddingClass.value,
+    variantClasses[props.variant],
+    hasValue.value ? "text-ink-gray-8" : "text-ink-gray-4",
+  ),
+);
+
+function onChange(event: Event): void {
+  const target = event.target as HTMLSelectElement;
+  const index = Number(target.value);
+  const next =
+    target.value === "" || Number.isNaN(index)
+      ? null
+      : (normalizedOptions.value[index]?.value ?? null);
+  model.value = next;
+}
+
+function focus(options?: FocusOptions): void {
+  selectRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <div :class="cn(hasLabeling && 'flex flex-col gap-1.5', hasLabeling && props.class)">
+    <label
+      v-if="hasLabel"
+      :for="selectId"
+      class="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+    >
+      <slot v-if="$slots.label" name="label" :required="props.required" />
+      <template v-else>
+        {{ props.label }}
+        <template v-if="props.required">
+          <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+          <span class="sr-only">(required)</span>
+        </template>
+      </template>
+    </label>
+    <div :class="cn('relative flex items-center', !hasLabeling && props.class)">
+      <span
+        v-if="$slots.prefix"
+        :class="
+          cn(
+            'pointer-events-none absolute inset-y-0 start-0 flex items-center',
+            prefixPadding[props.size],
+            props.disabled ? 'text-ink-gray-5' : 'text-ink-gray-8',
+          )
+        "
+      >
+        <slot name="prefix" />
+      </span>
+      <select
+        ref="selectRef"
+        :id="selectId"
+        :value="encodedValue"
+        :required="props.required"
+        :disabled="props.disabled"
+        :aria-required="props.required || undefined"
+        :aria-invalid="hasError || undefined"
+        :aria-errormessage="hasError ? errorId : undefined"
+        :aria-describedby="describedBy"
+        data-slot="control"
+        :data-size="props.size"
+        :data-variant="props.variant"
+        :data-state="hasError ? 'invalid' : 'valid'"
+        :data-placeholder="!hasValue ? '' : undefined"
+        :data-disabled="props.disabled ? 'true' : undefined"
+        :data-required="props.required ? 'true' : undefined"
+        :class="selectClasses"
+        v-bind="controlAttrs"
+        @change="onChange"
+      >
+        <option value="" :disabled="props.required">
+          {{ normalizedOptions.length === 0 ? props.emptyText : props.placeholder }}
+        </option>
+        <option
+          v-for="(option, index) in normalizedOptions"
+          :key="`${option.value}-${index}`"
+          :value="String(index)"
+          :disabled="option.disabled"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+      <span
+        :class="
+          cn(
+            'pointer-events-none absolute inset-y-0 end-0 flex items-center',
+            suffixPadding[props.size],
+            props.disabled ? 'text-ink-gray-5' : 'text-ink-gray-7',
+          )
+        "
+      >
+        <slot name="suffix">
+          <ChevronDown aria-hidden="true" :class="chevronSizeClasses[props.size]" />
+        </slot>
+      </span>
+    </div>
+    <p
+      v-if="hasDescription && !hasError"
+      :id="descriptionId"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+    >
+      <slot name="description">{{ props.description }}</slot>
+    </p>
+    <p
+      v-if="hasError"
+      :id="errorId"
+      role="alert"
+      class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+    >
+      {{ props.error }}
+    </p>
+  </div>
+</template>

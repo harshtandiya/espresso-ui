@@ -1,0 +1,28 @@
+{
+  "name": "form-control",
+  "type": "registry:ui",
+  "title": "FormControl",
+  "description": "espresso-ui FormControl component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "text-input",
+    "textarea",
+    "select",
+    "checkbox"
+  ],
+  "files": [
+    {
+      "path": "components/ui/FormControl.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed, ref, useAttrs } from \"vue\";\nimport TextInput from \"./TextInput.vue\";\nimport Textarea from \"./Textarea.vue\";\nimport Select from \"./Select.vue\";\nimport Checkbox from \"./Checkbox.vue\";\n\ndefineOptions({ inheritAttrs: false });\n\ntype FormControlType =\n  | \"text\"\n  | \"email\"\n  | \"password\"\n  | \"number\"\n  | \"search\"\n  | \"tel\"\n  | \"url\"\n  | \"textarea\"\n  | \"select\"\n  | \"checkbox\";\ntype FormControlSize = \"xs\" | \"sm\" | \"md\" | \"lg\";\ntype FormControlVariant = \"subtle\" | \"outline\" | \"ghost\";\ntype SelectValue = string | number;\ntype SelectOption =\n  | string\n  | {\n      label: string;\n      value: SelectValue;\n      disabled?: boolean;\n    };\n\nconst props = withDefaults(\n  defineProps<{\n    type?: FormControlType;\n    modelValue?: string | number | boolean | null;\n    size?: FormControlSize;\n    variant?: FormControlVariant;\n    label?: string;\n    description?: string;\n    error?: string;\n    required?: boolean;\n    rows?: number;\n    options?: SelectOption[];\n    id?: string;\n    class?: string;\n  }>(),\n  {\n    type: \"text\",\n    size: \"sm\",\n    variant: \"subtle\",\n    label: \"\",\n    description: \"\",\n    error: \"\",\n    required: false,\n  },\n);\n\nconst emit = defineEmits<{\n  \"update:modelValue\": [value: string | number | boolean | null];\n}>();\n\nconst attrs = useAttrs();\nconst controlRef = ref<{ focus?: (options?: FocusOptions) => void } | null>(null);\n\nconst resolvedComponent = computed(() => {\n  switch (props.type) {\n    case \"textarea\":\n      return Textarea;\n    case \"select\":\n      return Select;\n    case \"checkbox\":\n      return Checkbox;\n    default:\n      return TextInput;\n  }\n});\n\nconst forwardedAttrs = computed(() => {\n  const out: Record<string, unknown> = {};\n  for (const key in attrs) {\n    if (key !== \"class\" && key !== \"style\") out[key] = attrs[key];\n  }\n\n  if (props.type === \"checkbox\") {\n    out.size = props.size === \"lg\" ? \"md\" : props.size;\n  } else {\n    out.size = props.size;\n    out.variant = props.variant;\n  }\n\n  if (props.label !== undefined) out.label = props.label;\n  if (props.description !== undefined) out.description = props.description;\n  if (props.error !== undefined) out.error = props.error;\n  if (props.required !== undefined) out.required = props.required;\n  if (props.type === \"textarea\") out.rows = props.rows;\n  if (props.type === \"select\") out.options = props.options;\n  if (props.type !== \"textarea\" && props.type !== \"select\" && props.type !== \"checkbox\") {\n    out.type = props.type;\n  }\n\n  return out;\n});\n\nfunction onUpdate(value: string | number | boolean | null): void {\n  emit(\"update:modelValue\", value);\n}\n\nfunction focus(options?: FocusOptions): void {\n  controlRef.value?.focus?.(options);\n}\n\ndefineExpose({ focus });\n</script>\n\n<template>\n  <component\n    :is=\"resolvedComponent\"\n    ref=\"controlRef\"\n    :id=\"props.id\"\n    :model-value=\"props.modelValue\"\n    v-bind=\"forwardedAttrs\"\n    :class=\"props.class\"\n    :style=\"$attrs.style as any\"\n    @update:model-value=\"onUpdate\"\n  >\n    <template v-for=\"(_, name) in $slots\" :key=\"name\" #[name]=\"slotProps\">\n      <slot :name=\"name\" v-bind=\"slotProps ?? {}\" />\n    </template>\n  </component>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/form-control.css",
+      "content": "/* FormControl inherits the control tokens from the component it dispatches to. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

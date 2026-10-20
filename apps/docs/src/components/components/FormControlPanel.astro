@@ -1,0 +1,141 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { FormControl as FormControlReact } from "@/generated/react/FormControl.tsx";
+
+const options = [
+  { label: "Engineering", value: "engineering" },
+  { label: "Design", value: "design" },
+  { label: "Operations", value: "operations" },
+];
+
+const usage = `import { FormControl } from "@/components/ui/FormControl";
+
+export default function App() {
+  return (
+    <FormControl
+      type="select"
+      label="Team"
+      options={[
+        { label: "Engineering", value: "engineering" },
+        { label: "Design", value: "design" },
+      ]}
+      defaultValue="engineering"
+      description="Controls who can view this project."
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import FormControl from "@/components/ui/FormControl.vue";
+import { ref } from "vue";
+
+const team = ref("engineering");
+\u003C/script>
+
+<template>
+  <FormControl
+    v-model="team"
+    type="select"
+    label="Team"
+    :options="[
+      { label: 'Engineering', value: 'engineering' },
+      { label: 'Design', value: 'design' },
+    ]"
+    description="Controls who can view this project."
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="form-control"
+  num={sectionNumber("form-control")}
+  label="Form Control"
+  desc="Thin dispatcher matching frappe-ui v1: pass `type` to render a text input, textarea, select, or checkbox while keeping one label / description / error surface across a form."
+  status="new"
+  code={usage}
+  codeFile="form-control.tsx"
+  codeVue={usageVue}
+  codeVueFile="form-control.vue"
+>
+  <CanvasToolbar title="Preview" meta="text · select · textarea · checkbox" />
+  <Canvas class="form-stack">
+    <FormControlReact client:load label="Full name" placeholder="Jane Cooper" required />
+    <FormControlReact
+      client:load
+      type="select"
+      label="Team"
+      options={options}
+      defaultValue="engineering"
+      description="Controls who can view this project."
+    />
+    <FormControlReact
+      client:load
+      type="textarea"
+      label="Notes"
+      placeholder="Add context for your team…"
+      rows={3}
+    />
+    <FormControlReact
+      client:load
+      type="checkbox"
+      label="Email notifications"
+      description="Send me a summary every morning."
+      defaultChecked
+    />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="24 / 28 / 32 / 40 px">
+      <Canvas grid={false} class="form-stack">
+        <FormControlReact client:load size="xs" label="Extra small" placeholder="Extra small" />
+        <FormControlReact client:load size="sm" label="Small" placeholder="Small" />
+        <FormControlReact client:load size="md" label="Medium" placeholder="Medium" />
+        <FormControlReact client:load size="lg" label="Large" placeholder="Large" />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="form-stack">
+        <FormControlReact client:load label="Default" placeholder="Type here" />
+        <FormControlReact client:load label="Disabled" defaultValue="Read only" disabled />
+        <FormControlReact
+          client:load
+          label="With error"
+          defaultValue="not-an-email"
+          type="email"
+          error="Enter a valid email address."
+          required
+        />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.form-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.form-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: min(100%, 420px);
+  }
+
+  @media (max-width: 768px) {
+    :global(.form-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

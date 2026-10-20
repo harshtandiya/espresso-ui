@@ -1,0 +1,130 @@
+<script setup lang="ts">
+import { computed, ref, useAttrs } from "vue";
+import TextInput from "./TextInput.vue";
+import Textarea from "./Textarea.vue";
+import Select from "./Select.vue";
+import Checkbox from "./Checkbox.vue";
+
+defineOptions({ inheritAttrs: false });
+
+type FormControlType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "search"
+  | "tel"
+  | "url"
+  | "textarea"
+  | "select"
+  | "checkbox";
+type FormControlSize = "xs" | "sm" | "md" | "lg";
+type FormControlVariant = "subtle" | "outline" | "ghost";
+type SelectValue = string | number;
+type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+const props = withDefaults(
+  defineProps<{
+    type?: FormControlType;
+    modelValue?: string | number | boolean | null;
+    size?: FormControlSize;
+    variant?: FormControlVariant;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    rows?: number;
+    options?: SelectOption[];
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    type: "text",
+    size: "sm",
+    variant: "subtle",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string | number | boolean | null];
+}>();
+
+const attrs = useAttrs();
+const controlRef = ref<{ focus?: (options?: FocusOptions) => void } | null>(null);
+
+const resolvedComponent = computed(() => {
+  switch (props.type) {
+    case "textarea":
+      return Textarea;
+    case "select":
+      return Select;
+    case "checkbox":
+      return Checkbox;
+    default:
+      return TextInput;
+  }
+});
+
+const forwardedAttrs = computed(() => {
+  const out: Record<string, unknown> = {};
+  for (const key in attrs) {
+    if (key !== "class" && key !== "style") out[key] = attrs[key];
+  }
+
+  if (props.type === "checkbox") {
+    out.size = props.size === "lg" ? "md" : props.size;
+  } else {
+    out.size = props.size;
+    out.variant = props.variant;
+  }
+
+  if (props.label !== undefined) out.label = props.label;
+  if (props.description !== undefined) out.description = props.description;
+  if (props.error !== undefined) out.error = props.error;
+  if (props.required !== undefined) out.required = props.required;
+  if (props.type === "textarea") out.rows = props.rows;
+  if (props.type === "select") out.options = props.options;
+  if (props.type !== "textarea" && props.type !== "select" && props.type !== "checkbox") {
+    out.type = props.type;
+  }
+
+  return out;
+});
+
+function onUpdate(value: string | number | boolean | null): void {
+  emit("update:modelValue", value);
+}
+
+function focus(options?: FocusOptions): void {
+  controlRef.value?.focus?.(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <component
+    :is="resolvedComponent"
+    ref="controlRef"
+    :id="props.id"
+    :model-value="props.modelValue"
+    v-bind="forwardedAttrs"
+    :class="props.class"
+    :style="$attrs.style as any"
+    @update:model-value="onUpdate"
+  >
+    <template v-for="(_, name) in $slots" :key="name" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </component>
+</template>

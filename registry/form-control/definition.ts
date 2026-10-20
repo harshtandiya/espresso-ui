@@ -1,0 +1,46 @@
+export const formControlDef = {
+  name: "form-control",
+  props: {
+    type: {
+      type: "string",
+      values: [
+        "text",
+        "email",
+        "password",
+        "number",
+        "search",
+        "tel",
+        "url",
+        "textarea",
+        "select",
+        "checkbox",
+      ],
+      default: "text",
+    },
+    modelValue: { type: ["string", "number", "boolean"], default: null },
+    size: {
+      type: "string",
+      values: ["xs", "sm", "md", "lg"],
+      default: "sm",
+    },
+    variant: {
+      type: "string",
+      values: ["subtle", "outline", "ghost"],
+      default: "subtle",
+    },
+    label: { type: "string", default: "" },
+    description: { type: "string", default: "" },
+    error: { type: "string", default: "" },
+    required: { type: "boolean", default: false },
+    rows: { type: "number", default: 3 },
+    options: { type: "array", default: [] },
+    id: { type: "string", default: "" },
+  },
+  slots: ["label", "description", "prefix", "suffix"],
+  emits: ["update:modelValue"],
+  registryDependencies: ["text-input", "textarea", "select", "checkbox"],
+  peerDeps: {
+    react: ["clsx", "tailwind-merge"],
+    vue: ["clsx", "tailwind-merge"],
+  },
+} as const;

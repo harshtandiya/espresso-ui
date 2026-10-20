@@ -1,0 +1,315 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`form-control templates > renders React template 1`] = `
+"import { forwardRef, useRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { TextInput } from "./TextInput";
+import { Textarea } from "./Textarea";
+import { Select } from "./Select";
+import { Checkbox } from "./Checkbox";
+
+type FormControlType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "search"
+  | "tel"
+  | "url"
+  | "textarea"
+  | "select"
+  | "checkbox";
+
+type FormControlSize = "xs" | "sm" | "md" | "lg";
+type FormControlVariant = "subtle" | "outline" | "ghost";
+type SelectValue = string | number;
+type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+export type FormControlProps = Omit<ComponentPropsWithoutRef<"input">, "size" | "type"> & {
+  /** Which control to render. */
+  type?: FormControlType;
+  /** Visual size of the control. */
+  size?: FormControlSize;
+  /** Surface treatment; ignored by checkbox. */
+  variant?: FormControlVariant;
+  /** Label rendered above the control. */
+  label?: ReactNode;
+  /** Helper text rendered below the control. Hidden when \`error\` is set. */
+  description?: ReactNode;
+  /** Error message; marks the control invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Rows for \`type="textarea"\`. */
+  rows?: number;
+  /** Options for \`type="select"\`. */
+  options?: SelectOption[];
+  /** Called when the selected value changes for \`type="select"\`. */
+  onValueChange?: (value: SelectValue | null) => void;
+};
+
+type ControlElement =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement
+  | HTMLButtonElement;
+
+export const FormControl = forwardRef<HTMLElement, FormControlProps>(
+  ({ type = "text", size = "sm", variant = "subtle", options, rows, onValueChange, ...props }, ref) => {
+    const controlRef = useRef<ControlElement | null>(null);
+    const rest = props as Record<string, unknown>;
+    const setControlRef = (node: ControlElement | null) => {
+      controlRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    };
+
+    if (type === "textarea") {
+      return (
+        <Textarea
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          rows={rows}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "select") {
+      return (
+        <Select
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          options={options}
+          onValueChange={onValueChange}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "checkbox") {
+      return (
+        <Checkbox
+          ref={setControlRef}
+          size={size === "lg" ? "md" : size}
+          {...rest}
+        />
+      );
+    }
+
+    return <TextInput ref={setControlRef} type={type} size={size} variant={variant} {...rest} />;
+  },
+);
+
+FormControl.displayName = "FormControl";
+"
+`;
+
+exports[`form-control templates > renders React template without TypeScript 1`] = `
+"import { forwardRef, useRef } from "react";
+import { TextInput } from "./TextInput";
+import { Textarea } from "./Textarea";
+import { Select } from "./Select";
+import { Checkbox } from "./Checkbox";
+
+
+type ControlElement =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement
+  | HTMLButtonElement;
+
+export const FormControl = forwardRef(
+  ({ type = "text", size = "sm", variant = "subtle", options, rows, onValueChange, ...props }, ref) => {
+    const controlRef = useRef<ControlElement | null>(null);
+    const rest = props;
+    const setControlRef = (node: ControlElement | null) => {
+      controlRef.current = node;
+      if (typeof ref === "function") ref(node);
+      else if (ref) ref.current = node;
+    };
+
+    if (type === "textarea") {
+      return (
+        <Textarea
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          rows={rows}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "select") {
+      return (
+        <Select
+          ref={setControlRef}
+          size={size}
+          variant={variant}
+          options={options}
+          onValueChange={onValueChange}
+          {...rest}
+        />
+      );
+    }
+
+    if (type === "checkbox") {
+      return (
+        <Checkbox
+          ref={setControlRef}
+          size={size === "lg" ? "md" : size}
+          {...rest}
+        />
+      );
+    }
+
+    return <TextInput ref={setControlRef} type={type} size={size} variant={variant} {...rest} />;
+  },
+);
+
+FormControl.displayName = "FormControl";
+"
+`;
+
+exports[`form-control templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, ref, useAttrs } from "vue";
+import TextInput from "./TextInput.vue";
+import Textarea from "./Textarea.vue";
+import Select from "./Select.vue";
+import Checkbox from "./Checkbox.vue";
+
+defineOptions({ inheritAttrs: false });
+
+type FormControlType =
+  | "text"
+  | "email"
+  | "password"
+  | "number"
+  | "search"
+  | "tel"
+  | "url"
+  | "textarea"
+  | "select"
+  | "checkbox";
+type FormControlSize = "xs" | "sm" | "md" | "lg";
+type FormControlVariant = "subtle" | "outline" | "ghost";
+type SelectValue = string | number;
+type SelectOption =
+  | string
+  | {
+      label: string;
+      value: SelectValue;
+      disabled?: boolean;
+    };
+
+const props = withDefaults(
+  defineProps<{
+    type?: FormControlType;
+    modelValue?: string | number | boolean | null;
+    size?: FormControlSize;
+    variant?: FormControlVariant;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    rows?: number;
+    options?: SelectOption[];
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    type: "text",
+    size: "sm",
+    variant: "subtle",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: string | number | boolean | null];
+}>();
+
+const attrs = useAttrs();
+const controlRef = ref<{ focus?: (options?: FocusOptions) => void } | null>(null);
+
+const resolvedComponent = computed(() => {
+  switch (props.type) {
+    case "textarea":
+      return Textarea;
+    case "select":
+      return Select;
+    case "checkbox":
+      return Checkbox;
+    default:
+      return TextInput;
+  }
+});
+
+const forwardedAttrs = computed(() => {
+  const out: Record<string, unknown> = {};
+  for (const key in attrs) {
+    if (key !== "class" && key !== "style") out[key] = attrs[key];
+  }
+
+  if (props.type === "checkbox") {
+    out.size = props.size === "lg" ? "md" : props.size;
+  } else {
+    out.size = props.size;
+    out.variant = props.variant;
+  }
+
+  if (props.label !== undefined) out.label = props.label;
+  if (props.description !== undefined) out.description = props.description;
+  if (props.error !== undefined) out.error = props.error;
+  if (props.required !== undefined) out.required = props.required;
+  if (props.type === "textarea") out.rows = props.rows;
+  if (props.type === "select") out.options = props.options;
+  if (props.type !== "textarea" && props.type !== "select" && props.type !== "checkbox") {
+    out.type = props.type;
+  }
+
+  return out;
+});
+
+function onUpdate(value: string | number | boolean | null): void {
+  emit("update:modelValue", value);
+}
+
+function focus(options?: FocusOptions): void {
+  controlRef.value?.focus?.(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <component
+    :is="resolvedComponent"
+    ref="controlRef"
+    :id="props.id"
+    :model-value="props.modelValue"
+    v-bind="forwardedAttrs"
+    :class="props.class"
+    :style="$attrs.style as any"
+    @update:model-value="onUpdate"
+  >
+    <template v-for="(_, name) in $slots" :key="name" #[name]="slotProps">
+      <slot :name="name" v-bind="slotProps ?? {}" />
+    </template>
+  </component>
+</template>
+"
+`;
