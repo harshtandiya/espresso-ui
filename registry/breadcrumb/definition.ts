@@ -1,6 +1,12 @@
 export const breadcrumbDef = {
   name: "breadcrumb",
   props: {
+    items: {
+      type: "array",
+      default: [],
+      description:
+        "Ordered trail of { label, href?, route?, onClick? } items. When set, Breadcrumb renders the complete list.",
+    },
     size: {
       type: "string",
       values: ["sm", "md"],
@@ -29,7 +35,7 @@ export const breadcrumbDef = {
         "Crumb count to keep visible after the ellipsis when collapsed. Defaults to maxItems - itemsBeforeCollapse.",
     },
   },
-  slots: ["default"],
+  slots: ["default", "prefix", "suffix"],
   emits: [],
   registryDependencies: ["collapse"],
   peerDeps: {

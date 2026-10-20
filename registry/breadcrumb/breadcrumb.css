@@ -1,8 +1,8 @@
 /* Breadcrumb component tokens — override these to customise breadcrumbs. */
 :root {
   --breadcrumb-list-gap: 2px;
-  --breadcrumb-item-radius: var(--radius-md);
-  --breadcrumb-ellipsis-radius: var(--radius-lg);
+  --breadcrumb-item-radius: var(--radius-4);
+  --breadcrumb-ellipsis-radius: var(--radius-4);
 
   /* duration-press-hover: 120–180ms for hover and press feedback */
   --breadcrumb-transition-duration: 150ms;
@@ -11,10 +11,10 @@
   /* ux-fitts-hit-area: invisible expansion beyond visible bounds */
   --breadcrumb-hit-inset: -6px -8px;
 
-  --breadcrumb-link-fg: var(--color-muted-foreground);
-  --breadcrumb-link-hover-fg: var(--color-foreground);
-  --breadcrumb-page-fg: var(--color-foreground);
-  --breadcrumb-separator-fg: var(--color-muted-foreground);
+  --breadcrumb-link-fg: var(--ink-gray-5);
+  --breadcrumb-link-hover-fg: var(--ink-gray-7);
+  --breadcrumb-page-fg: var(--ink-gray-9);
+  --breadcrumb-separator-fg: var(--ink-gray-4);
 
   /* Size: sm — ux-fitts-target-size: min 32px interactive height */
   --breadcrumb-sm-py: 3px;
@@ -34,15 +34,15 @@
 
   /* Collapsed items menu (ellipsis dropdown) */
   --breadcrumb-menu-min-width: 160px;
-  --breadcrumb-menu-radius: var(--radius-md);
-  --breadcrumb-menu-border: var(--color-border);
-  --breadcrumb-menu-bg: var(--color-popover);
-  --breadcrumb-menu-fg: var(--color-popover-foreground);
+  --breadcrumb-menu-radius: var(--radius-6);
+  --breadcrumb-menu-border: var(--outline-gray-1);
+  --breadcrumb-menu-bg: var(--surface-elevation-2);
+  --breadcrumb-menu-fg: var(--ink-gray-8);
   --breadcrumb-menu-shadow: var(--shadow-md);
-  --breadcrumb-menu-item-radius: var(--radius-sm);
+  --breadcrumb-menu-item-radius: var(--radius-3);
   --breadcrumb-menu-item-px: 8px;
   --breadcrumb-menu-item-py: 6px;
   --breadcrumb-menu-item-font-size: 14px;
-  --breadcrumb-menu-item-highlight-bg: var(--color-accent);
-  --breadcrumb-menu-item-highlight-fg: var(--color-accent-foreground);
+  --breadcrumb-menu-item-highlight-bg: var(--surface-gray-2);
+  --breadcrumb-menu-item-highlight-fg: var(--ink-gray-8);
 }

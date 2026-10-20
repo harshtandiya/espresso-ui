@@ -29,7 +29,7 @@ import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { getCollapsePlan } from "<%= it.utilsAlias %>/collapse";
 
 const breadcrumbInteractiveVariants = cva(
-  "relative inline-flex cursor-pointer items-center gap-2 rounded-(--breadcrumb-item-radius) font-medium antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2 active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "relative inline-flex cursor-pointer items-center gap-2 rounded-(--breadcrumb-item-radius) font-medium antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out focus-visible:[outline:var(--focus-outline-default)] active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       size: {
@@ -74,7 +74,7 @@ const breadcrumbSeparatorVariants = cva(
 );
 
 const breadcrumbEllipsisVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-(--breadcrumb-ellipsis-radius) text-(--breadcrumb-link-fg) antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out hover:text-(--breadcrumb-link-hover-fg) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2 active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-(--breadcrumb-ellipsis-radius) text-(--breadcrumb-link-fg) antialiased outline-none transition-[color,transform] duration-(--breadcrumb-transition-duration) ease-out hover:text-(--breadcrumb-link-hover-fg) focus-visible:[outline:var(--focus-outline-default)] active:scale-[0.98] before:pointer-events-none before:absolute before:content-[''] before:[inset:var(--breadcrumb-hit-inset)] [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       size: {
@@ -97,6 +97,16 @@ const breadcrumbMenuItemClass =
 <% if (it.typescript) { %>
 type BreadcrumbSize = NonNullable<VariantProps<typeof breadcrumbInteractiveVariants>["size"]>;
 type BreadcrumbSeparatorType = "slash" | "chevron";
+
+export type BreadcrumbItem = {
+  label: ReactNode;
+  href?: string;
+  /** Alias for `href`, matching frappe-ui's route prop. */
+  route?: string;
+  onClick?: ComponentPropsWithoutRef<"a">["onClick"];
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+};
 
 export type BreadcrumbCollapsedItem = {
   value: string;
@@ -125,6 +135,8 @@ function useBreadcrumbContext(): BreadcrumbContextValue {
 
 export type BreadcrumbProps = ComponentPropsWithoutRef<"nav"> &
   VariantProps<typeof breadcrumbInteractiveVariants> & {
+    /** Ordered breadcrumb items. When set, Breadcrumb renders the full trail. */
+    items?: BreadcrumbItem[];
     separator?: BreadcrumbSeparatorType;
     maxItems?: number;
     itemsBeforeCollapse?: number;
@@ -133,10 +145,12 @@ export type BreadcrumbProps = ComponentPropsWithoutRef<"nav"> &
 
 export type BreadcrumbLinkProps = Omit<ComponentPropsWithoutRef<typeof ark.a>, "prefix"> & {
   prefix?: ReactNode;
+  suffix?: ReactNode;
 };
 
 export type BreadcrumbPageProps = Omit<ComponentPropsWithoutRef<"span">, "prefix"> & {
   prefix?: ReactNode;
+  suffix?: ReactNode;
 };
 
 export type BreadcrumbEllipsisProps = Omit<ComponentPropsWithoutRef<"button">, "prefix"> & {
@@ -235,6 +249,7 @@ function <%= it.componentName %>({
   className,
   size = "md",
   separator = "slash",
+  items,
   maxItems,
   itemsBeforeCollapse = 1,
   itemsAfterCollapse,
@@ -252,10 +267,77 @@ function <%= it.componentName %>({
     [size, separator, maxItems, itemsBeforeCollapse, itemsAfterCollapse],
   );
 
+  const renderedItems = items?.length ? (
+    <ol
+      className={cn(
+        "flex flex-wrap items-center gap-(--breadcrumb-list-gap) text-(--breadcrumb-link-fg)",
+      )}
+    >
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        const href = item.href ?? item.route;
+        const content = (
+          <>
+            {item.prefix ? (
+              <span className="inline-flex shrink-0 items-center">{item.prefix}</span>
+            ) : null}
+            {item.label}
+            {item.suffix ? (
+              <span className="inline-flex shrink-0 items-center">{item.suffix}</span>
+            ) : null}
+          </>
+        );
+
+        return (
+          <Fragment key={`${index}-${href ?? "crumb"}`}>
+            {index > 0 ? (
+              <li role="presentation" aria-hidden="true" className={breadcrumbSeparatorVariants({ size })}>
+                {separator === "chevron" ? <ChevronRight aria-hidden="true" /> : "/"}
+              </li>
+            ) : null}
+            <li className="inline-flex items-center">
+              {isLast ? (
+                <span
+                  aria-current="page"
+                  className={cn(
+                    breadcrumbPageVariants({ size }),
+                    "text-(--breadcrumb-page-fg)",
+                  )}
+                >
+                  {content}
+                </span>
+              ) : href ? (
+                <a
+                  href={href}
+                  onClick={item.onClick}
+                  className={cn(
+                    breadcrumbInteractiveVariants({ size }),
+                    "text-(--breadcrumb-link-fg) hover:text-(--breadcrumb-link-hover-fg)",
+                  )}
+                >
+                  {content}
+                </a>
+              ) : (
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-2 font-medium antialiased",
+                    "text-(--breadcrumb-link-fg)",
+                  )}
+                >
+                  {content}
+                </span>
+              )}
+            </li>
+          </Fragment>
+        );
+      })}
+    </ol>
+  ) : null;
+
   return (
     <BreadcrumbContext.Provider value={contextValue}>
       <nav aria-label="Breadcrumb" className={cn(className)} {...props}>
-        {children}
+        {renderedItems ?? children}
       </nav>
     </BreadcrumbContext.Provider>
   );
@@ -344,6 +426,7 @@ BreadcrumbItem.displayName = "BreadcrumbItem";
 function BreadcrumbLink({
   className,
   prefix,
+  suffix,
   children,
   ...props
 }<% if (it.typescript) { %>: BreadcrumbLinkProps<% } %>) {
@@ -360,6 +443,7 @@ function BreadcrumbLink({
     >
       {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
       {children}
+      {suffix ? <span className="inline-flex shrink-0 items-center">{suffix}</span> : null}
     </ark.a>
   );
 }
@@ -368,6 +452,7 @@ BreadcrumbLink.displayName = "BreadcrumbLink";
 function BreadcrumbPage({
   className,
   prefix,
+  suffix,
   children,
   ...props
 }<% if (it.typescript) { %>: BreadcrumbPageProps<% } %>) {
@@ -385,6 +470,7 @@ function BreadcrumbPage({
     >
       {prefix ? <span className="inline-flex shrink-0 items-center">{prefix}</span> : null}
       {children}
+      {suffix ? <span className="inline-flex shrink-0 items-center">{suffix}</span> : null}
     </span>
   );
 }

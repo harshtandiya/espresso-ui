@@ -6,82 +6,38 @@ import Variants from "@/components/panels/Variants.astro";
 import VariantRow from "@/components/panels/VariantRow.astro";
 import { sectionNumber } from "@/lib/sections";
 import { BreadcrumbDemo } from "@/components/examples/BreadcrumbDemo.tsx";
+import { BreadcrumbItemsDemo } from "@/components/examples/BreadcrumbItemsDemo.tsx";
 import { BreadcrumbMaxItemsDemo } from "@/components/examples/BreadcrumbMaxItemsDemo.tsx";
 
-const usageReact = `import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-} from "@/components/ui/Breadcrumb";
-import { FileText, FolderOpen, Home, Package } from "lucide-react";
+const usageReact = `import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { Home, Package } from "lucide-react";
 
 export default function App() {
   return (
-    // nav landmark + aria-current="page" on BreadcrumbPage are built in
-    <Breadcrumb size="md" separator="slash">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#" prefix={<Home aria-hidden="true" />}>
-            Home
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#" prefix={<Package aria-hidden="true" />}>
-            Products
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage prefix={<FileText aria-hidden="true" />}>Current page</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
+    <Breadcrumb
+      separator="chevron"
+      items={[
+        { label: "Home", href: "/", prefix: <Home aria-hidden="true" /> },
+        { label: "Products", href: "/products", prefix: <Package aria-hidden="true" /> },
+        { label: "Current page" },
+      ]}
+    />
   );
 }
 `;
 
 const usageVue = `<script setup>
-import Breadcrumb, {
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-} from "@/components/ui/Breadcrumb.vue";
-import { FileText, Home, Package } from "@lucide/vue";
+import Breadcrumb from "@/components/ui/Breadcrumb.vue";
+
+const items = [
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
+  { label: "Current page" },
+];
 </script>
 
 <template>
-  <Breadcrumb size="md" separator="chevron">
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="#">
-          <template #prefix><Home aria-hidden="true" /></template>
-          Home
-        </BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbLink href="#">
-          <template #prefix><Package aria-hidden="true" /></template>
-          Products
-        </BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbPage>
-          <template #prefix><FileText aria-hidden="true" /></template>
-          Current page
-        </BreadcrumbPage>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </Breadcrumb>
+  <Breadcrumb :items="items" separator="chevron" />
 </template>
 `;
 ---
@@ -90,7 +46,7 @@ import { FileText, Home, Package } from "@lucide/vue";
   id="breadcrumb"
   num={sectionNumber("breadcrumb")}
   label="Breadcrumb"
-  desc="Navigation trail for page hierarchy. Compound API with link, page, separator, and ellipsis parts. Set maxItems on Breadcrumb to auto-collapse middle crumbs into an ellipsis menu (hover or click to reveal). Links use 150ms hover/press feedback and 32px minimum hit targets with invisible expansion. Semantic nav with aria-current on the current page."
+  desc="Navigation trail matching frappe-ui v1. Pass an items array for the compact API, or compose BreadcrumbList, Item, Link, Page, Separator, and Ellipsis parts. Set maxItems to auto-collapse middle crumbs into a hover menu. Links use 150ms feedback and 32px minimum hit targets."
   status="new"
   code={usageReact}
   codeFile="breadcrumb.tsx"
@@ -103,6 +59,10 @@ import { FileText, Home, Package } from "@lucide/vue";
   </Canvas>
 
   <Variants>
+    <VariantRow label="Items API" sub="frappe-ui v1 shape · data-driven trail">
+      <BreadcrumbItemsDemo client:load />
+    </VariantRow>
+
     <VariantRow label="Separators" sub="slash · chevron">
       <BreadcrumbDemo client:load separator="slash" />
       <BreadcrumbDemo client:load separator="chevron" />

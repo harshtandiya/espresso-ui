@@ -39,14 +39,20 @@ describe("breadcrumb definition", () => {
   it("declares collapse as a registry dependency", () => {
     expect(breadcrumbDef.registryDependencies).toContain("collapse");
   });
+
+  it("accepts a frappe-ui style items array", () => {
+    expect(breadcrumbDef.props.items.type).toBe("array");
+    expect(breadcrumbDef.slots).toContain("prefix");
+    expect(breadcrumbDef.slots).toContain("suffix");
+  });
 });
 
 describe("breadcrumb css tokens", () => {
   it("aliases semantic tokens and defines sm/md size tokens", async () => {
     const css = await fs.readFile(path.join(__dirname, "breadcrumb.css"), "utf-8");
-    expect(css).toContain("--breadcrumb-link-fg: var(--color-muted-foreground)");
-    expect(css).toContain("--breadcrumb-page-fg: var(--color-foreground)");
-    expect(css).toContain("--breadcrumb-separator-fg: var(--color-muted-foreground)");
+    expect(css).toContain("--breadcrumb-link-fg: var(--ink-gray-5)");
+    expect(css).toContain("--breadcrumb-page-fg: var(--ink-gray-9)");
+    expect(css).toContain("--breadcrumb-separator-fg: var(--ink-gray-4)");
     expect(css).toContain("--breadcrumb-sm-font-size");
     expect(css).toContain("--breadcrumb-md-font-size");
     expect(css).toContain("--breadcrumb-transition-duration: 150ms");
@@ -73,10 +79,19 @@ describe("breadcrumb react template", () => {
     expect(result).toContain("ark.a");
   });
 
-  it("supports prefix prop on link and page", async () => {
+  it("supports prefix and suffix props on link and page", async () => {
     const result = await eta.renderAsync("./breadcrumb.react.eta", baseData);
     expect(result).toContain("prefix?: ReactNode");
+    expect(result).toContain("suffix?: ReactNode");
     expect(result).toContain("{prefix}");
+    expect(result).toContain("{suffix}");
+  });
+
+  it("renders a complete trail from an items array", async () => {
+    const result = await eta.renderAsync("./breadcrumb.react.eta", baseData);
+    expect(result).toContain("items?: BreadcrumbItem[]");
+    expect(result).toContain("item.route");
+    expect(result).toContain('aria-current="page"');
   });
 
   it("maps separator chevron to lucide ChevronRight", async () => {
@@ -118,9 +133,17 @@ describe("breadcrumb vue template", () => {
     expect(result).toContain("inject<BreadcrumbContextValue>");
   });
 
-  it("uses prefix slot on link and page", async () => {
+  it("uses prefix and suffix slots on link and page", async () => {
     const result = await eta.renderAsync("./breadcrumb.vue.eta", baseData);
     expect(result).toContain("slots.prefix");
+    expect(result).toContain("slots.suffix");
+  });
+
+  it("renders a complete trail from an items array", async () => {
+    const result = await eta.renderAsync("./breadcrumb.vue.eta", baseData);
+    expect(result).toContain("items?: BreadcrumbItem[]");
+    expect(result).toContain("item.route");
+    expect(result).toContain('aria-current="page"');
   });
 
   it("applies interaction UX patterns on links and ellipsis", async () => {
