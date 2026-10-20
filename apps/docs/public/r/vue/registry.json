@@ -173,6 +173,31 @@
       ]
     },
     {
+      "name": "divider",
+      "type": "registry:ui",
+      "title": "Divider",
+      "description": "espresso-ui Divider component (Vue)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [
+        "button"
+      ],
+      "files": [
+        {
+          "path": "components/ui/Divider.vue",
+          "content": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport Button from \"./Button.vue\";\nimport { cn } from \"@/lib/utils\";\n\ntype DividerAction = {\n  label: string;\n  onClick?: () => void;\n  theme?: \"gray\" | \"blue\" | \"green\" | \"red\";\n  variant?: \"solid\" | \"subtle\" | \"outline\" | \"ghost\" | \"link\";\n  size?: \"xs\" | \"sm\" | \"md\" | \"lg\";\n  disabled?: boolean;\n  loading?: boolean;\n};\n\nconst props = withDefaults(\n  defineProps<{\n    orientation?: \"horizontal\" | \"vertical\";\n    align?: \"start\" | \"center\" | \"end\";\n    flexItem?: boolean;\n    action?: DividerAction;\n  }>(),\n  {\n    orientation: \"horizontal\",\n    align: \"center\",\n    flexItem: false,\n  },\n);\n\nconst isHorizontal = computed(() => props.orientation === \"horizontal\");\nconst flexClass = computed(() => (props.flexItem ? \"self-stretch h-auto\" : \"h-full\"));\n\nconst dividerClasses = computed(() =>\n  cn(\n    \"border-0 border-outline-gray-2\",\n    isHorizontal.value ? \"w-full border-t\" : \"border-l\",\n    flexClass.value,\n  ),\n);\n\nconst actionContainerClasses = computed(() => {\n  const base = [\"relative whitespace-nowrap border-0 border-outline-gray-2\"];\n  if (isHorizontal.value) {\n    const position =\n      props.align === \"start\"\n        ? \"justify-start pl-4\"\n        : props.align === \"end\"\n          ? \"justify-end pr-4\"\n          : \"justify-center\";\n    return [...base, \"flex w-full min-h-7 items-center\", position];\n  }\n\n  const position =\n    props.align === \"start\"\n      ? \"items-start pt-4\"\n      : props.align === \"end\"\n        ? \"items-end pb-4\"\n        : \"items-center\";\n  return [\n    ...base,\n    \"flex justify-center\",\n    props.flexItem ? \"self-stretch\" : \"h-full\",\n    position,\n  ];\n});\n\nconst actionLineClasses = computed(() =>\n  isHorizontal.value\n    ? \"inset-x-0 top-1/2 -translate-y-1/2 border-t\"\n    : \"inset-y-0 left-1/2 -translate-x-1/2 border-l\",\n);\n\nconst actionButtonProps = computed(() => {\n  if (!props.action) return undefined;\n  const { onClick, ...buttonProps } = props.action;\n  return {\n    variant: \"outline\" as const,\n    size: \"sm\" as const,\n    ...buttonProps,\n  };\n});\n\nconst onActionClick = computed(() => props.action?.onClick);\n</script>\n\n<template>\n  <div v-if=\"props.action\" :class=\"actionContainerClasses\">\n    <div\n      role=\"separator\"\n      :aria-orientation=\"props.orientation\"\n      class=\"absolute border-0 border-outline-gray-2\"\n      :class=\"actionLineClasses\"\n    />\n    <Button\n      v-bind=\"actionButtonProps\"\n      class=\"relative z-10\"\n      @click=\"onActionClick\"\n    />\n  </div>\n\n  <hr\n    v-else\n    role=\"separator\"\n    :aria-orientation=\"props.orientation\"\n    :class=\"dividerClasses\"\n  />\n</template>\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/divider.css",
+          "content": "/* Divider uses the shared outline-gray-2 token for its rule color. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
       "name": "error-message",
       "type": "registry:ui",
       "title": "ErrorMessage",

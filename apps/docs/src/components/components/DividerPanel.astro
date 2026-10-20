@@ -1,0 +1,102 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Divider as DividerReact } from "@/generated/react/Divider.tsx";
+import { DividerActionDemo, DividerToolbarDemo } from "@/components/examples/DividerDemo.tsx";
+
+const usage = `import { Divider } from "@/components/ui/Divider";
+
+export default function App() {
+  return (
+    <div className="space-y-6">
+      <Divider />
+      <Divider action={{ label: "Load more" }} />
+    </div>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Divider from "@/components/ui/Divider.vue";
+\u003C/script>
+
+<template>
+  <div class="space-y-6">
+    <Divider />
+    <Divider :action="{ label: 'Load more' }" />
+  </div>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="divider"
+  num={sectionNumber("divider")}
+  label="Divider"
+  desc="A one-pixel horizontal or vertical rule. Optionally places a small outline button on the line, aligned to the start, center, or end; `flexItem` stretches a vertical rule to the height of its flex row."
+  status="new"
+  code={usage}
+  codeFile="divider.tsx"
+  codeVue={usageVue}
+  codeVueFile="divider.vue"
+>
+  <CanvasToolbar title="Preview" meta="plain · action" />
+  <Canvas class="divider-stack">
+    <DividerActionDemo client:load />
+    <DividerReact client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Orientation" sub="horizontal · vertical">
+      <Canvas grid={false} class="divider-stack">
+        <DividerToolbarDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Action alignment" sub="start · center · end">
+      <Canvas grid={false} class="divider-stack">
+        <DividerActionDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.divider-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.divider-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 24px !important;
+    width: min(100%, 460px);
+  }
+  :global(.divider-action-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+  }
+  :global(.divider-toolbar) {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 32px;
+    font-size: 14px;
+    color: var(--ink-gray-6);
+  }
+
+  @media (max-width: 768px) {
+    :global(.divider-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

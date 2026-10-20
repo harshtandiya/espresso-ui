@@ -173,6 +173,31 @@
       ]
     },
     {
+      "name": "divider",
+      "type": "registry:ui",
+      "title": "Divider",
+      "description": "espresso-ui Divider component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [
+        "button"
+      ],
+      "files": [
+        {
+          "path": "components/ui/Divider.tsx",
+          "content": "import type { HTMLAttributes } from \"react\";\nimport { Button } from \"./Button\";\nimport { cn } from \"@/lib/utils\";\n\nexport type DividerAction = {\n  label: string;\n  onClick?: () => void;\n  theme?: \"gray\" | \"blue\" | \"green\" | \"red\";\n  variant?: \"solid\" | \"subtle\" | \"outline\" | \"ghost\" | \"link\";\n  size?: \"xs\" | \"sm\" | \"md\" | \"lg\";\n  disabled?: boolean;\n  loading?: boolean;\n};\n\nexport type DividerProps = HTMLAttributes<HTMLElement> & {\n  /** Direction of the rule. */\n  orientation?: \"horizontal\" | \"vertical\";\n  /** Where a button sits along the rule. Ignored without `action`. */\n  align?: \"start\" | \"center\" | \"end\";\n  /** Stretch to the cross-axis size of a flex parent. */\n  flexItem?: boolean;\n  /** Render a button on the rule. */\n  action?: DividerAction;\n};\n\nexport function Divider({\n  className,\n  orientation = \"horizontal\",\n  align = \"center\",\n  flexItem = false,\n  action,\n  ...props\n}: DividerProps) {\n  const flexClass = flexItem ? \"self-stretch h-auto\" : \"h-full\";\n\n  if (!action) {\n    return (\n      <hr\n        role=\"separator\"\n        aria-orientation={orientation}\n        className={cn(\n          \"border-0 border-outline-gray-2\",\n          orientation === \"horizontal\" ? \"w-full border-t\" : \"border-l\",\n          flexClass,\n          className,\n        )}\n        {...props}\n      />\n    );\n  }\n\n  const { label, onClick, ...buttonProps } = action;\n  const isHorizontal = orientation === \"horizontal\";\n\n  return (\n    <div\n      className={cn(\n        \"relative whitespace-nowrap border-0 border-outline-gray-2\",\n        isHorizontal\n          ? cn(\n              \"flex w-full min-h-7 items-center\",\n              align === \"center\" && \"justify-center\",\n              align === \"start\" && \"justify-start pl-4\",\n              align === \"end\" && \"justify-end pr-4\",\n            )\n          : cn(\n              \"flex justify-center\",\n              flexItem ? \"self-stretch\" : \"h-full\",\n              align === \"center\" && \"items-center\",\n              align === \"start\" && \"items-start pt-4\",\n              align === \"end\" && \"items-end pb-4\",\n            ),\n        className,\n      )}\n      {...props}\n    >\n      <div\n        role=\"separator\"\n        aria-orientation={orientation}\n        className={cn(\n          \"absolute border-0 border-outline-gray-2\",\n          isHorizontal\n            ? \"inset-x-0 top-1/2 -translate-y-1/2 border-t\"\n            : \"inset-y-0 left-1/2 -translate-x-1/2 border-l\",\n        )}\n      />\n      <Button\n        {...buttonProps}\n        label={label}\n        variant={action.variant ?? \"outline\"}\n        size={action.size ?? \"sm\"}\n        onClick={onClick}\n        className=\"relative z-10\"\n      />\n    </div>\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/divider.css",
+          "content": "/* Divider uses the shared outline-gray-2 token for its rule color. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
       "name": "error-message",
       "type": "registry:ui",
       "title": "ErrorMessage",

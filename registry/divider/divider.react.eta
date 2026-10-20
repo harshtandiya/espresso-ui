@@ -1,0 +1,99 @@
+<% if (it.typescript) { %>import type { HTMLAttributes } from "react";
+<% } %>import { Button } from "./Button";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type DividerAction = {
+  label: string;
+  onClick?: () => void;
+  theme?: "gray" | "blue" | "green" | "red";
+  variant?: "solid" | "subtle" | "outline" | "ghost" | "link";
+  size?: "xs" | "sm" | "md" | "lg";
+  disabled?: boolean;
+  loading?: boolean;
+};
+
+export type DividerProps = HTMLAttributes<HTMLElement> & {
+  /** Direction of the rule. */
+  orientation?: "horizontal" | "vertical";
+  /** Where a button sits along the rule. Ignored without `action`. */
+  align?: "start" | "center" | "end";
+  /** Stretch to the cross-axis size of a flex parent. */
+  flexItem?: boolean;
+  /** Render a button on the rule. */
+  action?: DividerAction;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  className,
+  orientation = "horizontal",
+  align = "center",
+  flexItem = false,
+  action,
+  ...props
+}<% if (it.typescript) { %>: DividerProps<% } %>) {
+  const flexClass = flexItem ? "self-stretch h-auto" : "h-full";
+
+  if (!action) {
+    return (
+      <hr
+        role="separator"
+        aria-orientation={orientation}
+        className={cn(
+          "border-0 border-outline-gray-2",
+          orientation === "horizontal" ? "w-full border-t" : "border-l",
+          flexClass,
+          className,
+        )}
+        {...props}
+      />
+    );
+  }
+
+  const { label, onClick, ...buttonProps } = action;
+  const isHorizontal = orientation === "horizontal";
+
+  return (
+    <div
+      className={cn(
+        "relative whitespace-nowrap border-0 border-outline-gray-2",
+        isHorizontal
+          ? cn(
+              "flex w-full min-h-7 items-center",
+              align === "center" && "justify-center",
+              align === "start" && "justify-start pl-4",
+              align === "end" && "justify-end pr-4",
+            )
+          : cn(
+              "flex justify-center",
+              flexItem ? "self-stretch" : "h-full",
+              align === "center" && "items-center",
+              align === "start" && "items-start pt-4",
+              align === "end" && "items-end pb-4",
+            ),
+        className,
+      )}
+      {...props}
+    >
+      <div
+        role="separator"
+        aria-orientation={orientation}
+        className={cn(
+          "absolute border-0 border-outline-gray-2",
+          isHorizontal
+            ? "inset-x-0 top-1/2 -translate-y-1/2 border-t"
+            : "inset-y-0 left-1/2 -translate-x-1/2 border-l",
+        )}
+      />
+      <Button
+        {...buttonProps}
+        label={label}
+        variant={action.variant ?? "outline"}
+        size={action.size ?? "sm"}
+        onClick={onClick}
+        className="relative z-10"
+      />
+    </div>
+  );
+}
