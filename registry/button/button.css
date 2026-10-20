@@ -1,44 +1,26 @@
 /* Button component tokens — override these to customise the button. */
 :root {
-  /* Solid variant */
-  --btn-solid-bg: var(--color-primary);
-  --btn-solid-fg: var(--color-primary-foreground);
-  --btn-solid-bg-hover: oklch(from var(--color-primary) calc(l - 0.06) c h);
-  /* visual-button-shadow-anatomy: six-layer shadow for depth and polish */
-  --btn-solid-shadow:
-    0 0 0 0.5px oklch(0 0 0 / 0.2), inset 0 0 0 1px oklch(1 1 1 / 0.04),
-    inset 0 1px 0 oklch(1 1 1 / 0.07), 0 1px 2px oklch(0 0 0 / 0.1), 0 2px 4px oklch(0 0 0 / 0.06),
-    0 4px 8px oklch(0 0 0 / 0.03);
-
-  /* Outline variant */
-  --btn-outline-border: var(--color-border);
-  --btn-outline-fg: var(--color-foreground);
-  --btn-outline-bg-hover: var(--color-accent);
-
-  /* Ghost variant */
-  --btn-ghost-fg: var(--color-foreground);
-  --btn-ghost-bg-hover: var(--color-accent);
-
-  /* Link variant */
-  --btn-link-fg: var(--color-primary);
-
-  /* Shared */
-  --btn-radius: var(--radius-md);
-  --btn-ring: var(--color-ring);
-  --btn-disabled-opacity: 0.5;
+  /* Size: xs */
+  --btn-xs-height: 24px;
+  --btn-xs-px: 6px;
+  --btn-xs-radius: var(--radius-3);
+  --btn-xs-font-size: 12px;
 
   /* Size: sm */
-  --btn-sm-height: 32px;
-  --btn-sm-px: 12px;
-  --btn-sm-font-size: 13px;
+  --btn-sm-height: 28px;
+  --btn-sm-px: 8px;
+  --btn-sm-radius: var(--radius-4);
+  --btn-sm-font-size: 14px;
 
   /* Size: md */
-  --btn-md-height: 36px;
-  --btn-md-px: 16px;
+  --btn-md-height: 32px;
+  --btn-md-px: 10px;
+  --btn-md-radius: var(--radius-4);
   --btn-md-font-size: 14px;
 
   /* Size: lg */
   --btn-lg-height: 40px;
-  --btn-lg-px: 20px;
-  --btn-lg-font-size: 15px;
+  --btn-lg-px: 12px;
+  --btn-lg-radius: var(--radius-5);
+  --btn-lg-font-size: 16px;
 }

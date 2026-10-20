@@ -1,31 +1,61 @@
 import { ark } from "@ark-ui/react/factory";
 import { cva<% if (it.typescript) { %>, type VariantProps<% } %> } from "class-variance-authority";
-<% if (it.typescript) { %>import type { ComponentPropsWithoutRef } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
 <% } %>import { cn } from "<%= it.utilsAlias %>/utils";
 
 const buttonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--btn-ring) focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-(--btn-disabled-opacity) [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium leading-tighter transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:bg-surface-gray-2 disabled:text-ink-gray-4 disabled:border-transparent disabled:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
+      theme: {
+        gray: "",
+        blue: "",
+        green: "",
+        red: "",
+      },
       variant: {
-        solid:
-          "bg-(--btn-solid-bg) text-(--btn-solid-fg) hover:bg-(--btn-solid-bg-hover) [box-shadow:var(--btn-solid-shadow)]",
-        outline:
-          "border border-(--btn-outline-border) text-(--btn-outline-fg) hover:bg-(--btn-outline-bg-hover)",
-        ghost:
-          "text-(--btn-ghost-fg) hover:bg-(--btn-ghost-bg-hover)",
-        link:
-          "text-(--btn-link-fg) underline-offset-4 hover:underline",
+        solid: "",
+        subtle: "",
+        outline: "border",
+        ghost: "",
+        link: "bg-transparent underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-(--btn-sm-height) px-(--btn-sm-px) [font-size:var(--btn-sm-font-size)] rounded-(--btn-radius)",
-        md: "h-(--btn-md-height) px-(--btn-md-px) [font-size:var(--btn-md-font-size)] rounded-(--btn-radius)",
-        lg: "h-(--btn-lg-height) px-(--btn-lg-px) [font-size:var(--btn-lg-font-size)] rounded-(--btn-radius)",
+        xs: "h-(--btn-xs-height) px-(--btn-xs-px) rounded-(--btn-xs-radius) [font-size:var(--btn-xs-font-size)] [&_svg]:size-3.5",
+        sm: "h-(--btn-sm-height) px-(--btn-sm-px) rounded-(--btn-sm-radius) [font-size:var(--btn-sm-font-size)] [&_svg]:size-4",
+        md: "h-(--btn-md-height) px-(--btn-md-px) rounded-(--btn-md-radius) [font-size:var(--btn-md-font-size)] [&_svg]:size-4.5",
+        lg: "h-(--btn-lg-height) px-(--btn-lg-px) rounded-(--btn-lg-radius) [font-size:var(--btn-lg-font-size)] [&_svg]:size-5",
       },
     },
+    compoundVariants: [
+      { theme: "gray", variant: "solid", class: "bg-surface-gray-10 text-ink-base hover:bg-surface-gray-9 active:bg-surface-gray-8 focus-visible:[outline:var(--focus-outline-default)]" },
+      { theme: "gray", variant: "subtle", class: "bg-surface-gray-2 text-ink-gray-8 hover:bg-surface-gray-3 active:bg-surface-gray-4 focus-visible:[outline:var(--focus-outline-default)]" },
+      { theme: "gray", variant: "outline", class: "border-outline-gray-2 bg-surface-base text-ink-gray-8 hover:border-outline-gray-3 active:border-outline-gray-3 active:bg-surface-gray-4 focus-visible:[outline:var(--focus-outline-default)]" },
+      { theme: "gray", variant: "ghost", class: "bg-transparent text-ink-gray-8 hover:bg-surface-gray-3 active:bg-surface-gray-4 focus-visible:[outline:var(--focus-outline-default)]" },
+      { theme: "gray", variant: "link", class: "text-ink-gray-8 focus-visible:[outline:var(--focus-outline-default)]" },
+
+      { theme: "blue", variant: "solid", class: "bg-surface-blue-6 text-ink-base hover:bg-surface-blue-7 active:bg-surface-blue-8 focus-visible:[outline:var(--focus-outline-blue)]" },
+      { theme: "blue", variant: "subtle", class: "bg-surface-blue-2 text-ink-blue-5 hover:bg-surface-blue-3 active:bg-surface-blue-4 focus-visible:[outline:var(--focus-outline-blue)]" },
+      { theme: "blue", variant: "outline", class: "border-outline-blue-1 bg-surface-base text-ink-blue-5 hover:border-outline-blue-4 active:border-outline-blue-4 active:bg-surface-blue-4 focus-visible:[outline:var(--focus-outline-blue)]" },
+      { theme: "blue", variant: "ghost", class: "bg-transparent text-ink-blue-5 hover:bg-surface-blue-3 active:bg-surface-blue-4 focus-visible:[outline:var(--focus-outline-blue)]" },
+      { theme: "blue", variant: "link", class: "text-ink-blue-5 focus-visible:[outline:var(--focus-outline-blue)]" },
+
+      { theme: "green", variant: "solid", class: "bg-surface-green-7 text-ink-base hover:bg-surface-green-8 active:bg-surface-green-9 focus-visible:[outline:var(--focus-outline-green)]" },
+      { theme: "green", variant: "subtle", class: "bg-surface-green-2 text-ink-green-8 hover:bg-surface-green-3 active:bg-surface-green-4 focus-visible:[outline:var(--focus-outline-green)]" },
+      { theme: "green", variant: "outline", class: "border-outline-green-3 bg-surface-base text-ink-green-8 hover:border-outline-green-5 active:border-outline-green-5 active:bg-surface-green-4 focus-visible:[outline:var(--focus-outline-green)]" },
+      { theme: "green", variant: "ghost", class: "bg-transparent text-ink-green-8 hover:bg-surface-green-3 active:bg-surface-green-4 focus-visible:[outline:var(--focus-outline-green)]" },
+      { theme: "green", variant: "link", class: "text-ink-green-8 focus-visible:[outline:var(--focus-outline-green)]" },
+
+      { theme: "red", variant: "solid", class: "bg-surface-red-7 text-ink-base hover:bg-surface-red-8 active:bg-surface-red-9 focus-visible:[outline:var(--focus-outline-red)]" },
+      { theme: "red", variant: "subtle", class: "bg-surface-red-2 text-ink-red-7 hover:bg-surface-red-3 active:bg-surface-red-4 focus-visible:[outline:var(--focus-outline-red)]" },
+      { theme: "red", variant: "outline", class: "border-outline-red-1 bg-surface-base text-ink-red-7 hover:border-outline-red-3 active:border-outline-red-3 active:bg-surface-red-3 focus-visible:[outline:var(--focus-outline-red)]" },
+      { theme: "red", variant: "ghost", class: "bg-transparent text-ink-red-7 hover:bg-surface-red-3 active:bg-surface-red-4 focus-visible:[outline:var(--focus-outline-red)]" },
+      { theme: "red", variant: "link", class: "text-ink-red-7 focus-visible:[outline:var(--focus-outline-red)]" },
+    ],
     defaultVariants: {
-      variant: "solid",
-      size: "md",
+      theme: "gray",
+      variant: "subtle",
+      size: "sm",
     },
   },
 );
@@ -33,20 +63,81 @@ const buttonVariants = cva(
 export type ButtonProps = ComponentPropsWithoutRef<typeof ark.button> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    href?: string;
+    icon?: ReactNode;
+    iconLeft?: ReactNode;
+    iconRight?: ReactNode;
+    label?: ReactNode;
+    loading?: boolean;
+    loadingText?: string;
   };
 <% } %>
 export function <%= it.componentName %>({
   className,
+  theme,
   variant,
   size,
   asChild = false,
+  href,
+  icon,
+  iconLeft,
+  iconRight,
+  label,
+  loading = false,
+  loadingText,
+  disabled,
+  type = "button",
+  children,
   ...props
 }<% if (it.typescript) { %>: ButtonProps<% } %>) {
+  const content = (
+    <>
+      {loading ? (
+        <svg
+          className="size-4 animate-spin"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+          <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      ) : (
+        iconLeft ?? icon
+      )}
+      {loading && loadingText ? loadingText : (children ?? label)}
+      {!loading && iconRight}
+    </>
+  );
+
+  const classes = cn(buttonVariants({ theme, variant, size }), className);
+
+  if (href && !disabled) {
+    return (
+      <ark.a
+        href={href}
+        target="_blank"
+        rel="noreferrer noopener"
+        className={classes}
+        aria-busy={loading || undefined}
+        {...props}
+      >
+        {content}
+      </ark.a>
+    );
+  }
+
   return (
     <ark.button
       asChild={asChild}
-      className={cn(buttonVariants({ variant, size }), className)}
+      type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      aria-label={label ? String(label) : undefined}
+      className={classes}
       {...props}
-    />
+    >
+      {content}
+    </ark.button>
   );
 }

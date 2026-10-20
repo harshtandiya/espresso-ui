@@ -11,7 +11,7 @@ const usage = `import { Button } from "@/components/ui/Button";
 
 export default function App() {
   return (
-    <Button variant="solid" size="md">
+    <Button theme="gray" variant="subtle" size="sm">
       Get started
     </Button>
   );
@@ -23,26 +23,40 @@ export default function App() {
   id="button"
   num={sectionNumber("button")}
   label="Button"
-  desc="Primary action control with solid, outline, ghost, and link variants at three sizes. Supports disabled state and asChild composition via Ark UI."
+  desc="Action control matching frappe-ui v1: four themes, solid/subtle/outline/ghost variants, four sizes, loading state, and icon slots."
   status="stable"
   code={usage}
 >
-  <CanvasToolbar title="Preview" meta="solid · outline · ghost · link" />
+  <CanvasToolbar title="Preview" meta="solid · subtle · outline · ghost" />
   <Canvas>
-    <ButtonReact client:load variant="solid">Solid</ButtonReact>
-    <ButtonReact client:load variant="outline">Outline</ButtonReact>
-    <ButtonReact client:load variant="ghost">Ghost</ButtonReact>
-    <ButtonReact client:load variant="link">Link</ButtonReact>
+    <ButtonReact client:load theme="gray" variant="solid">Solid</ButtonReact>
+    <ButtonReact client:load theme="blue" variant="subtle">Subtle</ButtonReact>
+    <ButtonReact client:load theme="green" variant="outline">Outline</ButtonReact>
+    <ButtonReact client:load theme="red" variant="ghost">Ghost</ButtonReact>
   </Canvas>
 
   <Variants>
-    <VariantRow label="Sizes" sub="32 / 36 / 40 px">
+    <VariantRow label="Themes" sub="gray · blue · green · red">
+      <ButtonReact client:load theme="gray" variant="solid">Gray</ButtonReact>
+      <ButtonReact client:load theme="blue" variant="solid">Blue</ButtonReact>
+      <ButtonReact client:load theme="green" variant="solid">Green</ButtonReact>
+      <ButtonReact client:load theme="red" variant="solid">Red</ButtonReact>
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="24 / 28 / 32 / 40 px">
+      <ButtonReact client:load size="xs" variant="solid">Extra small</ButtonReact>
       <ButtonReact client:load size="sm" variant="solid">Small</ButtonReact>
       <ButtonReact client:load size="md" variant="solid">Medium</ButtonReact>
       <ButtonReact client:load size="lg" variant="solid">Large</ButtonReact>
     </VariantRow>
 
-    <VariantRow label="Disabled" sub="reduced opacity, no pointer events">
+    <VariantRow label="Loading" sub="spinner replaces the leading icon">
+      <ButtonReact client:load loading>Loading</ButtonReact>
+      <ButtonReact client:load loading loadingText="Saving…">Save</ButtonReact>
+      <ButtonReact client:load theme="blue" loading>Deploy</ButtonReact>
+    </VariantRow>
+
+    <VariantRow label="Disabled" sub="reduced emphasis, no pointer events">
       <ButtonReact client:load variant="solid" disabled>Disabled</ButtonReact>
       <ButtonReact client:load variant="outline" disabled>Disabled</ButtonReact>
     </VariantRow>
