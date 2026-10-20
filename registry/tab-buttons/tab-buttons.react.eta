@@ -1,0 +1,372 @@
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+<% if (it.typescript) { %>import type { HTMLAttributes, KeyboardEvent, MouseEvent, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type TabButtonValue = string | number;
+export type TabButtonsVariant = "subtle" | "ghost" | "underline" | "browser-tab";
+export type TabButtonsSize = "sm" | "md";
+
+export type TabButtonOption = {
+  /** Value this option picks. */
+  value: TabButtonValue;
+  /** Visible label. Becomes the accessible name for an icon-only option. */
+  label: string;
+  /** Icon-only option. The label is rendered for screen readers only. */
+  icon?: ReactNode;
+  /** Leading accent icon shown next to a visible label. */
+  iconLeft?: ReactNode;
+  /** Disables this option. */
+  disabled?: boolean;
+  /** Renders the option as a link. */
+  href?: string;
+  /** Called when the option is clicked. */
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
+};
+
+export type TabButtonsProps = Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange" | "defaultValue"
+> & {
+  /** Options to render. */
+  options?: TabButtonOption[];
+  /** Selected value. Omit for uncontrolled use. */
+  value?: TabButtonValue;
+  /** Initially selected value for uncontrolled use. */
+  defaultValue?: TabButtonValue;
+  /** Called when the selected value changes. */
+  onValueChange?: (value: TabButtonValue) => void;
+  /** Visual treatment, shared with the Tabs family. */
+  variant?: TabButtonsVariant;
+  /** Height and padding of the options. */
+  size?: TabButtonsSize;
+  /** Stack the options vertically. */
+  vertical?: boolean;
+  /** Options share the container width equally. */
+  fluid?: boolean;
+};
+<% } %>
+
+const trackClasses = {
+  subtle: "bg-surface-gray-2 gap-1 p-px",
+  ghost: "bg-surface-base gap-1 p-px",
+  underline: "gap-6 border-b border-outline-gray-1",
+  "browser-tab": "gap-1 border-b border-outline-gray-1",
+};
+
+const trackRadiusClasses = {
+  subtle: "rounded-4",
+  ghost: "rounded-4",
+  underline: "",
+  "browser-tab": "",
+};
+
+const indicatorSurfaceClasses = {
+  subtle: "bg-surface-elevation-3 shadow-base rounded-[7px]",
+  ghost: "bg-surface-gray-2 rounded-[7px]",
+  underline: "bg-outline-gray-8",
+  "browser-tab": "",
+};
+
+function pillSizeClasses(
+  variant<% if (it.typescript) { %>: TabButtonsVariant<% } %>,
+  size<% if (it.typescript) { %>: TabButtonsSize<% } %>,
+  vertical<% if (it.typescript) { %>: boolean<% } %>,
+  iconOnly<% if (it.typescript) { %>: boolean<% } %>,
+) {
+  if (iconOnly) return size === "sm" ? "size-6.5 p-[5px]" : "size-7 p-[5px]";
+
+  if (variant === "underline") {
+    if (vertical) return size === "sm" ? "h-6.5 gap-2 px-2" : "h-7 gap-2 px-2";
+    return size === "sm" ? "h-7 gap-2" : "h-8 gap-2";
+  }
+
+  if (variant === "browser-tab") {
+    if (vertical) return size === "sm" ? "h-6.5 gap-2 px-2" : "h-7 gap-2 px-2.5";
+    return size === "sm" ? "h-7 gap-2 px-2 py-[5px]" : "h-8 gap-2 px-2.5 py-[7px]";
+  }
+
+  return size === "sm" ? "h-6.5 gap-2 px-2 py-[5px]" : "h-7 gap-2 px-2.5 py-1.5";
+}
+
+function pillRadiusClasses(
+  variant<% if (it.typescript) { %>: TabButtonsVariant<% } %>,
+  size<% if (it.typescript) { %>: TabButtonsSize<% } %>,
+) {
+  if (variant === "underline") return "";
+  if (variant === "subtle") return size === "sm" ? "rounded-[7px]" : "rounded-[9px]";
+  if (variant === "browser-tab") return "rounded-t-4";
+  return size === "sm" ? "rounded-[7px]" : "rounded-4";
+}
+
+export function <%= it.componentName %>({
+  options = [],
+  value,
+  defaultValue,
+  onValueChange,
+  variant = "subtle",
+  size = "sm",
+  vertical = false,
+  fluid = false,
+  className,
+  onKeyDown,
+  ...props
+}<% if (it.typescript) { %>: TabButtonsProps<% } %>) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const selected = value !== undefined ? value : internalValue;
+  const trackRef = useRef<% if (it.typescript) { %><HTMLDivElement><% } %>(null);
+  const [indicator, setIndicator] = useState<% if (it.typescript) { %><{ x: number; y: number; width: number; height: number } | null><% } %>(null);
+  const [animated, setAnimated] = useState(false);
+  const isPill = variant === "subtle" || variant === "ghost";
+
+  const measure = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) {
+      setIndicator(null);
+      return;
+    }
+    const active = track.querySelector<% if (it.typescript) { %><HTMLElement><% } %>('[data-slot="tab-button"][data-state="active"]');
+    if (!active) {
+      setIndicator(null);
+      return;
+    }
+
+    const trackRect = track.getBoundingClientRect();
+    const rect = active.getBoundingClientRect();
+    const style = getComputedStyle(track);
+    const border = {
+      top: parseFloat(style.borderTopWidth) || 0,
+      bottom: parseFloat(style.borderBottomWidth) || 0,
+      left: parseFloat(style.borderLeftWidth) || 0,
+      right: parseFloat(style.borderRightWidth) || 0,
+    };
+    const x = rect.left - trackRect.left - border.left;
+    const y = rect.top - trackRect.top - border.top;
+
+    if (variant === "underline") {
+      if (vertical) {
+        const innerWidth = trackRect.width - border.left - border.right;
+        setIndicator({ x: innerWidth, y, width: 1, height: rect.height });
+      } else {
+        const innerHeight = trackRect.height - border.top - border.bottom;
+        setIndicator({ x, y: innerHeight, width: rect.width, height: 1 });
+      }
+      return;
+    }
+
+    setIndicator({ x, y, width: rect.width, height: rect.height });
+  }, [variant, vertical]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure, selected, options, size]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [measure]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => setAnimated(true)));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  function select(next<% if (it.typescript) { %>: TabButtonValue<% } %>) {
+    if (value === undefined) setInternalValue(next);
+    onValueChange?.(next);
+  }
+
+  function handleKeyDown(event<% if (it.typescript) { %>: KeyboardEvent<HTMLDivElement><% } %>) {
+    onKeyDown?.(event);
+    if (event.defaultPrevented) return;
+
+    const enabled = options.filter((option) => !option.disabled);
+    if (!enabled.length) return;
+    const currentIndex = enabled.findIndex((option) => option.value === selected);
+    const forwardKey = vertical ? "ArrowDown" : "ArrowRight";
+    const backwardKey = vertical ? "ArrowUp" : "ArrowLeft";
+    let nextIndex = currentIndex;
+
+    if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = enabled.length - 1;
+    else if (event.key === forwardKey || event.key === backwardKey) {
+      const step = event.key === forwardKey ? 1 : -1;
+      nextIndex = (Math.max(currentIndex, 0) + step + enabled.length) % enabled.length;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    const next = enabled[nextIndex];
+    select(next.value);
+    requestAnimationFrame(() => {
+      trackRef.current
+        ?.querySelector<% if (it.typescript) { %><HTMLElement<% } %>>(`[data-slot="tab-button"][data-value="${String(next.value)}"]`)
+        ?.focus();
+    });
+  }
+
+  const activeIndex = options.findIndex((option) => option.value === selected);
+
+  return (
+    <div
+      ref={trackRef}
+      role="radiogroup"
+      aria-orientation={vertical ? "vertical" : "horizontal"}
+      data-slot="tab-buttons"
+      data-variant={variant}
+      data-size={size}
+      data-orientation={vertical ? "vertical" : "horizontal"}
+      className={cn(
+        "flex",
+        fluid ? "w-full" : "inline-flex shrink-0",
+        vertical ? "flex-col" : "items-center",
+        isPill && "relative isolate",
+        variant === "underline" && "relative",
+        trackClasses[variant],
+        trackRadiusClasses[variant],
+        className,
+      )}
+      onKeyDown={handleKeyDown}
+      {...props}
+    >
+      {isPill ? (
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 overflow-hidden",
+            trackRadiusClasses[variant],
+          )}
+        >
+          <div
+            data-slot="tab-indicator"
+            className={cn(
+              "absolute left-0 top-0 -z-10 motion-reduce:transition-none",
+              animated && "transition-[width,height,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+              indicatorSurfaceClasses[variant],
+            )}
+            style={
+              indicator
+                ? {
+                    width: indicator.width,
+                    height: indicator.height,
+                    transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+                  }
+                : { display: "none" }
+            }
+          />
+        </div>
+      ) : null}
+      {variant === "underline" ? (
+        <div
+          aria-hidden="true"
+          data-slot="tab-indicator"
+          className={cn(
+            "absolute left-0 top-0 bg-outline-gray-8 motion-reduce:transition-none",
+            animated && "transition-[width,height,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+          )}
+          style={
+            indicator
+              ? {
+                  width: indicator.width,
+                  height: indicator.height,
+                  transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+                }
+              : { display: "none" }
+          }
+        />
+      ) : null}
+      {options.map((option) => {
+        const isActive = option.value === selected;
+        const iconOnly = Boolean(option.icon) && !option.iconLeft;
+        const tabbable = option.disabled
+          ? -1
+          : isActive
+            ? 0
+            : activeIndex === -1 && options.filter((item) => !item.disabled)[0]?.value === option.value
+              ? 0
+              : -1;
+
+        const content = (
+          <span
+            className={cn(
+              "inline-flex box-border shrink-0 select-none items-center justify-center whitespace-nowrap outline-none transition-[background-color,color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
+              variant === "subtle" ? "text-sm leading-[16.1px]" : "text-base leading-tighter",
+              isActive ? "text-ink-gray-8" : "text-ink-gray-5",
+              size === "md" && variant !== "underline" && variant !== "subtle"
+                ? "font-medium tracking-[0.015em]"
+                : "",
+              pillSizeClasses(variant, size, vertical, iconOnly),
+              pillRadiusClasses(variant, size),
+              !isActive && "hover:text-ink-gray-8",
+            )}
+          >
+            {option.icon ? (
+              <span
+                className={cn(
+                  "inline-flex shrink-0 items-center justify-center [&_svg]:size-full",
+                  size === "sm" ? "size-4" : "size-4.5",
+                )}
+              >
+                {option.icon}
+              </span>
+            ) : null}
+            {option.iconLeft ? (
+              <span
+                className={cn(
+                  "inline-flex shrink-0 items-center justify-center [&_svg]:size-full",
+                  size === "sm" ? "size-4" : "size-4.5",
+                )}
+              >
+                {option.iconLeft}
+              </span>
+            ) : null}
+            <span className={cn(iconOnly ? "sr-only" : "min-w-0 truncate")}>{option.label}</span>
+          </span>
+        );
+
+        const shared = {
+          role: "radio" as const,
+          "aria-checked": isActive,
+          "aria-label": iconOnly ? option.label : undefined,
+          tabIndex: tabbable,
+          "data-slot": "tab-button",
+          "data-state": isActive ? ("active" as const) : ("inactive" as const),
+          "data-value": String(option.value),
+          className: cn(
+            "inline-flex appearance-none p-0 text-inherit no-underline focus-visible:ring-0",
+            variant === "browser-tab"
+              ? isActive
+                ? "relative -mb-px rounded-t-4 border border-outline-gray-1 border-b-transparent bg-surface-base"
+                : "border border-transparent"
+              : "border-0 bg-transparent",
+            vertical && "w-full",
+            fluid && "flex-1 min-w-0",
+            option.disabled && "pointer-events-none opacity-60",
+          ),
+          onClick: (event<% if (it.typescript) { %>: MouseEvent<HTMLElement><% } %>) => {
+            option.onClick?.(event);
+            if (!event.defaultPrevented && !option.disabled) select(option.value);
+          },
+        };
+
+        if (option.href) {
+          return (
+            <a key={String(option.value)} href={option.href} target="_blank" rel="noreferrer noopener" {...shared}>
+              {content}
+            </a>
+          );
+        }
+
+        return (
+          <button key={String(option.value)} type="button" disabled={option.disabled} {...shared}>
+            {content}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

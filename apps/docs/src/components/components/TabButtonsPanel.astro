@@ -1,0 +1,116 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  TabButtonsBasicDemo,
+  TabButtonsIconDemo,
+  TabButtonsVariantsDemo,
+} from "@/components/examples/TabButtonsDemo.tsx";
+
+const usage = `import { useState } from "react";
+import { TabButtons } from "@/components/ui/TabButtons";
+
+export default function App() {
+  const [value, setValue] = useState("week");
+
+  return (
+    <TabButtons
+      options={[
+        { value: "day", label: "Day" },
+        { value: "week", label: "Week" },
+        { value: "month", label: "Month" },
+      ]}
+      value={value}
+      onValueChange={setValue}
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import { ref } from "vue";
+import TabButtons from "@/components/ui/TabButtons.vue";
+
+const value = ref("week");
+\u003C/script>
+
+<template>
+  <TabButtons
+    :options="[
+      { value: 'day', label: 'Day' },
+      { value: 'week', label: 'Week' },
+      { value: 'month', label: 'Month' },
+    ]"
+    v-model="value"
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="tab-buttons"
+  num={sectionNumber("tab-buttons")}
+  label="Tab Buttons"
+  desc="A row of buttons that picks one value, such as a filter, a setting, or a form field. The group is a single tab stop: arrow keys move the selection, and the active surface slides between options. Use Tabs when the choice switches the content shown below it."
+  status="new"
+  code={usage}
+  codeFile="tab-buttons.tsx"
+  codeVue={usageVue}
+  codeVueFile="tab-buttons.vue"
+>
+  <CanvasToolbar title="Preview" meta="value picker · sliding surface" />
+  <Canvas class="tab-buttons-stack">
+    <TabButtonsBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Variants" sub="subtle · ghost · underline · browser tab">
+      <Canvas grid={false} class="tab-buttons-stack">
+        <TabButtonsVariantsDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Icons" sub="icon only · medium">
+      <Canvas grid={false} class="tab-buttons-stack">
+        <TabButtonsIconDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.tab-buttons-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.tab-buttons-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 18px !important;
+    width: min(100%, 380px);
+  }
+  :global(.tab-buttons-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.tab-buttons-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.tab-buttons-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

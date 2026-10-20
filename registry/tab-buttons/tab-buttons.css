@@ -1,0 +1,14 @@
+/* The active surface slides between options; the track keeps the motion short. */
+[data-slot="tab-indicator"] {
+  will-change: transform, width, height;
+}
+
+[data-slot="tab-button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="tab-indicator"] {
+    transition: none;
+  }
+}
