@@ -34,6 +34,7 @@ export const SECTIONS: readonly Section[] = [
   { id: "textarea", label: "Textarea", group: "components", status: "new", sub: "4 sizes" },
   { id: "select", label: "Select", group: "components", status: "new", sub: "4 sizes" },
   { id: "checkbox", label: "Checkbox", group: "components", status: "new", sub: "3 sizes" },
+  { id: "radio", label: "Radio", group: "components", status: "new", sub: "3 sizes" },
   { id: "switch", label: "Switch", group: "components", status: "new", sub: "3 sizes" },
   {
     id: "form-control",

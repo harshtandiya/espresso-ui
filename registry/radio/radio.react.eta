@@ -1,0 +1,148 @@
+import { forwardRef, useContext, useId } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+import { RadioGroupContext } from "./RadioGroup";
+<% if (it.typescript) { %>import type { RadioValue } from "./RadioGroup";
+<% } %>
+
+const sizeClasses = {
+  xs: {
+    circle: "size-(--radio-xs-size)",
+    selected: "[border-width:var(--radio-xs-checked-border)]",
+    offset: "[margin-top:var(--radio-xs-offset)]",
+  },
+  sm: {
+    circle: "size-(--radio-sm-size)",
+    selected: "[border-width:var(--radio-sm-checked-border)]",
+    offset: "[margin-top:var(--radio-sm-offset)]",
+  },
+  md: {
+    circle: "size-(--radio-md-size)",
+    selected: "[border-width:var(--radio-md-checked-border)]",
+    offset: "[margin-top:var(--radio-md-offset)]",
+  },
+};
+
+<% if (it.typescript) { %>
+export type RadioProps = Omit<ComponentPropsWithoutRef<"label">, "onChange"> & {
+  /** Value this option represents inside its RadioGroup. */
+  value: RadioValue;
+  /** Label rendered beside the control. */
+  label?: ReactNode;
+  /** Description rendered below the label. */
+  description?: ReactNode;
+  /** Disables this option only. */
+  disabled?: boolean;
+};
+<% } %>
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLInputElement, RadioProps><% } %>(
+  ({ className, id, value, label, description, disabled, ...props }, ref) => {
+    const group = useContext(RadioGroupContext);
+    if (!group) {
+      throw new Error("[espresso-ui] <Radio> must be used inside a <RadioGroup>.");
+    }
+
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const labelId = `${inputId}-label`;
+    const descriptionId = `${inputId}-description`;
+    const hasLabel = Boolean(label);
+    const hasDescription = Boolean(description);
+    const isDisabled = group.disabled || Boolean(disabled);
+    const isSelected = group.value === value;
+    const sizing = sizeClasses[group.size];
+    const padded = group.padded;
+
+    const rowClasses = cn(
+      "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+      isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+      padded && !isDisabled && "hover:bg-surface-gray-3 active:bg-surface-gray-4",
+      padded &&
+        (hasDescription
+          ? group.size === "md"
+            ? "px-3 py-2"
+            : "px-1.5 py-1.5"
+          : group.size === "md"
+            ? "h-8 items-center px-3"
+            : group.size === "sm"
+              ? "h-7 items-center px-1.5"
+              : "h-6 items-center px-1.5"),
+      className,
+    );
+
+    const circleClasses = cn(
+      "box-border shrink-0 rounded-full transition-colors",
+      sizing.circle,
+      isSelected ? sizing.selected : "border",
+      hasDescription || !padded ? sizing.offset : "",
+      isDisabled
+        ? isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-5)]"
+          : "bg-surface-base border-outline-gray-3"
+        : isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-10)] group-hover:border-[color:var(--surface-gray-9)] group-active:border-[color:var(--surface-gray-8)]"
+          : "bg-surface-base border-outline-gray-4 group-hover:border-outline-gray-5 group-active:border-outline-gray-6",
+    );
+
+    return (
+      <label
+        htmlFor={inputId}
+        data-slot="control"
+        data-state={isSelected ? "checked" : "unchecked"}
+        data-size={group.size}
+        data-disabled={isDisabled ? "true" : undefined}
+        className={rowClasses}
+        {...props}
+      >
+        <input
+          ref={ref}
+          id={inputId}
+          type="radio"
+          name={group.name}
+          value={String(value)}
+          checked={isSelected}
+          disabled={isDisabled}
+          required={group.required}
+          aria-required={group.required || undefined}
+          aria-labelledby={hasLabel ? labelId : undefined}
+          aria-describedby={hasDescription ? descriptionId : undefined}
+          aria-invalid={group.hasError || undefined}
+          aria-errormessage={group.hasError ? group.errorId : undefined}
+          className="peer sr-only"
+          data-slot="input"
+          onChange={() => group.onSelect(value)}
+        />
+        <span className={circleClasses} aria-hidden="true" />
+        <span className="flex flex-col items-start gap-0.5 text-start">
+          {hasLabel ? (
+            <span
+              id={labelId}
+              data-slot="label"
+              className={cn(
+                "block select-none text-base leading-normal",
+                isDisabled ? "text-ink-gray-4" : "text-ink-gray-7",
+              )}
+            >
+              {label}
+            </span>
+          ) : null}
+          {hasDescription ? (
+            <span
+              id={descriptionId}
+              data-slot="description"
+              className={cn(
+                "block select-none text-sm leading-normal",
+                isDisabled ? "text-ink-gray-3" : "text-ink-gray-5",
+              )}
+            >
+              {description}
+            </span>
+          ) : null}
+        </span>
+      </label>
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";

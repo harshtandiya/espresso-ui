@@ -1,0 +1,471 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`radio templates > renders React template 1`] = `
+"import { forwardRef, useContext, useId } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import { RadioGroupContext } from "./RadioGroup";
+import type { RadioValue } from "./RadioGroup";
+
+const sizeClasses = {
+  xs: {
+    circle: "size-(--radio-xs-size)",
+    selected: "[border-width:var(--radio-xs-checked-border)]",
+    offset: "[margin-top:var(--radio-xs-offset)]",
+  },
+  sm: {
+    circle: "size-(--radio-sm-size)",
+    selected: "[border-width:var(--radio-sm-checked-border)]",
+    offset: "[margin-top:var(--radio-sm-offset)]",
+  },
+  md: {
+    circle: "size-(--radio-md-size)",
+    selected: "[border-width:var(--radio-md-checked-border)]",
+    offset: "[margin-top:var(--radio-md-offset)]",
+  },
+};
+
+export type RadioProps = Omit<ComponentPropsWithoutRef<"label">, "onChange"> & {
+  /** Value this option represents inside its RadioGroup. */
+  value: RadioValue;
+  /** Label rendered beside the control. */
+  label?: ReactNode;
+  /** Description rendered below the label. */
+  description?: ReactNode;
+  /** Disables this option only. */
+  disabled?: boolean;
+};
+
+export const Radio = forwardRef<HTMLInputElement, RadioProps>(
+  ({ className, id, value, label, description, disabled, ...props }, ref) => {
+    const group = useContext(RadioGroupContext);
+    if (!group) {
+      throw new Error("[espresso-ui] <Radio> must be used inside a <RadioGroup>.");
+    }
+
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const labelId = \`\${inputId}-label\`;
+    const descriptionId = \`\${inputId}-description\`;
+    const hasLabel = Boolean(label);
+    const hasDescription = Boolean(description);
+    const isDisabled = group.disabled || Boolean(disabled);
+    const isSelected = group.value === value;
+    const sizing = sizeClasses[group.size];
+    const padded = group.padded;
+
+    const rowClasses = cn(
+      "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+      isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+      padded && !isDisabled && "hover:bg-surface-gray-3 active:bg-surface-gray-4",
+      padded &&
+        (hasDescription
+          ? group.size === "md"
+            ? "px-3 py-2"
+            : "px-1.5 py-1.5"
+          : group.size === "md"
+            ? "h-8 items-center px-3"
+            : group.size === "sm"
+              ? "h-7 items-center px-1.5"
+              : "h-6 items-center px-1.5"),
+      className,
+    );
+
+    const circleClasses = cn(
+      "box-border shrink-0 rounded-full transition-colors",
+      sizing.circle,
+      isSelected ? sizing.selected : "border",
+      hasDescription || !padded ? sizing.offset : "",
+      isDisabled
+        ? isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-5)]"
+          : "bg-surface-base border-outline-gray-3"
+        : isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-10)] group-hover:border-[color:var(--surface-gray-9)] group-active:border-[color:var(--surface-gray-8)]"
+          : "bg-surface-base border-outline-gray-4 group-hover:border-outline-gray-5 group-active:border-outline-gray-6",
+    );
+
+    return (
+      <label
+        htmlFor={inputId}
+        data-slot="control"
+        data-state={isSelected ? "checked" : "unchecked"}
+        data-size={group.size}
+        data-disabled={isDisabled ? "true" : undefined}
+        className={rowClasses}
+        {...props}
+      >
+        <input
+          ref={ref}
+          id={inputId}
+          type="radio"
+          name={group.name}
+          value={String(value)}
+          checked={isSelected}
+          disabled={isDisabled}
+          required={group.required}
+          aria-required={group.required || undefined}
+          aria-labelledby={hasLabel ? labelId : undefined}
+          aria-describedby={hasDescription ? descriptionId : undefined}
+          aria-invalid={group.hasError || undefined}
+          aria-errormessage={group.hasError ? group.errorId : undefined}
+          className="peer sr-only"
+          data-slot="input"
+          onChange={() => group.onSelect(value)}
+        />
+        <span className={circleClasses} aria-hidden="true" />
+        <span className="flex flex-col items-start gap-0.5 text-start">
+          {hasLabel ? (
+            <span
+              id={labelId}
+              data-slot="label"
+              className={cn(
+                "block select-none text-base leading-normal",
+                isDisabled ? "text-ink-gray-4" : "text-ink-gray-7",
+              )}
+            >
+              {label}
+            </span>
+          ) : null}
+          {hasDescription ? (
+            <span
+              id={descriptionId}
+              data-slot="description"
+              className={cn(
+                "block select-none text-sm leading-normal",
+                isDisabled ? "text-ink-gray-3" : "text-ink-gray-5",
+              )}
+            >
+              {description}
+            </span>
+          ) : null}
+        </span>
+      </label>
+    );
+  },
+);
+
+Radio.displayName = "Radio";
+"
+`;
+
+exports[`radio templates > renders React template without TypeScript 1`] = `
+"import { forwardRef, useContext, useId } from "react";
+import { cn } from "@/lib/utils";
+import { RadioGroupContext } from "./RadioGroup";
+
+const sizeClasses = {
+  xs: {
+    circle: "size-(--radio-xs-size)",
+    selected: "[border-width:var(--radio-xs-checked-border)]",
+    offset: "[margin-top:var(--radio-xs-offset)]",
+  },
+  sm: {
+    circle: "size-(--radio-sm-size)",
+    selected: "[border-width:var(--radio-sm-checked-border)]",
+    offset: "[margin-top:var(--radio-sm-offset)]",
+  },
+  md: {
+    circle: "size-(--radio-md-size)",
+    selected: "[border-width:var(--radio-md-checked-border)]",
+    offset: "[margin-top:var(--radio-md-offset)]",
+  },
+};
+
+
+export const Radio = forwardRef(
+  ({ className, id, value, label, description, disabled, ...props }, ref) => {
+    const group = useContext(RadioGroupContext);
+    if (!group) {
+      throw new Error("[espresso-ui] <Radio> must be used inside a <RadioGroup>.");
+    }
+
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const labelId = \`\${inputId}-label\`;
+    const descriptionId = \`\${inputId}-description\`;
+    const hasLabel = Boolean(label);
+    const hasDescription = Boolean(description);
+    const isDisabled = group.disabled || Boolean(disabled);
+    const isSelected = group.value === value;
+    const sizing = sizeClasses[group.size];
+    const padded = group.padded;
+
+    const rowClasses = cn(
+      "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+      isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+      padded && !isDisabled && "hover:bg-surface-gray-3 active:bg-surface-gray-4",
+      padded &&
+        (hasDescription
+          ? group.size === "md"
+            ? "px-3 py-2"
+            : "px-1.5 py-1.5"
+          : group.size === "md"
+            ? "h-8 items-center px-3"
+            : group.size === "sm"
+              ? "h-7 items-center px-1.5"
+              : "h-6 items-center px-1.5"),
+      className,
+    );
+
+    const circleClasses = cn(
+      "box-border shrink-0 rounded-full transition-colors",
+      sizing.circle,
+      isSelected ? sizing.selected : "border",
+      hasDescription || !padded ? sizing.offset : "",
+      isDisabled
+        ? isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-5)]"
+          : "bg-surface-base border-outline-gray-3"
+        : isSelected
+          ? "bg-surface-base border-[color:var(--surface-gray-10)] group-hover:border-[color:var(--surface-gray-9)] group-active:border-[color:var(--surface-gray-8)]"
+          : "bg-surface-base border-outline-gray-4 group-hover:border-outline-gray-5 group-active:border-outline-gray-6",
+    );
+
+    return (
+      <label
+        htmlFor={inputId}
+        data-slot="control"
+        data-state={isSelected ? "checked" : "unchecked"}
+        data-size={group.size}
+        data-disabled={isDisabled ? "true" : undefined}
+        className={rowClasses}
+        {...props}
+      >
+        <input
+          ref={ref}
+          id={inputId}
+          type="radio"
+          name={group.name}
+          value={String(value)}
+          checked={isSelected}
+          disabled={isDisabled}
+          required={group.required}
+          aria-required={group.required || undefined}
+          aria-labelledby={hasLabel ? labelId : undefined}
+          aria-describedby={hasDescription ? descriptionId : undefined}
+          aria-invalid={group.hasError || undefined}
+          aria-errormessage={group.hasError ? group.errorId : undefined}
+          className="peer sr-only"
+          data-slot="input"
+          onChange={() => group.onSelect(value)}
+        />
+        <span className={circleClasses} aria-hidden="true" />
+        <span className="flex flex-col items-start gap-0.5 text-start">
+          {hasLabel ? (
+            <span
+              id={labelId}
+              data-slot="label"
+              className={cn(
+                "block select-none text-base leading-normal",
+                isDisabled ? "text-ink-gray-4" : "text-ink-gray-7",
+              )}
+            >
+              {label}
+            </span>
+          ) : null}
+          {hasDescription ? (
+            <span
+              id={descriptionId}
+              data-slot="description"
+              className={cn(
+                "block select-none text-sm leading-normal",
+                isDisabled ? "text-ink-gray-3" : "text-ink-gray-5",
+              )}
+            >
+              {description}
+            </span>
+          ) : null}
+        </span>
+      </label>
+    );
+  },
+);
+
+Radio.displayName = "Radio";
+"
+`;
+
+exports[`radio templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, inject, ref, useAttrs, useId, useSlots } from "vue";
+import type { ComputedRef, InjectionKey } from "vue";
+import { cn } from "@/lib/utils";
+
+defineOptions({ inheritAttrs: false });
+
+type RadioSize = "xs" | "sm" | "md";
+type RadioValue = string | number | boolean;
+type RadioGroupContext = {
+  name: ComputedRef<string>;
+  value: ComputedRef<RadioValue | undefined>;
+  size: ComputedRef<RadioSize>;
+  padded: ComputedRef<boolean>;
+  disabled: ComputedRef<boolean>;
+  required: ComputedRef<boolean>;
+  hasError: ComputedRef<boolean>;
+  errorId: string;
+  onSelect: (value: RadioValue) => void;
+};
+const RADIO_GROUP_KEY = Symbol.for("espresso-ui.radio-group") as InjectionKey<RadioGroupContext>;
+
+const sizeClasses: Record<
+  RadioSize,
+  { circle: string; selected: string; offset: string }
+> = {
+  xs: {
+    circle: "size-(--radio-xs-size)",
+    selected: "[border-width:var(--radio-xs-checked-border)]",
+    offset: "[margin-top:var(--radio-xs-offset)]",
+  },
+  sm: {
+    circle: "size-(--radio-sm-size)",
+    selected: "[border-width:var(--radio-sm-checked-border)]",
+    offset: "[margin-top:var(--radio-sm-offset)]",
+  },
+  md: {
+    circle: "size-(--radio-md-size)",
+    selected: "[border-width:var(--radio-md-checked-border)]",
+    offset: "[margin-top:var(--radio-md-offset)]",
+  },
+};
+
+const props = withDefaults(
+  defineProps<{
+    value: RadioValue;
+    label?: string;
+    description?: string;
+    disabled?: boolean;
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    label: "",
+    description: "",
+    disabled: false,
+  },
+);
+
+const slots = useSlots();
+const attrs = useAttrs();
+const group = inject(RADIO_GROUP_KEY, null);
+if (!group) {
+  throw new Error("[espresso-ui] <Radio> must be used inside a <RadioGroup>.");
+}
+
+const inputRef = ref<HTMLInputElement | null>(null);
+const fallbackId = useId();
+const inputId = computed(() => props.id ?? fallbackId);
+const labelId = computed(() => \`\${inputId.value}-label\`);
+const descriptionId = computed(() => \`\${inputId.value}-description\`);
+const hasLabel = computed(() => Boolean(props.label || slots.label));
+const hasDescription = computed(() => Boolean(props.description || slots.description));
+const isDisabled = computed(() => group.disabled.value || props.disabled);
+const isSelected = computed(() => group.value.value === props.value);
+const sizing = computed(() => sizeClasses[group.size.value]);
+
+const rowClasses = computed(() =>
+  cn(
+    "group flex items-start gap-2 rounded-(--radio-padded-radius) text-start transition-colors [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+    isDisabled.value ? "cursor-not-allowed" : "cursor-pointer",
+    group.padded.value &&
+      !isDisabled.value &&
+      "hover:bg-surface-gray-3 active:bg-surface-gray-4",
+    group.padded.value &&
+      (hasDescription.value
+        ? group.size.value === "md"
+          ? "px-3 py-2"
+          : "px-1.5 py-1.5"
+        : group.size.value === "md"
+          ? "h-8 items-center px-3"
+          : group.size.value === "sm"
+            ? "h-7 items-center px-1.5"
+            : "h-6 items-center px-1.5"),
+    props.class,
+  ),
+);
+
+const circleClasses = computed(() =>
+  cn(
+    "box-border shrink-0 rounded-full transition-colors",
+    sizing.value.circle,
+    isSelected.value ? sizing.value.selected : "border",
+    hasDescription.value || !group.padded.value ? sizing.value.offset : "",
+    isDisabled.value
+      ? isSelected.value
+        ? "bg-surface-base border-[color:var(--surface-gray-5)]"
+        : "bg-surface-base border-outline-gray-3"
+      : isSelected.value
+        ? "bg-surface-base border-[color:var(--surface-gray-10)] group-hover:border-[color:var(--surface-gray-9)] group-active:border-[color:var(--surface-gray-8)]"
+        : "bg-surface-base border-outline-gray-4 group-hover:border-outline-gray-5 group-active:border-outline-gray-6",
+  ),
+);
+
+function focus(options?: FocusOptions): void {
+  inputRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <label
+    v-bind="attrs"
+    :for="inputId"
+    data-slot="control"
+    :data-state="isSelected ? 'checked' : 'unchecked'"
+    :data-size="group.size.value"
+    :data-disabled="isDisabled ? 'true' : undefined"
+    :class="rowClasses"
+  >
+    <input
+      ref="inputRef"
+      :id="inputId"
+      type="radio"
+      :name="group.name.value"
+      :value="String(props.value)"
+      :checked="isSelected"
+      :disabled="isDisabled"
+      :required="group.required.value"
+      :aria-required="group.required.value || undefined"
+      :aria-labelledby="hasLabel ? labelId : undefined"
+      :aria-describedby="hasDescription ? descriptionId : undefined"
+      :aria-invalid="group.hasError.value || undefined"
+      :aria-errormessage="group.hasError.value ? group.errorId : undefined"
+      class="peer sr-only"
+      data-slot="input"
+      @change="group.onSelect(props.value)"
+    />
+    <span :class="circleClasses" aria-hidden="true" />
+    <span class="flex flex-col items-start gap-0.5 text-start">
+      <span
+        v-if="hasLabel"
+        :id="labelId"
+        data-slot="label"
+        :class="
+          cn(
+            'block select-none text-base leading-normal',
+            isDisabled ? 'text-ink-gray-4' : 'text-ink-gray-7',
+          )
+        "
+      >
+        <slot name="label">{{ props.label }}</slot>
+      </span>
+      <span
+        v-if="hasDescription"
+        :id="descriptionId"
+        data-slot="description"
+        :class="
+          cn(
+            'block select-none text-sm leading-normal',
+            isDisabled ? 'text-ink-gray-3' : 'text-ink-gray-5',
+          )
+        "
+      >
+        <slot name="description">{{ props.description }}</slot>
+      </span>
+    </span>
+  </label>
+</template>
+"
+`;

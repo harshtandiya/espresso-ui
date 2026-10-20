@@ -1,0 +1,116 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  RadioHorizontalDemo,
+  RadioPaddedDemo,
+  RadioPreviewDemo,
+  RadioSizesDemo,
+  RadioStatesDemo,
+} from "@/components/examples/RadioDemo.tsx";
+
+const usage = `import { RadioGroup } from "@/components/ui/RadioGroup";
+import { Radio } from "@/components/ui/Radio";
+
+export default function App() {
+  return (
+    <RadioGroup label="Choose a plan" defaultValue="pro">
+      <Radio value="free" label="Free" description="For personal projects." />
+      <Radio value="pro" label="Pro" description="For growing teams." />
+      <Radio value="enterprise" label="Enterprise" />
+    </RadioGroup>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import RadioGroup from "@/components/ui/RadioGroup.vue";
+import Radio from "@/components/ui/Radio.vue";
+import { ref } from "vue";
+
+const plan = ref("pro");
+\u003C/script>
+
+<template>
+  <RadioGroup v-model="plan" label="Choose a plan">
+    <Radio value="free" label="Free" description="For personal projects." />
+    <Radio value="pro" label="Pro" description="For growing teams." />
+    <Radio value="enterprise" label="Enterprise" />
+  </RadioGroup>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="radio"
+  num={sectionNumber("radio")}
+  label="Radio"
+  desc="Native radio group matching frappe-ui v1: 13 / 14 / 16px controls, vertical or horizontal layout, optional padded rows, group label, description, error, and required marker."
+  status="new"
+  code={usage}
+  codeFile="radio.tsx"
+  codeVue={usageVue}
+  codeVueFile="radio.vue"
+>
+  <CanvasToolbar title="Preview" meta="label · description · selected" />
+  <Canvas class="radio-stack">
+    <RadioPreviewDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="13 / 14 / 16px">
+      <Canvas grid={false} class="radio-stack">
+        <RadioSizesDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Padded" sub="clickable selection rows">
+      <Canvas grid={false} class="radio-stack">
+        <RadioPaddedDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="radio-stack">
+        <RadioStatesDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Orientation" sub="vertical · horizontal">
+      <Canvas grid={false} class="radio-stack">
+        <RadioHorizontalDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.radio-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.radio-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    width: min(100%, 460px);
+  }
+  :global(.radio-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.radio-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

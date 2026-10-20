@@ -1,0 +1,19 @@
+/* RadioGroup and Radio tokens — frappe-ui v1 control geometry. */
+:root {
+  /* Control diameter: xs 13px / sm 14px / md 16px */
+  --radio-xs-size: 13px;
+  --radio-sm-size: 14px;
+  --radio-md-size: 16px;
+
+  /* Selected ring width leaves a surface-base hole in the centre. */
+  --radio-xs-checked-border: 3.7px;
+  --radio-sm-checked-border: 4px;
+  --radio-md-checked-border: 4.5px;
+
+  /* Optical offset from the first line of the label. */
+  --radio-xs-offset: 4px;
+  --radio-sm-offset: 3.5px;
+  --radio-md-offset: 2.5px;
+
+  --radio-padded-radius: var(--radius-4);
+}

@@ -1,0 +1,576 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`radio-group templates > renders React template 1`] = `
+"import { createContext, forwardRef, useId, useState } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+type RadioSize = "xs" | "sm" | "md";
+type RadioOrientation = "vertical" | "horizontal";
+export type RadioValue = string | number | boolean;
+export type RadioGroupError =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] })
+  | null;
+
+export type RadioGroupProps = Omit<
+  ComponentPropsWithoutRef<"div">,
+  "onChange" | "defaultValue"
+> & {
+  /** Selected value. Omit for uncontrolled use. */
+  value?: RadioValue;
+  /** Initial value for uncontrolled use. */
+  defaultValue?: RadioValue;
+  /** Called when the selected value changes. */
+  onValueChange?: (value: RadioValue) => void;
+  /** Size of every radio in the group. */
+  size?: RadioSize;
+  /** Wraps each option in a clickable surface. */
+  padded?: boolean;
+  /** Disables every radio in the group. */
+  disabled?: boolean;
+  /** Layout and arrow-key axis. */
+  orientation?: RadioOrientation;
+  /** Keeps arrow-key navigation inside the group. Native radios loop by default. */
+  loop?: boolean;
+  /** Native form name for the group. */
+  name?: string;
+  /** Group label rendered above the options. */
+  label?: ReactNode;
+  /** Group description rendered below the options. Hidden when \`error\` is set. */
+  description?: ReactNode;
+  /** Group error message. Accepts a string, lines, or an Error. */
+  error?: RadioGroupError;
+  /** Marks the group as required and renders an asterisk. */
+  required?: boolean;
+};
+
+export type RadioGroupContextValue = {
+  name: string;
+  value: RadioValue | undefined;
+  size: RadioSize;
+  padded: boolean;
+  disabled: boolean;
+  required: boolean;
+  hasError: boolean;
+  errorId: string;
+  onSelect: (value: RadioValue) => void;
+};
+
+export const RadioGroupContext = createContext<RadioGroupContextValue | null>(null);
+
+function linesOf(value: RadioGroupError | undefined): string[] {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
+  (
+    {
+      className,
+      children,
+      id,
+      value,
+      defaultValue,
+      onValueChange,
+      size = "sm",
+      padded = false,
+      disabled = false,
+      orientation = "vertical",
+      loop = true,
+      name,
+      label,
+      description,
+      error,
+      required,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const groupId = id ?? generatedId;
+    const labelId = \`\${groupId}-label\`;
+    const descriptionId = \`\${groupId}-description\`;
+    const errorId = \`\${groupId}-error\`;
+    const generatedName = useId();
+    const groupName = name ?? \`radio-group-\${generatedName.replace(/:/g, "")}\`;
+    const [internalValue, setInternalValue] = useState(defaultValue);
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
+    const errorLines = linesOf(error);
+    const hasError = errorLines.length > 0;
+    const hasLabel = Boolean(label);
+    const stacked = orientation === "vertical";
+    const describedBy =
+      [
+        description && !hasError ? descriptionId : null,
+        hasError ? errorId : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const select = (next: RadioValue) => {
+      if (!isControlled) setInternalValue(next);
+      onValueChange?.(next);
+    };
+
+    return (
+      <div className={cn("flex flex-col", className)}>
+        {hasLabel ? (
+          <div
+            id={labelId}
+            className="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+          >
+            {label}
+            {required ? requiredMark : null}
+          </div>
+        ) : null}
+        <div
+          ref={ref}
+          id={groupId}
+          role="radiogroup"
+          aria-labelledby={hasLabel ? labelId : undefined}
+          aria-describedby={describedBy}
+          aria-required={required || undefined}
+          aria-orientation={orientation}
+          aria-invalid={hasError || undefined}
+          aria-errormessage={hasError ? errorId : undefined}
+          data-slot="group"
+          data-size={size}
+          data-padded={padded ? "true" : undefined}
+          data-orientation={orientation}
+          data-disabled={disabled ? "true" : undefined}
+          data-loop={loop ? "true" : "false"}
+          className={cn(
+            "flex",
+            stacked ? "flex-col" : "flex-row flex-wrap items-center",
+            padded ? "" : stacked ? "gap-y-1.5" : "gap-x-4",
+            hasLabel ? "mt-1.5" : "",
+          )}
+          {...props}
+        >
+          <RadioGroupContext.Provider
+            value={{
+              name: groupName,
+              value: currentValue,
+              size,
+              padded,
+              disabled,
+              required: Boolean(required),
+              hasError,
+              errorId,
+              onSelect: select,
+            }}
+          >
+            {children}
+          </RadioGroupContext.Provider>
+        </div>
+        {description && !hasError ? (
+          <p
+            id={descriptionId}
+            className="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+          >
+            {description}
+          </p>
+        ) : null}
+        {hasError ? (
+          <div
+            id={errorId}
+            role="alert"
+            className="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+          >
+            {errorLines.map((line, index) => (
+              <p key={index}>{line}</p>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+RadioGroup.displayName = "RadioGroup";
+"
+`;
+
+exports[`radio-group templates > renders React template without TypeScript 1`] = `
+"import { createContext, forwardRef, useId, useState } from "react";
+import { cn } from "@/lib/utils";
+
+
+function linesOf(value) {
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+}
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+export const RadioGroup = forwardRef(
+  (
+    {
+      className,
+      children,
+      id,
+      value,
+      defaultValue,
+      onValueChange,
+      size = "sm",
+      padded = false,
+      disabled = false,
+      orientation = "vertical",
+      loop = true,
+      name,
+      label,
+      description,
+      error,
+      required,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const groupId = id ?? generatedId;
+    const labelId = \`\${groupId}-label\`;
+    const descriptionId = \`\${groupId}-description\`;
+    const errorId = \`\${groupId}-error\`;
+    const generatedName = useId();
+    const groupName = name ?? \`radio-group-\${generatedName.replace(/:/g, "")}\`;
+    const [internalValue, setInternalValue] = useState(defaultValue);
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
+    const errorLines = linesOf(error);
+    const hasError = errorLines.length > 0;
+    const hasLabel = Boolean(label);
+    const stacked = orientation === "vertical";
+    const describedBy =
+      [
+        description && !hasError ? descriptionId : null,
+        hasError ? errorId : null,
+      ]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const select = (next) => {
+      if (!isControlled) setInternalValue(next);
+      onValueChange?.(next);
+    };
+
+    return (
+      <div className={cn("flex flex-col", className)}>
+        {hasLabel ? (
+          <div
+            id={labelId}
+            className="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+          >
+            {label}
+            {required ? requiredMark : null}
+          </div>
+        ) : null}
+        <div
+          ref={ref}
+          id={groupId}
+          role="radiogroup"
+          aria-labelledby={hasLabel ? labelId : undefined}
+          aria-describedby={describedBy}
+          aria-required={required || undefined}
+          aria-orientation={orientation}
+          aria-invalid={hasError || undefined}
+          aria-errormessage={hasError ? errorId : undefined}
+          data-slot="group"
+          data-size={size}
+          data-padded={padded ? "true" : undefined}
+          data-orientation={orientation}
+          data-disabled={disabled ? "true" : undefined}
+          data-loop={loop ? "true" : "false"}
+          className={cn(
+            "flex",
+            stacked ? "flex-col" : "flex-row flex-wrap items-center",
+            padded ? "" : stacked ? "gap-y-1.5" : "gap-x-4",
+            hasLabel ? "mt-1.5" : "",
+          )}
+          {...props}
+        >
+          <RadioGroupContext.Provider
+            value={{
+              name: groupName,
+              value: currentValue,
+              size,
+              padded,
+              disabled,
+              required: Boolean(required),
+              hasError,
+              errorId,
+              onSelect: select,
+            }}
+          >
+            {children}
+          </RadioGroupContext.Provider>
+        </div>
+        {description && !hasError ? (
+          <p
+            id={descriptionId}
+            className="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+          >
+            {description}
+          </p>
+        ) : null}
+        {hasError ? (
+          <div
+            id={errorId}
+            role="alert"
+            className="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+          >
+            {errorLines.map((line, index) => (
+              <p key={index}>{line}</p>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+RadioGroup.displayName = "RadioGroup";
+"
+`;
+
+exports[`radio-group templates > renders Vue template 1`] = `
+"<script lang="ts">
+import type { ComputedRef, InjectionKey } from "vue";
+
+export type RadioSize = "xs" | "sm" | "md";
+export type RadioOrientation = "vertical" | "horizontal";
+export type RadioValue = string | number | boolean;
+export type RadioGroupError =
+  | string
+  | string[]
+  | (Error & { messages?: string | string[] })
+  | null;
+
+export type RadioGroupContext = {
+  name: ComputedRef<string>;
+  value: ComputedRef<RadioValue | undefined>;
+  size: ComputedRef<RadioSize>;
+  padded: ComputedRef<boolean>;
+  disabled: ComputedRef<boolean>;
+  required: ComputedRef<boolean>;
+  hasError: ComputedRef<boolean>;
+  errorId: string;
+  onSelect: (value: RadioValue) => void;
+};
+
+export const RADIO_GROUP_KEY: InjectionKey<RadioGroupContext> = Symbol.for(
+  "espresso-ui.radio-group",
+);
+</script>
+
+<script setup lang="ts">
+import { computed, provide, ref, useAttrs, useId } from "vue";
+import { cn } from "@/lib/utils";
+
+defineOptions({ inheritAttrs: false });
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: RadioValue;
+    defaultValue?: RadioValue;
+    size?: RadioSize;
+    padded?: boolean;
+    disabled?: boolean;
+    orientation?: RadioOrientation;
+    loop?: boolean;
+    name?: string;
+    label?: string;
+    description?: string;
+    error?: RadioGroupError;
+    required?: boolean;
+    class?: string;
+  }>(),
+  {
+    size: "sm",
+    padded: false,
+    disabled: false,
+    orientation: "vertical",
+    loop: true,
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: RadioValue];
+}>();
+
+const attrs = useAttrs();
+const slots = defineSlots<{
+  default?: () => unknown;
+  label?: (props: { required: boolean }) => unknown;
+  description?: () => unknown;
+}>();
+
+const fallbackId = useId();
+const labelId = computed(() => \`radio-group-\${fallbackId}-label\`);
+const descriptionId = computed(() => \`radio-group-\${fallbackId}-description\`);
+const errorId = computed(() => \`radio-group-\${fallbackId}-error\`);
+const groupName = computed(() => props.name ?? \`radio-group-\${fallbackId.replace(/:/g, "")}\`);
+
+const internalValue = ref<RadioValue | undefined>(props.defaultValue);
+const isControlled = computed(() => props.modelValue !== undefined);
+const currentValue = computed(() =>
+  isControlled.value ? props.modelValue : internalValue.value,
+);
+
+const errorLines = computed(() => {
+  const value = props.error;
+  if (!value) return [];
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.filter(Boolean).map(String);
+  if (value instanceof Error) {
+    const messages = value.messages;
+    if (Array.isArray(messages) && messages.length) return messages.filter(Boolean).map(String);
+    if (typeof messages === "string" && messages) return [messages];
+    return value.message ? [value.message] : [];
+  }
+  return [String(value)];
+});
+const hasError = computed(() => errorLines.value.length > 0);
+const hasLabel = computed(() => Boolean(props.label || slots.label));
+const hasDescription = computed(() => Boolean(props.description || slots.description));
+const stacked = computed(() => props.orientation === "vertical");
+
+const externalDescribedBy = computed(() => attrs["aria-describedby"] as string | undefined);
+const describedBy = computed(
+  () =>
+    [
+      props.description && !hasError.value ? descriptionId.value : null,
+      hasError.value ? errorId.value : null,
+      externalDescribedBy.value,
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined,
+);
+
+const controlAttrs = computed(() =>
+  Object.fromEntries(
+    Object.entries(attrs).filter(
+      ([key]) => key !== "class" && key !== "style" && key !== "aria-describedby",
+    ),
+  ),
+);
+
+function select(next: RadioValue): void {
+  if (!isControlled.value) internalValue.value = next;
+  emit("update:modelValue", next);
+}
+
+provide(RADIO_GROUP_KEY, {
+  name: groupName,
+  value: currentValue,
+  size: computed(() => props.size),
+  padded: computed(() => props.padded),
+  disabled: computed(() => props.disabled),
+  required: computed(() => props.required),
+  hasError,
+  errorId: errorId.value,
+  onSelect: select,
+});
+</script>
+
+<template>
+  <div :class="cn('flex flex-col', props.class)">
+    <div
+      v-if="hasLabel"
+      :id="labelId"
+      class="block [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]"
+    >
+      <slot v-if="$slots.label" name="label" :required="props.required" />
+      <template v-else>
+        {{ props.label }}
+        <template v-if="props.required">
+          <span class="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">*</span>
+          <span class="sr-only">(required)</span>
+        </template>
+      </template>
+    </div>
+    <div
+      role="radiogroup"
+      :aria-labelledby="hasLabel ? labelId : undefined"
+      :aria-describedby="describedBy"
+      :aria-required="props.required || undefined"
+      :aria-orientation="props.orientation"
+      :aria-invalid="hasError || undefined"
+      :aria-errormessage="hasError ? errorId : undefined"
+      data-slot="group"
+      :data-size="props.size"
+      :data-padded="props.padded ? 'true' : undefined"
+      :data-orientation="props.orientation"
+      :data-disabled="props.disabled ? 'true' : undefined"
+      :data-loop="props.loop ? 'true' : 'false'"
+      :class="
+        cn(
+          'flex',
+          stacked ? 'flex-col' : 'flex-row flex-wrap items-center',
+          props.padded ? '' : stacked ? 'gap-y-1.5' : 'gap-x-4',
+          hasLabel ? 'mt-1.5' : '',
+        )
+      "
+      v-bind="controlAttrs"
+    >
+      <slot />
+    </div>
+    <p
+      v-if="hasDescription && (!hasError || $slots.description)"
+      :id="descriptionId"
+      class="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+    >
+      <slot name="description">{{ props.description }}</slot>
+    </p>
+    <div
+      v-if="hasError"
+      :id="errorId"
+      role="alert"
+      class="mt-1 [font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+    >
+      <p v-for="(line, index) in errorLines" :key="index">{{ line }}</p>
+    </div>
+  </div>
+</template>
+"
+`;
