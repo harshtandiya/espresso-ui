@@ -40,9 +40,10 @@
   },
   "scripts": {
     "bundle-registry": "tsx scripts/bundle-registry.ts",
-    "build": "npm run bundle-registry && vp pack",
-    "dev": "npm run bundle-registry && vp pack --watch",
-    "pretest": "npm run bundle-registry",
+    "generate-theme": "tsx scripts/generate-theme.ts",
+    "build": "npm run generate-theme && npm run bundle-registry && vp pack",
+    "dev": "npm run generate-theme && npm run bundle-registry && vp pack --watch",
+    "pretest": "npm run generate-theme && npm run bundle-registry",
     "test": "vp test",
     "check": "vp check",
     "prepublishOnly": "npm run build"

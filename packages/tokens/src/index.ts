@@ -21,6 +21,12 @@ export interface Primitives {
 
 export interface SemanticSection {
   color: Record<string, string>;
+  surface: Record<string, string>;
+  surfaceAlpha: Record<string, string>;
+  ink: Record<string, string>;
+  outline: Record<string, string>;
+  outlineAlpha: Record<string, string>;
+  focus: Record<string, string>;
   shadow: Record<string, string>;
 }
 
@@ -75,7 +81,12 @@ export type SemanticColorToken =
   | "color-line-2"
   | "color-surface"
   | "color-surface-2"
-  | "color-surface-3";
+  | "color-surface-3"
+  | `surface-${string}`
+  | `surface-alpha-${string}`
+  | `ink-${string}`
+  | `outline-${string}`
+  | `outline-alpha-${string}`;
 
 /** Semantic shadow token names. */
 export type SemanticShadowToken =
@@ -96,8 +107,15 @@ export type SemanticRadiusToken =
   | "radius-3xl"
   | "radius-full";
 
+/** Semantic focus-outline token names. */
+export type SemanticFocusToken = `focus-outline-${string}`;
+
 /** Union of all semantic token names. */
-export type SemanticToken = SemanticColorToken | SemanticShadowToken | SemanticRadiusToken;
+export type SemanticToken =
+  | SemanticColorToken
+  | SemanticFocusToken
+  | SemanticShadowToken
+  | SemanticRadiusToken;
 
 /** Returns a CSS var reference string, e.g. cssVar("color-primary") → "var(--color-primary)". */
 export function cssVar(token: SemanticToken): string {

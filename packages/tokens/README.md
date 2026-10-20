@@ -5,9 +5,11 @@
 Design token source of truth for espresso-ui: primitives, semantic CSS variables, and a Tailwind v4 `@theme` block.
 
 - `src/primitives.json` — raw scale (colors, spacing, radii, fonts)
-- `src/semantic.json` — intent layer (`--color-primary`, `--color-bg`, …)
+- `src/semantic.json` — intent layer (`--color-primary`, `--surface-gray-1`, `--ink-gray-8`, `--outline-gray-2`, …)
 - `src/build-tokens.ts` — token build → `dist/{tokens,tailwind}.css`
 - `src/index.ts` — typed JS surface (`primitives`, `semantic`, `cssVar`)
+
+The `surface`, `surface-alpha`, `ink`, `outline`, `outline-alpha`, `focus-outline`, and numbered `radius` vocabularies mirror [frappe-ui 1.0](https://github.com/frappe/frappe-ui) (MIT). Keeping the names identical is deliberate: a component copied from either library resolves the same token variables.
 
 ## Who consumes this
 
