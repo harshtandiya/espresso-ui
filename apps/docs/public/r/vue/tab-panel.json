@@ -1,0 +1,25 @@
+{
+  "name": "tab-panel",
+  "type": "registry:ui",
+  "title": "TabPanel",
+  "description": "espresso-ui TabPanel component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabPanel.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed, inject } from \"vue\";\nimport { cn } from \"@/lib/utils\";\nimport { TABS_KEY, panelId, tabId, type TabValue } from \"./Tabs.vue\";\n\nconst props = withDefaults(\n  defineProps<{\n    value: TabValue;\n    keepMounted?: boolean;\n    class?: string;\n  }>(),\n  {\n    keepMounted: false,\n  },\n);\n\nconst context = inject(TABS_KEY);\nif (!context) throw new Error(\"<TabPanel> must be used inside <Tabs>.\");\n\nconst selected = computed(() => context.selected.value === props.value);\n</script>\n\n<template>\n  <div\n    v-if=\"selected || props.keepMounted\"\n    v-show=\"selected\"\n    role=\"tabpanel\"\n    :id=\"panelId(context.baseId, props.value)\"\n    :aria-labelledby=\"tabId(context.baseId, props.value)\"\n    tabindex=\"0\"\n    data-slot=\"tab-panel\"\n    :class=\"cn('outline-none', props.class)\"\n  >\n    <slot />\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-panel.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

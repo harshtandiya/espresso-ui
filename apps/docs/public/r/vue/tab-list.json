@@ -1,0 +1,25 @@
+{
+  "name": "tab-list",
+  "type": "registry:ui",
+  "title": "TabList",
+  "description": "espresso-ui TabList component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabList.vue",
+      "content": "<script lang=\"ts\">\nimport type { ComputedRef, InjectionKey } from \"vue\";\nimport type { TabsOrientation, TabsSize, TabsVariant } from \"./Tabs.vue\";\n\nexport type TabListContext = {\n  variant: ComputedRef<TabsVariant>;\n  size: ComputedRef<TabsSize>;\n  orientation: ComputedRef<TabsOrientation>;\n};\n\nexport const TAB_LIST_KEY: InjectionKey<TabListContext> = Symbol.for(\n  \"espresso-ui.tab-list\",\n);\n</script>\n\n<script setup lang=\"ts\">\nimport { computed, inject, onMounted, provide, ref } from \"vue\";\nimport { cn } from \"@/lib/utils\";\nimport { TABS_KEY } from \"./Tabs.vue\";\n\nconst props = withDefaults(\n  defineProps<{\n    variant?: TabsVariant;\n    size?: TabsSize;\n    class?: string;\n  }>(),\n  {},\n);\n\nconst context = inject(TABS_KEY);\nif (!context) throw new Error(\"<TabList> must be used inside <Tabs>.\");\n\nconst variant = computed(() => props.variant ?? context.variant.value);\nconst size = computed(() => props.size ?? context.size.value);\nconst orientation = computed(() => context.orientation.value);\nconst isVertical = computed(() => orientation.value === \"vertical\");\nconst listRef = ref<HTMLElement | null>(null);\n\nprovide(TAB_LIST_KEY, { variant, size, orientation });\n\nconst listVariantClasses = {\n  underline: {\n    horizontal: \"relative flex items-center border-b border-outline-gray-2\",\n    vertical: \"relative flex flex-col border-r border-outline-gray-2\",\n  },\n  subtle: {\n    horizontal: \"inline-flex items-center gap-1 rounded-(--radius-4) bg-surface-gray-2 p-1\",\n    vertical:\n      \"inline-flex flex-col items-stretch gap-1 rounded-(--radius-4) bg-surface-gray-2 p-1\",\n  },\n  ghost: {\n    horizontal: \"inline-flex items-center gap-1 rounded-(--radius-4) p-1\",\n    vertical: \"inline-flex flex-col items-stretch gap-1 rounded-(--radius-4) p-1\",\n  },\n  \"browser-tab\": {\n    horizontal: \"relative flex items-end gap-1 border-b border-outline-gray-2\",\n    vertical: \"relative flex flex-col gap-1 border-r border-outline-gray-2\",\n  },\n};\n\nconst classes = computed(() =>\n  cn(\n    listVariantClasses[variant.value][orientation.value],\n    isVertical.value && \"self-start\",\n    props.class,\n  ),\n);\n\nonMounted(() => {\n  if (context.selected.value !== undefined) return;\n  const first = listRef.value?.querySelector<HTMLButtonElement>(\n    '[role=\"tab\"]:not(:disabled)',\n  );\n  first?.click();\n});\n\nfunction onKeydown(event: KeyboardEvent) {\n  const tabs = Array.from(\n    listRef.value?.querySelectorAll<HTMLButtonElement>('[role=\"tab\"]:not(:disabled)') ?? [],\n  );\n  if (!tabs.length) return;\n\n  const currentIndex = tabs.indexOf(document.activeElement as HTMLButtonElement);\n  const nextKeys = isVertical.value ? [\"ArrowDown\", \"ArrowUp\"] : [\"ArrowRight\", \"ArrowLeft\"];\n  let nextIndex = currentIndex;\n\n  if (event.key === \"Home\") nextIndex = 0;\n  else if (event.key === \"End\") nextIndex = tabs.length - 1;\n  else if (event.key === nextKeys[0] || event.key === nextKeys[1]) {\n    const direction = event.key === nextKeys[0] ? 1 : -1;\n    nextIndex = (Math.max(currentIndex, 0) + direction + tabs.length) % tabs.length;\n  } else {\n    return;\n  }\n\n  event.preventDefault();\n  const next = tabs[nextIndex];\n  next.focus();\n  next.click();\n}\n</script>\n\n<template>\n  <div\n    ref=\"listRef\"\n    role=\"tablist\"\n    :aria-orientation=\"orientation\"\n    data-slot=\"tab-list\"\n    :data-variant=\"variant\"\n    :data-size=\"size\"\n    :class=\"classes\"\n    @keydown=\"onKeydown\"\n  >\n    <slot />\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-list.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

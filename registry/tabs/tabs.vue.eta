@@ -1,0 +1,83 @@
+<script lang="ts">
+import type { ComputedRef, InjectionKey } from "vue";
+
+export type TabValue = string | number;
+export type TabsVariant = "underline" | "subtle" | "ghost" | "browser-tab";
+export type TabsSize = "sm" | "md";
+export type TabsOrientation = "horizontal" | "vertical";
+
+export type TabsContext = {
+  selected: ComputedRef<TabValue | undefined>;
+  select: (value: TabValue) => void;
+  orientation: ComputedRef<TabsOrientation>;
+  variant: ComputedRef<TabsVariant>;
+  size: ComputedRef<TabsSize>;
+  baseId: string;
+};
+
+export const TABS_KEY: InjectionKey<TabsContext> = Symbol.for("espresso-ui.tabs");
+
+export function tabId(baseId: string, value: TabValue) {
+  return `${baseId}-tab-${String(value).replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+}
+
+export function panelId(baseId: string, value: TabValue) {
+  return `${baseId}-panel-${String(value).replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+}
+</script>
+
+<script setup lang="ts">
+import { computed, provide, ref, useId } from "vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: TabValue;
+    defaultValue?: TabValue;
+    variant?: TabsVariant;
+    size?: TabsSize;
+    vertical?: boolean;
+    orientation?: TabsOrientation;
+    class?: string;
+  }>(),
+  {
+    variant: "underline",
+    size: "sm",
+    vertical: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: TabValue];
+}>();
+
+const internalValue = ref<TabValue | undefined>(props.defaultValue);
+const selected = computed(() =>
+  props.modelValue !== undefined ? props.modelValue : internalValue.value,
+);
+const orientation = computed<TabsOrientation>(
+  () => props.orientation ?? (props.vertical ? "vertical" : "horizontal"),
+);
+const variant = computed(() => props.variant);
+const size = computed(() => props.size);
+const baseId = useId().replace(/:/g, "");
+
+function select(value: TabValue) {
+  if (props.modelValue === undefined) internalValue.value = value;
+  emit("update:modelValue", value);
+}
+
+provide(TABS_KEY, { selected, select, orientation, variant, size, baseId });
+</script>
+
+<template>
+  <div
+    data-slot="tabs"
+    :data-orientation="orientation"
+    :data-variant="variant"
+    :data-size="size"
+    :class="cn('min-w-0', props.class)"
+  >
+    <slot />
+  </div>
+</template>

@@ -1,0 +1,25 @@
+{
+  "name": "tab-panel",
+  "type": "registry:ui",
+  "title": "TabPanel",
+  "description": "espresso-ui TabPanel component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabPanel.tsx",
+      "content": "export { TabPanel } from \"./Tabs\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-panel.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

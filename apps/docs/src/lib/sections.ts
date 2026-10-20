@@ -56,6 +56,7 @@ export const SECTIONS: readonly Section[] = [
   { id: "divider", label: "Divider", group: "components", status: "new", sub: "with action" },
   { id: "alert", label: "Alert", group: "components", status: "new", sub: "row · banner" },
   { id: "tooltip", label: "Tooltip", group: "components", status: "new", sub: "4 sides" },
+  { id: "tabs", label: "Tabs", group: "components", status: "new", sub: "4 variants" },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */

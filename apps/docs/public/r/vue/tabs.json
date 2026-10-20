@@ -1,0 +1,23 @@
+{
+  "name": "tabs",
+  "type": "registry:ui",
+  "title": "Tabs",
+  "description": "espresso-ui Tabs component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Tabs.vue",
+      "content": "<script lang=\"ts\">\nimport type { ComputedRef, InjectionKey } from \"vue\";\n\nexport type TabValue = string | number;\nexport type TabsVariant = \"underline\" | \"subtle\" | \"ghost\" | \"browser-tab\";\nexport type TabsSize = \"sm\" | \"md\";\nexport type TabsOrientation = \"horizontal\" | \"vertical\";\n\nexport type TabsContext = {\n  selected: ComputedRef<TabValue | undefined>;\n  select: (value: TabValue) => void;\n  orientation: ComputedRef<TabsOrientation>;\n  variant: ComputedRef<TabsVariant>;\n  size: ComputedRef<TabsSize>;\n  baseId: string;\n};\n\nexport const TABS_KEY: InjectionKey<TabsContext> = Symbol.for(\"espresso-ui.tabs\");\n\nexport function tabId(baseId: string, value: TabValue) {\n  return `${baseId}-tab-${String(value).replace(/[^a-zA-Z0-9_-]/g, \"-\")}`;\n}\n\nexport function panelId(baseId: string, value: TabValue) {\n  return `${baseId}-panel-${String(value).replace(/[^a-zA-Z0-9_-]/g, \"-\")}`;\n}\n</script>\n\n<script setup lang=\"ts\">\nimport { computed, provide, ref, useId } from \"vue\";\nimport { cn } from \"@/lib/utils\";\n\nconst props = withDefaults(\n  defineProps<{\n    modelValue?: TabValue;\n    defaultValue?: TabValue;\n    variant?: TabsVariant;\n    size?: TabsSize;\n    vertical?: boolean;\n    orientation?: TabsOrientation;\n    class?: string;\n  }>(),\n  {\n    variant: \"underline\",\n    size: \"sm\",\n    vertical: false,\n  },\n);\n\nconst emit = defineEmits<{\n  \"update:modelValue\": [value: TabValue];\n}>();\n\nconst internalValue = ref<TabValue | undefined>(props.defaultValue);\nconst selected = computed(() =>\n  props.modelValue !== undefined ? props.modelValue : internalValue.value,\n);\nconst orientation = computed<TabsOrientation>(\n  () => props.orientation ?? (props.vertical ? \"vertical\" : \"horizontal\"),\n);\nconst variant = computed(() => props.variant);\nconst size = computed(() => props.size);\nconst baseId = useId().replace(/:/g, \"\");\n\nfunction select(value: TabValue) {\n  if (props.modelValue === undefined) internalValue.value = value;\n  emit(\"update:modelValue\", value);\n}\n\nprovide(TABS_KEY, { selected, select, orientation, variant, size, baseId });\n</script>\n\n<template>\n  <div\n    data-slot=\"tabs\"\n    :data-orientation=\"orientation\"\n    :data-variant=\"variant\"\n    :data-size=\"size\"\n    :class=\"cn('min-w-0', props.class)\"\n  >\n    <slot />\n  </div>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tabs.css",
+      "content": "/* Tabs use color transitions only; the moving indicator is intentionally omitted. */\n[data-slot=\"tab-trigger\"] {\n  -webkit-tap-highlight-color: transparent;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"tab-trigger\"] {\n    transition: none;\n  }\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

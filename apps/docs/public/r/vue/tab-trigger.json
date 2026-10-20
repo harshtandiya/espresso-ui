@@ -1,0 +1,26 @@
+{
+  "name": "tab-trigger",
+  "type": "registry:ui",
+  "title": "TabTrigger",
+  "description": "espresso-ui TabTrigger component (Vue)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs",
+    "tab-list"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabTrigger.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed, inject, type Component } from \"vue\";\nimport { cn } from \"@/lib/utils\";\nimport { TABS_KEY, panelId, tabId, type TabValue } from \"./Tabs.vue\";\nimport { TAB_LIST_KEY } from \"./TabList.vue\";\n\nconst props = withDefaults(\n  defineProps<{\n    value: TabValue;\n    label?: string;\n    icon?: string | Component;\n    disabled?: boolean;\n    class?: string;\n  }>(),\n  {\n    label: \"\",\n    disabled: false,\n  },\n);\n\nconst slots = defineSlots<{\n  prefix?: () => unknown;\n  default?: () => unknown;\n  suffix?: () => unknown;\n}>();\n\nconst context = inject(TABS_KEY);\nif (!context) throw new Error(\"<TabTrigger> must be used inside <Tabs>.\");\nconst list = inject(TAB_LIST_KEY);\nif (!list) throw new Error(\"<TabTrigger> must be used inside <TabList>.\");\n\nconst selected = computed(() => context.selected.value === props.value);\nconst isVertical = computed(() => list.orientation.value === \"vertical\");\n\nconst sizeClasses = {\n  sm: \"h-8 px-2.5 text-sm\",\n  md: \"h-9 px-3 text-sm\",\n};\n\nconst triggerVariantClasses = {\n  underline: {\n    base: \"text-ink-gray-5 hover:text-ink-gray-7\",\n    selected:\n      \"text-ink-gray-8 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-outline-gray-8\",\n    verticalSelected:\n      \"text-ink-gray-8 after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-outline-gray-8\",\n  },\n  subtle: {\n    base: \"rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected: \"rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm\",\n    verticalSelected: \"rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm\",\n  },\n  ghost: {\n    base: \"rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected: \"rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8\",\n    verticalSelected: \"rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8\",\n  },\n  \"browser-tab\": {\n    base: \"rounded-t-(--radius-4) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected:\n      \"-mb-px rounded-t-(--radius-4) border border-outline-gray-2 border-b-surface-base bg-surface-base text-ink-gray-8\",\n    verticalSelected:\n      \"-mr-px rounded-l-(--radius-4) border border-outline-gray-2 border-r-surface-base bg-surface-base text-ink-gray-8\",\n  },\n};\n\nconst classes = computed(() => {\n  const variantClasses = triggerVariantClasses[list.variant.value];\n  return cn(\n    \"relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-outline-gray-4 disabled:cursor-not-allowed disabled:opacity-50\",\n    sizeClasses[list.size.value],\n    variantClasses.base,\n    selected.value &&\n      (isVertical.value\n        ? variantClasses.verticalSelected\n        : variantClasses.selected),\n    list.variant.value === \"browser-tab\" && \"px-3\",\n    isVertical.value && \"w-full justify-start\",\n    props.class,\n  );\n});\n\nfunction onClick() {\n  if (props.disabled) return;\n  context.select(props.value);\n}\n</script>\n\n<template>\n  <button\n    type=\"button\"\n    role=\"tab\"\n    :id=\"tabId(context.baseId, props.value)\"\n    :aria-selected=\"selected\"\n    :aria-controls=\"panelId(context.baseId, props.value)\"\n    :aria-label=\"props.label && !slots.default ? props.label : undefined\"\n    :tabindex=\"props.disabled ? -1 : selected ? 0 : -1\"\n    :disabled=\"props.disabled\"\n    data-slot=\"tab-trigger\"\n    :data-state=\"selected ? 'active' : 'inactive'\"\n    :class=\"classes\"\n    @click=\"onClick\"\n  >\n    <slot name=\"prefix\" />\n    <span\n      v-if=\"typeof props.icon === 'string'\"\n      :class=\"props.icon\"\n      class=\"size-3.5\"\n      aria-hidden=\"true\"\n    />\n    <component\n      v-else-if=\"props.icon\"\n      :is=\"props.icon\"\n      class=\"size-3.5\"\n      aria-hidden=\"true\"\n    />\n    <slot>{{ props.label }}</slot>\n    <slot name=\"suffix\" />\n  </button>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-trigger.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

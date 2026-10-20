@@ -1,0 +1,10 @@
+/* Tabs use color transitions only; the moving indicator is intentionally omitted. */
+[data-slot="tab-trigger"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="tab-trigger"] {
+    transition: none;
+  }
+}

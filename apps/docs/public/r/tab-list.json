@@ -1,0 +1,25 @@
+{
+  "name": "tab-list",
+  "type": "registry:ui",
+  "title": "TabList",
+  "description": "espresso-ui TabList component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabList.tsx",
+      "content": "export { TabList } from \"./Tabs\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-list.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

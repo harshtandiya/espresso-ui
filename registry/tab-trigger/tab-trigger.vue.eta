@@ -1,0 +1,120 @@
+<script setup lang="ts">
+import { computed, inject, type Component } from "vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+import { TABS_KEY, panelId, tabId, type TabValue } from "./Tabs.vue";
+import { TAB_LIST_KEY } from "./TabList.vue";
+
+const props = withDefaults(
+  defineProps<{
+    value: TabValue;
+    label?: string;
+    icon?: string | Component;
+    disabled?: boolean;
+    class?: string;
+  }>(),
+  {
+    label: "",
+    disabled: false,
+  },
+);
+
+const slots = defineSlots<{
+  prefix?: () => unknown;
+  default?: () => unknown;
+  suffix?: () => unknown;
+}>();
+
+const context = inject(TABS_KEY);
+if (!context) throw new Error("<TabTrigger> must be used inside <Tabs>.");
+const list = inject(TAB_LIST_KEY);
+if (!list) throw new Error("<TabTrigger> must be used inside <TabList>.");
+
+const selected = computed(() => context.selected.value === props.value);
+const isVertical = computed(() => list.orientation.value === "vertical");
+
+const sizeClasses = {
+  sm: "h-8 px-2.5 text-sm",
+  md: "h-9 px-3 text-sm",
+};
+
+const triggerVariantClasses = {
+  underline: {
+    base: "text-ink-gray-5 hover:text-ink-gray-7",
+    selected:
+      "text-ink-gray-8 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-outline-gray-8",
+    verticalSelected:
+      "text-ink-gray-8 after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-outline-gray-8",
+  },
+  subtle: {
+    base: "rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7",
+    selected: "rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm",
+    verticalSelected: "rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm",
+  },
+  ghost: {
+    base: "rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7",
+    selected: "rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8",
+    verticalSelected: "rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8",
+  },
+  "browser-tab": {
+    base: "rounded-t-(--radius-4) text-ink-gray-5 hover:text-ink-gray-7",
+    selected:
+      "-mb-px rounded-t-(--radius-4) border border-outline-gray-2 border-b-surface-base bg-surface-base text-ink-gray-8",
+    verticalSelected:
+      "-mr-px rounded-l-(--radius-4) border border-outline-gray-2 border-r-surface-base bg-surface-base text-ink-gray-8",
+  },
+};
+
+const classes = computed(() => {
+  const variantClasses = triggerVariantClasses[list.variant.value];
+  return cn(
+    "relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-outline-gray-4 disabled:cursor-not-allowed disabled:opacity-50",
+    sizeClasses[list.size.value],
+    variantClasses.base,
+    selected.value &&
+      (isVertical.value
+        ? variantClasses.verticalSelected
+        : variantClasses.selected),
+    list.variant.value === "browser-tab" && "px-3",
+    isVertical.value && "w-full justify-start",
+    props.class,
+  );
+});
+
+function onClick() {
+  if (props.disabled) return;
+  context.select(props.value);
+}
+</script>
+
+<template>
+  <button
+    type="button"
+    role="tab"
+    :id="tabId(context.baseId, props.value)"
+    :aria-selected="selected"
+    :aria-controls="panelId(context.baseId, props.value)"
+    :aria-label="props.label && !slots.default ? props.label : undefined"
+    :tabindex="props.disabled ? -1 : selected ? 0 : -1"
+    :disabled="props.disabled"
+    data-slot="tab-trigger"
+    :data-state="selected ? 'active' : 'inactive'"
+    :class="classes"
+    @click="onClick"
+  >
+    <slot name="prefix" />
+    <span
+      v-if="typeof props.icon === 'string'"
+      :class="props.icon"
+      class="size-3.5"
+      aria-hidden="true"
+    />
+    <component
+      v-else-if="props.icon"
+      :is="props.icon"
+      class="size-3.5"
+      aria-hidden="true"
+    />
+    <slot>{{ props.label }}</slot>
+    <slot name="suffix" />
+  </button>
+</template>

@@ -1,0 +1,26 @@
+{
+  "name": "tab-trigger",
+  "type": "registry:ui",
+  "title": "TabTrigger",
+  "description": "espresso-ui TabTrigger component (React)",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [
+    "tabs",
+    "tab-list"
+  ],
+  "files": [
+    {
+      "path": "components/ui/TabTrigger.tsx",
+      "content": "export { TabTrigger } from \"./Tabs\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/tab-trigger.css",
+      "content": "/* Part of the Tabs compound component. */\n",
+      "type": "registry:style"
+    }
+  ]
+}

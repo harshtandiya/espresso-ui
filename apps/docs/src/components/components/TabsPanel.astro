@@ -1,0 +1,121 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  TabsBrowserDemo,
+  TabsGhostDemo,
+  TabsSubtleDemo,
+  TabsUnderlineDemo,
+  TabsVerticalDemo,
+} from "@/components/examples/TabsDemo.tsx";
+
+const usage = `import { Tabs, TabList, TabTrigger, TabPanel } from "@/components/ui/Tabs";
+
+export default function App() {
+  return (
+    <Tabs defaultValue="overview" variant="underline">
+      <TabList>
+        <TabTrigger value="overview" label="Overview" />
+        <TabTrigger value="activity" label="Activity" />
+      </TabList>
+      <TabPanel value="overview">Overview content</TabPanel>
+      <TabPanel value="activity">Activity content</TabPanel>
+    </Tabs>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Tabs from "@/components/ui/Tabs.vue";
+import TabList from "@/components/ui/TabList.vue";
+import TabTrigger from "@/components/ui/TabTrigger.vue";
+import TabPanel from "@/components/ui/TabPanel.vue";
+\u003C/script>
+
+<template>
+  <Tabs default-value="overview" variant="underline">
+    <TabList>
+      <TabTrigger value="overview" label="Overview" />
+      <TabTrigger value="activity" label="Activity" />
+    </TabList>
+    <TabPanel value="overview">Overview content</TabPanel>
+    <TabPanel value="activity">Activity content</TabPanel>
+  </Tabs>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="tabs"
+  num={sectionNumber("tabs")}
+  label="Tabs"
+  desc="Switches between panels of content. The same compound parts cover underline record sections, pill filters, quiet ghost navigation, attached browser tabs, and a vertical rail. Arrow keys, Home and End move focus and selection; disabled triggers are skipped."
+  status="new"
+  code={usage}
+  codeFile="tabs.tsx"
+  codeVue={usageVue}
+  codeVueFile="tabs.vue"
+>
+  <CanvasToolbar title="Preview" meta="underline · count · panel" />
+  <Canvas class="tabs-stack">
+    <TabsUnderlineDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Subtle" sub="pill track">
+      <Canvas grid={false} class="tabs-stack">
+        <TabsSubtleDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Ghost" sub="quiet track">
+      <Canvas grid={false} class="tabs-stack">
+        <TabsGhostDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Browser tab" sub="attached panel">
+      <Canvas grid={false} class="tabs-stack">
+        <TabsBrowserDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Vertical" sub="side rail">
+      <Canvas grid={false} class="tabs-stack">
+        <TabsVerticalDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.tabs-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.tabs-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: min(100%, 540px);
+  }
+  :global(.tabs-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.tabs-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+    :global(.tabs-stack .canvas-content) {
+      width: 100%;
+    }
+  }
+</style>

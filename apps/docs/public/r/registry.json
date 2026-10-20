@@ -461,6 +461,105 @@
       ]
     },
     {
+      "name": "tab-list",
+      "type": "registry:ui",
+      "title": "TabList",
+      "description": "espresso-ui TabList component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [
+        "tabs"
+      ],
+      "files": [
+        {
+          "path": "components/ui/TabList.tsx",
+          "content": "export { TabList } from \"./Tabs\";\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/tab-list.css",
+          "content": "/* Part of the Tabs compound component. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "tab-panel",
+      "type": "registry:ui",
+      "title": "TabPanel",
+      "description": "espresso-ui TabPanel component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [
+        "tabs"
+      ],
+      "files": [
+        {
+          "path": "components/ui/TabPanel.tsx",
+          "content": "export { TabPanel } from \"./Tabs\";\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/tab-panel.css",
+          "content": "/* Part of the Tabs compound component. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "tab-trigger",
+      "type": "registry:ui",
+      "title": "TabTrigger",
+      "description": "espresso-ui TabTrigger component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [
+        "tabs",
+        "tab-list"
+      ],
+      "files": [
+        {
+          "path": "components/ui/TabTrigger.tsx",
+          "content": "export { TabTrigger } from \"./Tabs\";\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/tab-trigger.css",
+          "content": "/* Part of the Tabs compound component. */\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "espresso-ui Tabs component (React)",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Tabs.tsx",
+          "content": "import {\n  createContext,\n  useContext,\n  useEffect,\n  useId,\n  useRef,\n  useState,\n  type ButtonHTMLAttributes,\n  type HTMLAttributes,\n  type KeyboardEvent,\n  type ReactNode,\n} from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport type TabValue = string | number;\nexport type TabsVariant = \"underline\" | \"subtle\" | \"ghost\" | \"browser-tab\";\nexport type TabsSize = \"sm\" | \"md\";\nexport type TabsOrientation = \"horizontal\" | \"vertical\";\n\ntype TabsContextValue = {\n  value: TabValue | undefined;\n  select: (value: TabValue) => void;\n  orientation: TabsOrientation;\n  variant: TabsVariant;\n  size: TabsSize;\n  baseId: string;\n};\n\ntype TabListContextValue = {\n  variant: TabsVariant;\n  size: TabsSize;\n  orientation: TabsOrientation;\n};\n\nexport type TabsProps = Omit<HTMLAttributes<HTMLDivElement>, \"defaultValue\" | \"onChange\"> & {\n  /** Selected tab value. Omit for uncontrolled use. */\n  value?: TabValue;\n  /** Initially selected tab for uncontrolled use. */\n  defaultValue?: TabValue;\n  /** Called when the selected tab changes. */\n  onValueChange?: (value: TabValue) => void;\n  /** Visual treatment of the trigger row. */\n  variant?: TabsVariant;\n  /** Height and padding of the triggers. */\n  size?: TabsSize;\n  /** Render the list vertically instead of horizontally. */\n  vertical?: boolean;\n  /** Explicit orientation; wins over `vertical`. */\n  orientation?: TabsOrientation;\n};\n\nexport type TabListProps = HTMLAttributes<HTMLDivElement> & {\n  variant?: TabsVariant;\n  size?: TabsSize;\n};\n\nexport type TabTriggerProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, \"value\"> & {\n  /** Value this trigger selects. */\n  value: TabValue;\n  /** Visible label. Children take precedence. */\n  label?: ReactNode;\n  /** Leading icon before the label. */\n  icon?: ReactNode;\n  /** Content before the icon and label. */\n  prefix?: ReactNode;\n  /** Content after the label, such as a count. */\n  suffix?: ReactNode;\n};\n\nexport type TabPanelProps = HTMLAttributes<HTMLDivElement> & {\n  /** Value of the trigger that owns this panel. */\n  value: TabValue;\n  /** Keep the panel mounted while hidden. */\n  keepMounted?: boolean;\n};\n\nconst TabsContext = createContext<TabsContextValue | null>(null);\nconst TabListContext = createContext<TabListContextValue | null>(null);\n\nfunction useTabsContext() {\n  const context = useContext(TabsContext);\n  if (!context) throw new Error(\"Tabs parts must be used inside <Tabs>.\");\n  return context;\n}\n\nfunction useTabListContext() {\n  const context = useContext(TabListContext);\n  if (!context) throw new Error(\"<TabTrigger> must be used inside <TabList>.\");\n  return context;\n}\n\nfunction slug(value: TabValue) {\n  return String(value).replace(/[^a-zA-Z0-9_-]/g, \"-\");\n}\n\nfunction tabId(baseId: string, value: TabValue) {\n  return `${baseId}-tab-${slug(value)}`;\n}\n\nfunction panelId(baseId: string, value: TabValue) {\n  return `${baseId}-panel-${slug(value)}`;\n}\n\nconst sizeClasses = {\n  sm: \"h-8 px-2.5 text-sm\",\n  md: \"h-9 px-3 text-sm\",\n};\n\nconst triggerVariantClasses = {\n  underline: {\n    base: \"text-ink-gray-5 hover:text-ink-gray-7\",\n    selected:\n      \"text-ink-gray-8 after:absolute after:inset-x-0 after:-bottom-px after:h-px after:bg-outline-gray-8\",\n    verticalSelected:\n      \"text-ink-gray-8 after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-outline-gray-8\",\n  },\n  subtle: {\n    base: \"rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected: \"rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm\",\n    verticalSelected: \"rounded-(--radius-3) bg-surface-base text-ink-gray-8 shadow-sm\",\n  },\n  ghost: {\n    base: \"rounded-(--radius-3) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected: \"rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8\",\n    verticalSelected: \"rounded-(--radius-3) bg-surface-gray-3 text-ink-gray-8\",\n  },\n  \"browser-tab\": {\n    base: \"rounded-t-(--radius-4) text-ink-gray-5 hover:text-ink-gray-7\",\n    selected:\n      \"-mb-px rounded-t-(--radius-4) border border-outline-gray-2 border-b-surface-base bg-surface-base text-ink-gray-8\",\n    verticalSelected:\n      \"-mr-px rounded-l-(--radius-4) border border-outline-gray-2 border-r-surface-base bg-surface-base text-ink-gray-8\",\n  },\n};\n\nconst listVariantClasses = {\n  underline: {\n    horizontal: \"relative flex items-center border-b border-outline-gray-2\",\n    vertical: \"relative flex flex-col border-r border-outline-gray-2\",\n  },\n  subtle: {\n    horizontal: \"inline-flex items-center gap-1 rounded-(--radius-4) bg-surface-gray-2 p-1\",\n    vertical: \"inline-flex flex-col items-stretch gap-1 rounded-(--radius-4) bg-surface-gray-2 p-1\",\n  },\n  ghost: {\n    horizontal: \"inline-flex items-center gap-1 rounded-(--radius-4) p-1\",\n    vertical: \"inline-flex flex-col items-stretch gap-1 rounded-(--radius-4) p-1\",\n  },\n  \"browser-tab\": {\n    horizontal: \"relative flex items-end gap-1 border-b border-outline-gray-2\",\n    vertical: \"relative flex flex-col gap-1 border-r border-outline-gray-2\",\n  },\n};\n\nexport function Tabs({\n  value,\n  defaultValue,\n  onValueChange,\n  variant = \"underline\",\n  size = \"sm\",\n  vertical = false,\n  orientation,\n  className,\n  children,\n  ...props\n}: TabsProps) {\n  const [internalValue, setInternalValue] = useState(defaultValue);\n  const selected = value !== undefined ? value : internalValue;\n  const resolvedOrientation = orientation ?? (vertical ? \"vertical\" : \"horizontal\");\n  const baseId = useId().replace(/:/g, \"\");\n\n  function select(next: TabValue) {\n    if (value === undefined) setInternalValue(next);\n    onValueChange?.(next);\n  }\n\n  return (\n    <TabsContext.Provider\n      value={{ value: selected, select, orientation: resolvedOrientation, variant, size, baseId }}\n    >\n      <div\n        data-slot=\"tabs\"\n        data-orientation={resolvedOrientation}\n        data-variant={variant}\n        data-size={size}\n        className={cn(\"min-w-0\", className)}\n        {...props}\n      >\n        {children}\n      </div>\n    </TabsContext.Provider>\n  );\n}\n\nexport function TabList({ variant, size, className, children, onKeyDown, ...props }: TabListProps) {\n  const context = useTabsContext();\n  const rootRef = useRef<HTMLDivElement>(null);\n  const listVariant = variant ?? context.variant;\n  const listSize = size ?? context.size;\n  const isVertical = context.orientation === \"vertical\";\n\n  useEffect(() => {\n    if (context.value !== undefined) return;\n    const first = rootRef.current?.querySelector<HTMLButtonElement>('[role=\"tab\"]:not(:disabled)');\n    first?.click();\n  }, [context.value]);\n\n  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {\n    onKeyDown?.(event);\n    if (event.defaultPrevented) return;\n\n    const tabs = Array.from(\n      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role=\"tab\"]:not(:disabled)') ?? [],\n    );\n    if (!tabs.length) return;\n\n    const currentIndex = tabs.indexOf(document.activeElement as HTMLButtonElement);\n    const nextKey = isVertical ? [\"ArrowDown\", \"ArrowUp\"] : [\"ArrowRight\", \"ArrowLeft\"];\n    let nextIndex = currentIndex;\n\n    if (event.key === \"Home\") nextIndex = 0;\n    else if (event.key === \"End\") nextIndex = tabs.length - 1;\n    else if (event.key === nextKey[0] || event.key === nextKey[1]) {\n      const direction = event.key === nextKey[0] ? 1 : -1;\n      nextIndex = (Math.max(currentIndex, 0) + direction + tabs.length) % tabs.length;\n    } else {\n      return;\n    }\n\n    event.preventDefault();\n    const next = tabs[nextIndex];\n    next.focus();\n    next.click();\n  }\n\n  return (\n    <TabListContext.Provider\n      value={{ variant: listVariant, size: listSize, orientation: context.orientation }}\n    >\n      <div\n        ref={rootRef}\n        role=\"tablist\"\n        aria-orientation={context.orientation}\n        data-slot=\"tab-list\"\n        data-variant={listVariant}\n        data-size={listSize}\n        className={cn(\n          listVariantClasses[listVariant][context.orientation],\n          isVertical && \"self-start\",\n          className,\n        )}\n        onKeyDown={handleKeyDown}\n        {...props}\n      >\n        {children}\n      </div>\n    </TabListContext.Provider>\n  );\n}\n\nexport function TabTrigger({\n  value,\n  label,\n  icon,\n  prefix,\n  suffix,\n  disabled = false,\n  className,\n  children,\n  onClick,\n  ...props\n}: TabTriggerProps) {\n  const context = useTabsContext();\n  const list = useTabListContext();\n  const selected = context.value === value;\n  const isVertical = list.orientation === \"vertical\";\n  const variantClasses = triggerVariantClasses[list.variant];\n\n  return (\n    <button\n      type=\"button\"\n      role=\"tab\"\n      id={tabId(context.baseId, value)}\n      aria-selected={selected}\n      aria-controls={panelId(context.baseId, value)}\n      tabIndex={disabled ? -1 : selected ? 0 : -1}\n      disabled={disabled}\n      data-slot=\"tab-trigger\"\n      data-state={selected ? \"active\" : \"inactive\"}\n      className={cn(\n        \"relative inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-outline-gray-4 disabled:cursor-not-allowed disabled:opacity-50\",\n        sizeClasses[list.size],\n        variantClasses.base,\n        selected && (isVertical && variantClasses.verticalSelected\n          ? variantClasses.verticalSelected\n          : variantClasses.selected),\n        list.variant === \"browser-tab\" && \"px-3\",\n        isVertical && \"w-full justify-start\",\n        className,\n      )}\n      onClick={(event) => {\n        onClick?.(event);\n        if (!event.defaultPrevented) context.select(value);\n      }}\n      {...props}\n    >\n      {prefix}\n      {icon}\n      {children ?? label}\n      {suffix}\n    </button>\n  );\n}\n\nexport function TabPanel({ value, keepMounted = false, className, children, ...props }: TabPanelProps) {\n  const context = useTabsContext();\n  const selected = context.value === value;\n\n  if (!selected && !keepMounted) return null;\n\n  return (\n    <div\n      role=\"tabpanel\"\n      id={panelId(context.baseId, value)}\n      aria-labelledby={tabId(context.baseId, value)}\n      tabIndex={0}\n      hidden={!selected}\n      data-slot=\"tab-panel\"\n      className={cn(\"outline-none\", className)}\n      {...props}\n    >\n      {children}\n    </div>\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/tabs.css",
+          "content": "/* Tabs use color transitions only; the moving indicator is intentionally omitted. */\n[data-slot=\"tab-trigger\"] {\n  -webkit-tap-highlight-color: transparent;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"tab-trigger\"] {\n    transition: none;\n  }\n}\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
       "name": "text-input",
       "type": "registry:ui",
       "title": "TextInput",

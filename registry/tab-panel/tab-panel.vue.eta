@@ -1,0 +1,36 @@
+<script setup lang="ts">
+import { computed, inject } from "vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+import { TABS_KEY, panelId, tabId, type TabValue } from "./Tabs.vue";
+
+const props = withDefaults(
+  defineProps<{
+    value: TabValue;
+    keepMounted?: boolean;
+    class?: string;
+  }>(),
+  {
+    keepMounted: false,
+  },
+);
+
+const context = inject(TABS_KEY);
+if (!context) throw new Error("<TabPanel> must be used inside <Tabs>.");
+
+const selected = computed(() => context.selected.value === props.value);
+</script>
+
+<template>
+  <div
+    v-if="selected || props.keepMounted"
+    v-show="selected"
+    role="tabpanel"
+    :id="panelId(context.baseId, props.value)"
+    :aria-labelledby="tabId(context.baseId, props.value)"
+    tabindex="0"
+    data-slot="tab-panel"
+    :class="cn('outline-none', props.class)"
+  >
+    <slot />
+  </div>
+</template>
