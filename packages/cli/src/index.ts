@@ -20,4 +20,4 @@ registerInit(program);
 registerAdd(program);
 registerTheme(program);
 
-program.parse();
+await program.parseAsync();

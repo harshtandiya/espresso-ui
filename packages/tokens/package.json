@@ -11,13 +11,12 @@
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
     },
-    "./primitives.css": "./dist/primitives.css",
     "./tokens.css": "./dist/tokens.css",
     "./tailwind.css": "./dist/tailwind.css",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "generate": "tsx src/sd.config.ts",
+    "generate": "tsx src/build-tokens.ts",
     "build": "vp pack && pnpm generate",
     "dev": "vp pack --watch",
     "test": "vp test",
@@ -26,7 +25,6 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@typescript/native-preview": "7.0.0-dev.20260316.1",
-    "style-dictionary": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

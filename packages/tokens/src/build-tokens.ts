@@ -17,25 +17,6 @@ type Semantic = {
 };
 
 // ---------------------------------------------------------------------------
-// Flatten a nested primitives object to { "color-gray-50": "oklch(...)" }.
-// Skips non-leaf nodes. Separator is "-" to match CSS custom property naming.
-// ---------------------------------------------------------------------------
-function flattenPrimitives(
-  obj: Record<string, unknown>,
-  prefix: string[] = [],
-): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, val] of Object.entries(obj)) {
-    if (val !== null && typeof val === "object") {
-      Object.assign(result, flattenPrimitives(val as Record<string, unknown>, [...prefix, key]));
-    } else if (typeof val === "string") {
-      result[[...prefix, key].join("-")] = val;
-    }
-  }
-  return result;
-}
-
-// ---------------------------------------------------------------------------
 // Resolve a "{token.path}" reference to its primitive value.
 // Falls back to the raw string if no match (e.g. inline oklch literals).
 // ---------------------------------------------------------------------------
@@ -80,20 +61,12 @@ function build(): void {
 
   fs.mkdirSync(distDir, { recursive: true });
 
-  // 1. dist/primitives.css — all raw scale tokens as --espresso-* on :root
-  const flat = flattenPrimitives(primitives);
-  const primitivesCss = `:root {\n${Object.entries(flat)
-    .map(([k, v]) => `  --espresso-${k}: ${v};`)
-    .join("\n")}\n}\n`;
-  fs.writeFileSync(path.join(distDir, "primitives.css"), primitivesCss, "utf-8");
-  console.log("  ✔  dist/primitives.css");
-
-  // 2. dist/tokens.css — semantic vars (light on :root, dark on [data-theme="dark"])
+  // 1. dist/tokens.css — semantic vars (light on :root, dark on [data-theme="dark"])
   const lightColor = resolveSection(semantic.light.color, primitives);
   const lightShadow = resolveSection(semantic.light.shadow, primitives);
   const darkColor = resolveSection(semantic.dark.color, primitives);
   const darkShadow = resolveSection(semantic.dark.shadow, primitives);
-  const radius = resolveSection(semantic.radius as unknown as Record<string, string>, primitives);
+  const radius = resolveSection(semantic.radius, primitives);
 
   const tokensCss = [
     ":root {",
@@ -111,7 +84,7 @@ function build(): void {
   fs.writeFileSync(path.join(distDir, "tokens.css"), tokensCss, "utf-8");
   console.log("  ✔  dist/tokens.css");
 
-  // 3. dist/tailwind.css — @theme block mapping utility classes to semantic vars
+  // 2. dist/tailwind.css — @theme block mapping utility classes to semantic vars
   const allSemanticVars = [
     ...Object.keys(lightColor).map((k) => `color-${k}`),
     ...Object.keys(lightShadow).map((k) => `shadow-${k}`),
@@ -128,5 +101,3 @@ function build(): void {
 }
 
 build();
-
-export { build };

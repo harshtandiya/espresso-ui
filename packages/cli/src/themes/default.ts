@@ -1,6 +1,16 @@
 export const tailwindThemeBlock = `@theme inline {
   --color-background: var(--color-background);
   --color-foreground: var(--color-foreground);
+  --color-ink-1: var(--color-ink-1);
+  --color-ink-2: var(--color-ink-2);
+  --color-ink-3: var(--color-ink-3);
+  --color-ink-4: var(--color-ink-4);
+  --color-ink-5: var(--color-ink-5);
+  --color-line: var(--color-line);
+  --color-line-2: var(--color-line-2);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-surface-3: var(--color-surface-3);
   --color-card: var(--color-card);
   --color-card-foreground: var(--color-card-foreground);
   --color-popover: var(--color-popover);
@@ -47,6 +57,16 @@ export const tailwindThemeBlock = `@theme inline {
 
 export const lightTokens = `  --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.2046 0 0);
+  --color-ink-1: oklch(0.2046 0 0);
+  --color-ink-2: oklch(0.3407 0 0);
+  --color-ink-3: oklch(0.4386 0 0);
+  --color-ink-4: oklch(0.683 0 0);
+  --color-ink-5: oklch(0.8297 0 0);
+  --color-line: oklch(0.9461 0 0);
+  --color-line-2: oklch(0.9642 0 0);
+  --color-surface: oklch(1 0 0);
+  --color-surface-2: oklch(0.9791 0 0);
+  --color-surface-3: oklch(0.9642 0 0);
   --color-card: oklch(1 0 0);
   --color-card-foreground: oklch(0.2046 0 0);
   --color-popover: oklch(1 0 0);
@@ -92,6 +112,16 @@ export const lightTokens = `  --color-background: oklch(1 0 0);
 
 export const darkTokens = `  --color-background: oklch(0.09 0 0);
   --color-foreground: oklch(0.9791 0 0);
+  --color-ink-1: oklch(0.9791 0 0);
+  --color-ink-2: oklch(0.9128 0 0);
+  --color-ink-3: oklch(0.683 0 0);
+  --color-ink-4: oklch(0.5863 0 0);
+  --color-ink-5: oklch(0.4386 0 0);
+  --color-line: oklch(0.26 0 0);
+  --color-line-2: oklch(0.21 0 0);
+  --color-surface: oklch(0.10 0 0);
+  --color-surface-2: oklch(0.13 0 0);
+  --color-surface-3: oklch(0.17 0 0);
   --color-card: oklch(0.145 0 0);
   --color-card-foreground: oklch(0.9791 0 0);
   --color-popover: oklch(0.145 0 0);

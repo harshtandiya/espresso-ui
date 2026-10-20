@@ -6,7 +6,7 @@ Design token source of truth for espresso-ui: primitives, semantic CSS variables
 
 - `src/primitives.json` — raw scale (colors, spacing, radii, fonts)
 - `src/semantic.json` — intent layer (`--color-primary`, `--color-bg`, …)
-- `src/sd.config.ts` — Style Dictionary build → `dist/{primitives,tokens,tailwind}.css`
+- `src/build-tokens.ts` — token build → `dist/{tokens,tailwind}.css`
 - `src/index.ts` — typed JS surface (`primitives`, `semantic`, `cssVar`)
 
 ## Who consumes this

@@ -27,8 +27,9 @@ Theming is handled through a three-tier CSS custom property system: primitive sc
 ```bash
 vp check                              # lint + format + typecheck
 vp test                               # run all tests
-pnpm --filter @espresso-ui/cli build  # bundle CLI + registry for npm
-pnpm release                          # bump version, commit, and tag
+vp run --filter ./packages/cli build  # bundle CLI + registry for npm
+# bump "version" in packages/cli/package.json, commit, then:
+git tag v0.1.8
 git push --follow-tags                # triggers npm publish workflow
 ```
 

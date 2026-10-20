@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm -w build:registry && astro dev",
-    "build": "pnpm -w build:registry && astro build",
+    "dev": "pnpm -w build:registry && pnpm --filter @espresso-ui/tokens build && astro dev",
+    "build": "pnpm -w build:registry && pnpm --filter @espresso-ui/tokens build && astro build",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro"
@@ -13,7 +13,6 @@
   "dependencies": {
     "@ark-ui/react": "catalog:",
     "@ark-ui/vue": "catalog:",
-    "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.0.0",
     "@astrojs/vue": "^5.0.0",
     "@espresso-ui/cli": "workspace:*",

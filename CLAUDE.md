@@ -19,14 +19,16 @@ CLI invocation: `npm install -g @espresso-ui/cli`, then `espresso-ui <command>`
 ```
 espresso-ui/
 ├── apps/
-│   └── docs/                        # VitePress docs site
-│       ├── .vitepress/
-│       │   ├── config.ts
-│       │   └── theme/index.ts
-│       ├── frames/
-│       │   ├── react.html           # whyframe iframe host for React previews
-│       │   └── vue.md               # whyframe iframe host for Vue previews
-│       └── components/              # one .md file per component
+│   └── docs/                        # Astro static docs site
+│       ├── astro.config.mjs
+│       ├── public/r/                # generated shadcn registry (committed)
+│       └── src/
+│           ├── components/          # panels, previews, mobile shell
+│           ├── generated/           # generated React/Vue files (gitignored)
+│           ├── layouts/Layout.astro
+│           ├── lib/sections.ts      # docs navigation order
+│           ├── pages/index.astro    # single-page docs shell
+│           └── styles/globals.css
 ├── packages/
 │   ├── cli/                         # the npx-able CLI (what users run)
 │   │   └── src/
@@ -43,19 +45,20 @@ espresso-ui/
 │   └── tokens/                      # design token source of truth
 │       ├── primitives.json          # raw scale: colors, spacing, radii, fonts
 │       ├── semantic.json            # intent layer: --color-primary, --color-bg, etc.
-│       └── sd.config.ts             # Style Dictionary config → CSS + Tailwind v4 output
+│       └── build-tokens.ts          # token build → CSS + Tailwind v4 output
 ├── registry/                        # component definitions and code templates
 │   ├── shadcn-schema.ts             # TypeScript types for the shadcn registry.json format
-│   ├── build.ts                     # generates apps/docs/public/r/ from ETA templates
+│   ├── build.ts                     # generates public/r/ + docs preview sources
 │   ├── registry.test.ts             # smoke tests for the generated registry output
+│   ├── _lib/                        # shared code-copy utilities (e.g. collapse)
 │   └── button/
 │       ├── definition.ts            # props, variants, slots, emits, peer deps
 │       ├── button.react.eta         # ETA template → Button.tsx
 │       ├── button.vue.eta           # ETA template → Button.vue
-│       └── button.css               # component-scoped CSS custom property overrides
-├── turbo.json                       # Turborepo — remote cache config only
+│       ├── button.css               # component-scoped CSS custom property overrides
+│       └── button.test.ts           # snapshot tests for both templates
 ├── pnpm-workspace.yaml
-└── vp.config.ts                     # Vite+ unified toolchain config (lint, format, test, pack)
+└── vite.config.ts                   # Vite+ config (staged, lint, fmt)
 ```
 
 ---
@@ -64,14 +67,14 @@ espresso-ui/
 
 This project uses **Vite+** (`vp`) as the unified toolchain. Do not add separate ESLint, Prettier, or tsup configs — they are all handled by `vp`.
 
-| Command               | What it does                                                            |
-| --------------------- | ----------------------------------------------------------------------- |
-| `vp check`            | Format (Oxfmt) + lint (Oxlint) + type-check (tsgo) in one pass          |
-| `vp check --fix`      | Auto-fix formatting and lint errors                                     |
-| `vp test`             | Run all tests via Vitest (Browser Mode for component tests)             |
-| `vp pack`             | Bundle `packages/cli` and `packages/tokens` for npm via Rolldown/tsdown |
-| `vp run <script>`     | Run workspace scripts with dependency-aware caching                     |
-| `pnpm build:registry` | Regenerate `apps/docs/public/r/` from ETA templates (shadcn export)     |
+| Command               | What it does                                                           |
+| --------------------- | ---------------------------------------------------------------------- |
+| `vp check`            | Format (Oxfmt) + lint (Oxlint) + type-check (tsgo) in one pass         |
+| `vp check --fix`      | Auto-fix formatting and lint errors                                    |
+| `vp test`             | Run all tests via Vitest (Browser Mode for component tests)            |
+| `vp pack`             | Bundle workspace packages for npm via Rolldown/tsdown                  |
+| `vp run <script>`     | Run workspace scripts with dependency-aware caching                    |
+| `pnpm build:registry` | Regenerate `public/r/` + `apps/docs/src/generated/` from ETA templates |
 
 Always run `vp check` before committing. CI will fail if it does not pass.
 
@@ -178,7 +181,8 @@ Components use Ark UI as the headless behavioral layer. Two patterns exist:
 3. Write `<name>.react.eta` and `<name>.vue.eta`
 4. Write `<name>.css` with component-scoped token overrides (e.g. `--btn-bg`, `--btn-radius`)
 5. Add a Vitest snapshot test in `registry/<name>/<name>.test.ts` that renders both templates and asserts output
-6. Run `pnpm build:registry` and commit the updated `apps/docs/public/r/` output alongside the component files
+6. Add a docs panel at `apps/docs/src/components/components/<Name>Panel.astro`, then register it in `apps/docs/src/lib/sections.ts` and `apps/docs/src/pages/index.astro`
+7. Run `pnpm build:registry` and commit the updated `apps/docs/public/r/` output alongside the component files
 
 ---
 
@@ -190,7 +194,7 @@ Components use Ark UI as the headless behavioral layer. Two patterns exist:
 2. **Semantic tokens** (`tokens/semantic.json`) — intent layer (`--color-primary`, `--color-bg`, etc.), consumed by Tailwind v4 `@theme` and component CSS
 3. **Component tokens** (`registry/<name>/<name>.css`) — local overrides scoped to one component (e.g. `--btn-bg: var(--color-primary)`)
 
-Style Dictionary transforms primitives + semantic tokens into:
+The token build (`build-tokens.ts`) transforms primitives + semantic tokens into:
 
 - `tokens.css` — CSS custom properties on `:root` and `[data-theme="dark"]`
 - A Tailwind v4 plugin file — feeds `@theme` so utility classes like `bg-primary` work
@@ -210,7 +214,7 @@ Dark mode is handled via `[data-theme="dark"]` on `<html>` by default. The `dark
 
 ### Preset encoding
 
-The `--preset` flag encodes the full theme config as a base62 string using bit-packing:
+The `preset/` codec encodes the full theme config as a base62 string using bit-packing. It is not currently wired to a CLI flag.
 
 - Each config field maps to a fixed bit offset in a BigInt (`schema.ts`)
 - **The field order and bit offsets in `schema.ts` are frozen forever.** Adding new fields appends to the end. Never reorder or remove existing fields — this would break all existing preset strings.
@@ -244,21 +248,22 @@ apps/docs/public/r/
 
 ## Docs site (`apps/docs`)
 
-Built with **VitePress**. Do not introduce Next.js or any server-side runtime.
+Built with **Astro** (`output: "static"`). Do not introduce Next.js or any server-side runtime.
 
 ### Component previews
 
-- **whyframe** renders component examples in true iframes at the bundler level, isolating React and Vue runtimes from VitePress's Vue runtime.
-- React previews use `frames/react.html` as the iframe host.
-- Vue previews use `frames/vue.md` as the iframe host.
-- `postcssIsolateStyles` (built into VitePress) scopes docs CSS away from previewed components.
-- Use `:::preview` blocks in `.md` files via `@vitepress-demo-preview/plugin`.
+- `registry/build.ts` renders the same ETA templates into `apps/docs/src/generated/{react,vue}/` (gitignored) for live previews.
+- Panels import those generated files and mount them as Astro islands (`client:load`).
+- The docs shell lives in `apps/docs/src/pages/index.astro`; navigation order is in `apps/docs/src/lib/sections.ts`.
+- Do not hand-write component copies under `apps/docs` — regenerate with `pnpm build:registry`.
+- `apps/docs/public/r/` is the committed shadcn registry output; it is rebuilt by the same script.
 
-### Writing docs pages
+### Writing docs panels
 
-- One `.md` file per component under `docs/components/`
-- Each page must include: description, props table, at least one React preview, at least one Vue preview, and a usage code block.
-- Do not hardcode theme values in docs examples — use semantic token names.
+- Add a panel at `apps/docs/src/components/components/<Name>Panel.astro`.
+- Register the section in `sections.ts` and render the panel in `pages/index.astro`.
+- Keep styling in Tailwind utilities + semantic tokens; see `apps/docs/STYLING.md`.
+- Do not hardcode theme values in examples — use semantic token names.
 
 ---
 
@@ -301,9 +306,8 @@ For font sizes stored as CSS custom properties, use the explicit arbitrary prope
 
 #### Token pipeline (`packages/tokens`)
 
-`sd.config.ts` builds three files into `packages/tokens/dist/`:
+`build-tokens.ts` builds two files into `packages/tokens/dist/`:
 
-- `primitives.css` — raw scale vars (`--espresso-color-gray-50`, etc.) on `:root`
 - `tokens.css` — semantic vars on `:root` (light) and `[data-theme="dark"]`
 - `tailwind.css` — `@theme inline { --color-X: var(--color-X); }` block
 
@@ -312,7 +316,7 @@ The `@theme inline` (not `@theme`) directive is critical: it tells Tailwind to u
 ### Git
 
 - Commit messages: conventional commits format (`feat:`, `fix:`, `chore:`, `docs:`)
-- Each new component gets its own PR with definition, both templates, CSS tokens, and a docs page.
+- Each new component gets its own PR with definition, both templates, CSS tokens, and a docs panel.
 
 #### Pre-commit hook
 

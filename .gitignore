@@ -19,6 +19,7 @@ packages/cli/registry/
 apps/docs/.astro/
 apps/docs/dist/
 apps/docs/src/generated/
+apps/docs/src/lib/collapse.ts
 
 # Test app — local only, not tracked in git
 test-app/

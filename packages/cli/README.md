@@ -19,8 +19,8 @@ Requires Node.js 22.12+.
 | `init`             | Scaffold `espresso.config.json`, global CSS, and shared dependencies |
 | `add <component>`  | Copy a component into your project as editable source                |
 | `theme list`       | List available themes                                                |
-| `theme add <name>` | Add a theme to your project                                          |
-| `theme init`       | Create a custom theme file                                           |
+| `theme add <name>` | Add a theme to your project (coming soon)                            |
+| `theme init`       | Create a custom theme file (coming soon)                             |
 
 ## Quick start
 

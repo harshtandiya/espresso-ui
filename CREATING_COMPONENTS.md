@@ -353,15 +353,15 @@ After that, re-run on every change to catch regressions.
 
 ---
 
-## Wiring it up in the CLI
+## Wiring it up
 
-Open `packages/cli/src/commands/add.ts` and add `"avatar"` to the list of known components (however that registry lookup is structured). The `add` command will then:
+Nothing to wire. `packages/cli/scripts/bundle-registry.ts` discovers every `registry/<name>/definition.ts` automatically and copies its `.react.eta`, `.vue.eta`, and `.css` into the published CLI. `registry/build.ts` does the same for the docs registry and live previews. The `add` command then:
 
-1. Look up `registry/avatar/definition.ts` for peer deps
-2. Render `avatar.react.eta` or `avatar.vue.eta` depending on the user's config
-3. Write the generated file to the user's components directory
-4. Copy `avatar.css` alongside it
-5. Install the peer deps listed in `definition.ts`
+1. Loads `registry/avatar/definition.json` for peer deps
+2. Renders `avatar.react.eta` or `avatar.vue.eta` depending on the user's config
+3. Writes the generated file to the user's components directory
+4. Appends `avatar.css` tokens to the user's global CSS between idempotent markers
+5. Installs the peer deps listed in `definition.ts`
 
 ---
 
@@ -374,5 +374,6 @@ Before opening a PR:
 - [ ] `registry/avatar/avatar.react.eta` — renders valid TSX/JSX, no hardcoded values
 - [ ] `registry/avatar/avatar.vue.eta` — renders valid SFC, no hardcoded values
 - [ ] `registry/avatar/avatar.test.ts` — snapshots generated and passing
+- [ ] Docs panel added and registered in `sections.ts` + `pages/index.astro`
 - [ ] `vp check` passes (format + lint + typecheck)
 - [ ] `vp test` passes

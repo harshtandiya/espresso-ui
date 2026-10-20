@@ -115,7 +115,8 @@ Reference: [npm/documentation#1960](https://github.com/npm/documentation/issues/
 ## 4. Cut a release
 
 ```bash
-pnpm release              # bump version, commit, tag (e.g. v0.1.0)
+# bump "version" in packages/cli/package.json and commit
+git tag v0.1.0
 git push --follow-tags    # triggers .github/workflows/release.yml
 ```
 
