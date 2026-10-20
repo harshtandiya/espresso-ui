@@ -1,0 +1,217 @@
+<script setup lang="ts">
+import { computed, ref, useAttrs, useId, useSlots, watch, watchEffect } from "vue";
+import { Check, Minus } from "@lucide/vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+defineOptions({ inheritAttrs: false });
+
+const sizeClasses: Record<string, string> = {
+  xs: "size-(--checkbox-xs-size)",
+  sm: "size-(--checkbox-sm-size)",
+  md: "size-(--checkbox-md-size)",
+};
+
+const iconSizeClasses: Record<string, string> = {
+  xs: "size-2",
+  sm: "size-2.5",
+  md: "size-3",
+};
+
+const paddedSizeClasses: Record<string, string> = {
+  xs: "h-(--checkbox-xs-height) px-1.5",
+  sm: "h-(--checkbox-sm-height) px-1.5",
+  md: "h-(--checkbox-md-height) px-3",
+};
+
+const props = withDefaults(
+  defineProps<{
+    size?: "xs" | "sm" | "md";
+    padded?: boolean;
+    indeterminate?: boolean;
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    size: "sm",
+    padded: false,
+    indeterminate: false,
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+    disabled: false,
+  },
+);
+
+const model = defineModel<boolean | 1 | 0>();
+const attrs = useAttrs();
+const slots = useSlots();
+const fallbackId = useId();
+const inputRef = ref<HTMLInputElement | null>(null);
+const inputId = computed(() => props.id || fallbackId);
+const descriptionId = computed(() => `${inputId.value}-description`);
+const errorId = computed(() => `${inputId.value}-error`);
+const hasError = computed(() => Boolean(props.error));
+const hasLabel = computed(() => Boolean(props.label || slots.label));
+const hasDescription = computed(() => Boolean(props.description || slots.description));
+const hasDetail = computed(() => Boolean(hasDescription.value || props.error));
+const checked = computed(() => Boolean(model.value));
+const mixed = ref(props.indeterminate);
+const describedBy = computed(
+  () =>
+    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+      .filter(Boolean)
+      .join(" ") || undefined,
+);
+
+const controlAttrs = computed(() =>
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+);
+
+const rootClasses = computed(() =>
+  cn(
+    "flex-col",
+    props.padded ? "flex" : "inline-flex",
+    props.padded && "group rounded-(--checkbox-padded-radius) transition-colors",
+    props.padded &&
+      !props.disabled &&
+      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+    props.padded && props.disabled && "cursor-not-allowed opacity-70",
+    props.padded && (hasDetail.value ? (props.size === "md" ? "px-3 py-2" : "px-1.5 py-1.5") : paddedSizeClasses[props.size]),
+    props.class,
+  ),
+);
+
+const inputClasses = computed(() =>
+  cn(
+    "peer shrink-0 appearance-none rounded-(--checkbox-radius) border bg-surface-base text-surface-base transition-colors outline-none",
+    sizeClasses[props.size],
+    props.disabled
+      ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5"
+      : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 focus-visible:[outline:var(--focus-outline-default)]",
+  ),
+);
+
+const labelClasses = computed(() =>
+  cn(
+    "select-none [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]",
+    props.disabled
+      ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+      : "cursor-pointer",
+  ),
+);
+
+watch(
+  () => props.indeterminate,
+  (value) => {
+    mixed.value = value;
+  },
+);
+
+watchEffect(() => {
+  if (inputRef.value) inputRef.value.indeterminate = mixed.value;
+});
+
+function onChange(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  model.value = target.checked;
+  mixed.value = false;
+  if (inputRef.value) inputRef.value.indeterminate = false;
+}
+
+function onContainerClick(event: MouseEvent): void {
+  if (!props.padded || props.disabled) return;
+  const target = event.target as HTMLElement;
+  if (target.closest('input[type="checkbox"]') || target.closest("label")) return;
+  inputRef.value?.click();
+}
+
+function focus(options?: FocusOptions): void {
+  inputRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <div :class="rootClasses" :style="$attrs.style as any" @click="onContainerClick">
+    <div class="inline-flex items-center gap-(--checkbox-label-gap)">
+      <span class="relative inline-flex shrink-0 items-center justify-center">
+        <input
+          ref="inputRef"
+          :id="inputId"
+          type="checkbox"
+          :checked="checked"
+          :disabled="props.disabled"
+          :required="props.required"
+          :aria-required="props.required || undefined"
+          :aria-invalid="hasError || undefined"
+          :aria-errormessage="hasError ? errorId : undefined"
+          :aria-describedby="describedBy"
+          :aria-checked="mixed ? 'mixed' : undefined"
+          data-slot="control"
+          :data-size="props.size"
+          :data-state="mixed ? 'indeterminate' : checked ? 'checked' : 'unchecked'"
+          :data-disabled="props.disabled ? 'true' : undefined"
+          :data-required="props.required ? 'true' : undefined"
+          :class="inputClasses"
+          v-bind="controlAttrs"
+          @change="onChange"
+        />
+        <Minus
+          v-if="mixed"
+          aria-hidden="true"
+          :class="cn('pointer-events-none absolute text-surface-base', iconSizeClasses[props.size])"
+          :stroke-width="3"
+        />
+        <Check
+          v-else
+          aria-hidden="true"
+          :class="
+            cn(
+              'pointer-events-none absolute text-surface-base opacity-0 peer-checked:opacity-100',
+              iconSizeClasses[props.size],
+            )
+          "
+          :stroke-width="3"
+        />
+      </span>
+      <label v-if="hasLabel" :for="inputId" :class="labelClasses">
+        <slot v-if="$slots.label" name="label" :required="props.required" />
+        <template v-else>
+          {{ props.label }}
+          <template v-if="props.required">
+            <span
+              class="select-none [color:var(--label-required-color,var(--ink-red-5))]"
+              aria-hidden="true"
+              >*</span
+            >
+            <span class="sr-only">(required)</span>
+          </template>
+        </template>
+      </label>
+    </div>
+    <div v-if="hasDetail" :class="cn('ps-[1.35rem] mt-1', !hasLabel && 'ps-0')">
+      <p
+        v-if="hasDescription && !hasError"
+        :id="descriptionId"
+        class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+      >
+        <slot name="description">{{ props.description }}</slot>
+      </p>
+      <p
+        v-if="hasError"
+        :id="errorId"
+        role="alert"
+        class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+      >
+        {{ props.error }}
+      </p>
+    </div>
+  </div>
+</template>

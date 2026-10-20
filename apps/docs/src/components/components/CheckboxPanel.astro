@@ -1,0 +1,123 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Checkbox as CheckboxReact } from "@/generated/react/Checkbox.tsx";
+
+const usage = `import { Checkbox } from "@/components/ui/Checkbox";
+
+export default function App() {
+  return (
+    <Checkbox
+      label="Email notifications"
+      description="Send me a summary every morning."
+      defaultChecked
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Checkbox from "@/components/ui/Checkbox.vue";
+import { ref } from "vue";
+
+const enabled = ref(true);
+\u003C/script>
+
+<template>
+  <Checkbox
+    v-model="enabled"
+    label="Email notifications"
+    description="Send me a summary every morning."
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="checkbox"
+  num={sectionNumber("checkbox")}
+  label="Checkbox"
+  desc="Native checkbox matching frappe-ui v1: 13 / 14 / 16px sizes, optional padded surface, indeterminate state, built-in label, description, error, and required marker."
+  status="new"
+  code={usage}
+  codeFile="checkbox.tsx"
+  codeVue={usageVue}
+  codeVueFile="checkbox.vue"
+>
+  <CanvasToolbar title="Preview" meta="default · description · indeterminate" />
+  <Canvas class="toggle-row-stack">
+    <CheckboxReact client:load label="Email notifications" defaultChecked />
+    <CheckboxReact
+      client:load
+      label="Weekly digest"
+      description="Sent every Monday at 9am."
+    />
+    <CheckboxReact client:load label="Select all" indeterminate />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="13 / 14 / 16px">
+      <CheckboxReact client:load size="xs" label="Extra small" defaultChecked />
+      <CheckboxReact client:load size="sm" label="Small" defaultChecked />
+      <CheckboxReact client:load size="md" label="Medium" defaultChecked />
+    </VariantRow>
+
+    <VariantRow label="Padded" sub="clickable selection rows">
+      <Canvas grid={false} class="toggle-row-stack">
+        <CheckboxReact
+          client:load
+          padded
+          label="Product updates"
+          description="New features and improvements."
+          defaultChecked
+        />
+        <CheckboxReact
+          client:load
+          padded
+          label="Security alerts"
+          description="Sign-ins and password changes."
+        />
+        <CheckboxReact client:load padded label="Disabled option" disabled />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="toggle-row-stack">
+        <CheckboxReact client:load label="Default" />
+        <CheckboxReact client:load label="Disabled" defaultChecked disabled />
+        <CheckboxReact
+          client:load
+          label="With error"
+          error="Accept the terms to continue."
+          required
+        />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.toggle-row-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.toggle-row-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: min(100%, 420px);
+  }
+
+  @media (max-width: 768px) {
+    :global(.toggle-row-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

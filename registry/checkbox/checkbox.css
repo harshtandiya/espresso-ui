@@ -1,0 +1,15 @@
+/* Checkbox component tokens — mirrors frappe-ui v1 toggle geometry. */
+:root {
+  --checkbox-xs-size: 13px;
+  --checkbox-sm-size: 14px;
+  --checkbox-md-size: 16px;
+  --checkbox-radius: var(--radius-1);
+  --checkbox-padded-radius: var(--radius-4);
+  --checkbox-label-gap: 8px;
+
+  --checkbox-xs-height: 24px;
+  --checkbox-sm-height: 28px;
+  --checkbox-md-height: 32px;
+
+  --input-description-font-size: 13px;
+}

@@ -1,0 +1,22 @@
+/* Switch component tokens — mirrors frappe-ui v1 toggle geometry. */
+:root {
+  --switch-radius: var(--radius-full);
+  --switch-padded-radius: var(--radius-4);
+
+  --switch-xs-height: 14px;
+  --switch-xs-width: 24px;
+  --switch-xs-thumb-size: 10px;
+  --switch-xs-travel: 10px;
+
+  --switch-sm-height: 16px;
+  --switch-sm-width: 26px;
+  --switch-sm-thumb-size: 12px;
+  --switch-sm-travel: 10px;
+
+  --switch-md-height: 20px;
+  --switch-md-width: 32px;
+  --switch-md-thumb-size: 14px;
+  --switch-md-travel: 12px;
+
+  --input-description-font-size: 13px;
+}

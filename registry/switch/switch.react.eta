@@ -1,0 +1,259 @@
+import { forwardRef, useId, useState } from "react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+const trackSizeClasses = {
+  xs: "h-(--switch-xs-height) w-(--switch-xs-width) border-2",
+  sm: "h-(--switch-sm-height) w-(--switch-sm-width) border-2",
+  md: "h-(--switch-md-height) w-(--switch-md-width) border-[3px]",
+};
+
+const thumbSizeClasses = {
+  xs: "size-(--switch-xs-thumb-size)",
+  sm: "size-(--switch-sm-thumb-size)",
+  md: "size-(--switch-md-thumb-size)",
+};
+
+const thumbTravelClasses = {
+  xs: "translate-x-(--switch-xs-travel)",
+  sm: "translate-x-(--switch-sm-travel)",
+  md: "translate-x-(--switch-md-travel)",
+};
+
+const paddedSizeClasses = {
+  xs: "h-(--switch-xs-height) px-1.5",
+  sm: "h-(--switch-sm-height) px-1.5",
+  md: "h-(--switch-md-height) px-3",
+};
+
+const gapClasses = {
+  xs: "gap-x-2.5",
+  sm: "gap-x-2.5",
+  md: "gap-x-3.5",
+};
+
+const errorIndentClasses = {
+  xs: "ps-8",
+  sm: "ps-9",
+  md: "ps-[42px]",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+<% if (it.typescript) { %>
+type SwitchSize = keyof typeof trackSizeClasses;
+
+export type SwitchProps = Omit<ComponentPropsWithoutRef<"button">, "onChange" | "type"> & {
+  /** Controls the size of the switch. */
+  size?: SwitchSize;
+  /** Checked state. */
+  checked?: boolean;
+  /** Initial checked state for uncontrolled use. */
+  defaultChecked?: boolean;
+  /** Called when the checked state changes. */
+  onCheckedChange?: (checked: boolean) => void;
+  /** Label rendered beside the switch. */
+  label?: ReactNode;
+  /** Helper text rendered below the switch. Hidden when `error` is set. */
+  description?: ReactNode;
+  /** Error message; marks the switch invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Wraps the control and label in a clickable surface. */
+  padded?: boolean;
+  /** Places the control before or after the label. */
+  controlPosition?: "start" | "end";
+  /** Optional icon rendered before the label. */
+  icon?: ReactNode;
+};
+<% } %>
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLButtonElement, SwitchProps><% } %>(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      checked,
+      defaultChecked = false,
+      onCheckedChange,
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      padded = false,
+      controlPosition = "end",
+      icon,
+      onClick,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = `${inputId}-description`;
+    const errorId = `${inputId}-error`;
+    const hasError = Boolean(error);
+    const hasLabel = Boolean(label);
+    const hasDetail = Boolean(description || error);
+    const isControlled = checked !== undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
+    const isChecked = isControlled ? Boolean(checked) : internalChecked;
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const toggle = () => {
+      if (disabled) return;
+      const next = !isChecked;
+      if (!isControlled) setInternalChecked(next);
+      onCheckedChange?.(next);
+    };
+
+    const control = (
+      <button
+        ref={ref}
+        id={inputId}
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        aria-required={required || undefined}
+        aria-invalid={hasError || undefined}
+        aria-errormessage={hasError ? errorId : undefined}
+        aria-describedby={describedBy}
+        disabled={disabled}
+        data-slot="control"
+        data-size={size}
+        data-state={isChecked ? "checked" : "unchecked"}
+        data-disabled={disabled ? "true" : undefined}
+        data-required={required ? "true" : undefined}
+        className={cn(
+          "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+          trackSizeClasses[size],
+          disabled
+            ? "cursor-not-allowed bg-surface-gray-3"
+            : isChecked
+              ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+              : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+        )}
+        onClick={(event) => {
+          onClick?.(event);
+          if (!event.defaultPrevented) toggle();
+        }}
+        {...props}
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none inline-block transform rounded-full bg-surface-base shadow ring-0 transition duration-100 ease-in-out",
+            thumbSizeClasses[size],
+            isChecked ? thumbTravelClasses[size] : "translate-x-0",
+          )}
+        />
+      </button>
+    );
+
+    return (
+      <div
+        className={cn(
+          "flex flex-col",
+          padded && "group rounded-(--switch-padded-radius) transition-colors",
+          padded &&
+            !disabled &&
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+          padded && disabled && "cursor-not-allowed opacity-70",
+          padded &&
+            (hasDetail
+              ? size === "md"
+                ? "px-3 py-2"
+                : size === "sm"
+                  ? "px-2 py-1.5"
+                  : "px-1.5 py-1.5"
+              : paddedSizeClasses[size]),
+          padded && (controlPosition === "start" ? "w-fit" : "w-full"),
+          className,
+        )}
+        onClick={(event) => {
+          if (!padded || disabled) return;
+          const target = event.target as HTMLElement;
+          if (target.closest('button[role="switch"]') || target.closest("label")) return;
+          toggle();
+        }}
+      >
+        <div
+          className={cn(
+            "flex items-center",
+            controlPosition === "start" ? "flex-row-reverse justify-end" : "justify-between",
+            gapClasses[size],
+            !padded && "py-1.5",
+          )}
+        >
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center">
+              {icon ? (
+                <span className="me-2 inline-flex size-4 shrink-0 items-center justify-center text-ink-gray-6" aria-hidden="true">
+                  {icon}
+                </span>
+              ) : null}
+              {hasLabel ? (
+                <label
+                  htmlFor={inputId}
+                  className={cn(
+                    "select-none leading-tight [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] [color:var(--label-color,var(--ink-gray-6))]",
+                    disabled
+                      ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+                      : "cursor-pointer",
+                  )}
+                >
+                  {label}
+                  {required ? requiredMark : null}
+                </label>
+              ) : null}
+            </div>
+          </div>
+          {control}
+        </div>
+        {hasDetail ? (
+          <div
+            className={cn(
+              "mt-1",
+              controlPosition === "start" ? errorIndentClasses[size] : undefined,
+              !hasLabel && "ps-0",
+            )}
+          >
+            {description && !hasError ? (
+              <p
+                id={descriptionId}
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+              >
+                {description}
+              </p>
+            ) : null}
+            {hasError ? (
+              <p
+                id={errorId}
+                role="alert"
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+              >
+                {error}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";

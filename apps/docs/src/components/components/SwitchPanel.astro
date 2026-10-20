@@ -1,0 +1,131 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import { Switch as SwitchReact } from "@/generated/react/Switch.tsx";
+
+const usage = `import { Switch } from "@/components/ui/Switch";
+
+export default function App() {
+  return (
+    <Switch
+      label="Email notifications"
+      description="Send me a summary every morning."
+      defaultChecked
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Switch from "@/components/ui/Switch.vue";
+import { ref } from "vue";
+
+const enabled = ref(true);
+\u003C/script>
+
+<template>
+  <Switch
+    v-model="enabled"
+    label="Email notifications"
+    description="Send me a summary every morning."
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="switch"
+  num={sectionNumber("switch")}
+  label="Switch"
+  desc="Toggle matching frappe-ui v1: 14 / 16 / 20px tracks, optional padded surface, label, description, error, required marker, and start or end control placement."
+  status="new"
+  code={usage}
+  codeFile="switch.tsx"
+  codeVue={usageVue}
+  codeVueFile="switch.vue"
+>
+  <CanvasToolbar title="Preview" meta="on · off · description" />
+  <Canvas class="toggle-row-stack">
+    <SwitchReact client:load label="Email notifications" defaultChecked />
+    <SwitchReact client:load label="Weekly digest" />
+    <SwitchReact
+      client:load
+      label="Security alerts"
+      description="Sign-ins and password changes."
+      defaultChecked
+    />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sizes" sub="14 / 16 / 20px tracks">
+      <SwitchReact client:load size="xs" label="Extra small" defaultChecked />
+      <SwitchReact client:load size="sm" label="Small" defaultChecked />
+      <SwitchReact client:load size="md" label="Medium" defaultChecked />
+    </VariantRow>
+
+    <VariantRow label="Control position" sub="end · start">
+      <Canvas grid={false} class="toggle-row-stack">
+        <SwitchReact client:load label="Control at end" defaultChecked />
+        <SwitchReact client:load controlPosition="start" label="Control at start" defaultChecked />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Padded" sub="clickable settings rows">
+      <Canvas grid={false} class="toggle-row-stack">
+        <SwitchReact
+          client:load
+          padded
+          label="Product updates"
+          description="New features and improvements."
+          defaultChecked
+        />
+        <SwitchReact
+          client:load
+          padded
+          label="Security alerts"
+          description="Sign-ins and password changes."
+        />
+        <SwitchReact client:load padded label="Disabled option" disabled />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="States" sub="default · disabled · error">
+      <Canvas grid={false} class="toggle-row-stack">
+        <SwitchReact client:load label="Default" />
+        <SwitchReact client:load label="Disabled" defaultChecked disabled />
+        <SwitchReact
+          client:load
+          label="With error"
+          error="Turn this on to continue."
+          required
+        />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.toggle-row-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.toggle-row-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: min(100%, 420px);
+  }
+
+  @media (max-width: 768px) {
+    :global(.toggle-row-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

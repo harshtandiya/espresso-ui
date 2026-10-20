@@ -1,0 +1,221 @@
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from "react";
+import { Check, Minus } from "lucide-react";
+<% if (it.typescript) { %>import type { ComponentPropsWithoutRef, ReactNode } from "react";
+<% } %>import { cn } from "<%= it.utilsAlias %>/utils";
+
+const sizeClasses = {
+  xs: "size-(--checkbox-xs-size)",
+  sm: "size-(--checkbox-sm-size)",
+  md: "size-(--checkbox-md-size)",
+};
+
+const iconSizeClasses = {
+  xs: "size-2",
+  sm: "size-2.5",
+  md: "size-3",
+};
+
+const paddedSizeClasses = {
+  xs: "h-(--checkbox-xs-height) px-1.5",
+  sm: "h-(--checkbox-sm-height) px-1.5",
+  md: "h-(--checkbox-md-height) px-3",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+<% if (it.typescript) { %>
+type CheckboxSize = keyof typeof sizeClasses;
+
+export type CheckboxProps = Omit<ComponentPropsWithoutRef<"input">, "size" | "type"> & {
+  /** Controls the size of the checkbox. */
+  size?: CheckboxSize;
+  /** Wraps the control and label in a clickable surface. */
+  padded?: boolean;
+  /** Renders the mixed state. Set through the prop, not markup. */
+  indeterminate?: boolean;
+  /** Label rendered beside the checkbox. */
+  label?: ReactNode;
+  /** Helper text rendered below the checkbox. Hidden when `error` is set. */
+  description?: ReactNode;
+  /** Error message; marks the checkbox invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+};
+<% } %>
+
+export const <%= it.componentName %> = forwardRef<% if (it.typescript) { %><HTMLInputElement, CheckboxProps><% } %>(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      padded = false,
+      indeterminate = false,
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      checked,
+      defaultChecked,
+      onChange,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = `${inputId}-description`;
+    const errorId = `${inputId}-error`;
+    const hasError = Boolean(error);
+    const hasLabel = Boolean(label);
+    const hasDetail = Boolean(description || error);
+    const isControlled = checked !== undefined;
+    const [internalChecked, setInternalChecked] = useState(Boolean(defaultChecked));
+    const isChecked = isControlled ? Boolean(checked) : internalChecked;
+    const [mixed, setMixed] = useState(indeterminate);
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+
+    useEffect(() => {
+      setMixed(indeterminate);
+    }, [indeterminate]);
+
+    useEffect(() => {
+      if (inputRef.current) inputRef.current.indeterminate = mixed;
+    }, [mixed]);
+
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    return (
+      <div
+        className={cn(
+          "flex-col",
+          padded ? "flex" : "inline-flex",
+          padded && "group rounded-(--checkbox-padded-radius) transition-colors",
+          padded &&
+            !disabled &&
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+          padded && disabled && "cursor-not-allowed opacity-70",
+          padded &&
+            (hasDetail
+              ? size === "md"
+                ? "px-3 py-2"
+                : "px-1.5 py-1.5"
+              : paddedSizeClasses[size]),
+          className,
+        )}
+        onClick={(event) => {
+          if (!padded || disabled) return;
+          const target = event.target as HTMLElement;
+          if (target.closest('input[type="checkbox"]') || target.closest("label")) return;
+          inputRef.current?.click();
+        }}
+      >
+        <div className="inline-flex items-center gap-(--checkbox-label-gap)">
+          <span className="relative inline-flex shrink-0 items-center justify-center">
+            <input
+              ref={inputRef}
+              id={inputId}
+              type="checkbox"
+              checked={isControlled ? Boolean(checked) : undefined}
+              defaultChecked={isControlled ? undefined : defaultChecked}
+              disabled={disabled}
+              required={required}
+              aria-required={required || undefined}
+              aria-invalid={hasError || undefined}
+              aria-errormessage={hasError ? errorId : undefined}
+              aria-describedby={describedBy}
+              aria-checked={mixed ? "mixed" : undefined}
+              data-slot="control"
+              data-size={size}
+              data-state={mixed ? "indeterminate" : isChecked ? "checked" : "unchecked"}
+              data-disabled={disabled ? "true" : undefined}
+              data-required={required ? "true" : undefined}
+              className={cn(
+                "peer shrink-0 appearance-none rounded-(--checkbox-radius) border bg-surface-base text-surface-base transition-colors outline-none",
+                sizeClasses[size],
+                disabled
+                  ? "cursor-not-allowed border-outline-gray-3 text-surface-gray-5"
+                  : "cursor-pointer border-outline-gray-4 hover:border-outline-gray-5 checked:border-surface-gray-10 checked:bg-surface-gray-10 indeterminate:border-surface-gray-10 indeterminate:bg-surface-gray-10 focus-visible:[outline:var(--focus-outline-default)]",
+              )}
+              onChange={(event) => {
+                if (!isControlled) setInternalChecked(event.currentTarget.checked);
+                setMixed(false);
+                if (inputRef.current) inputRef.current.indeterminate = false;
+                onChange?.(event);
+              }}
+              {...props}
+            />
+            {mixed ? (
+              <Minus
+                aria-hidden="true"
+                className={cn("pointer-events-none absolute text-surface-base", iconSizeClasses[size])}
+                strokeWidth={3}
+              />
+            ) : (
+              <Check
+                aria-hidden="true"
+                className={cn(
+                  "pointer-events-none absolute text-surface-base opacity-0 peer-checked:opacity-100",
+                  iconSizeClasses[size],
+                )}
+                strokeWidth={3}
+              />
+            )}
+          </span>
+          {hasLabel ? (
+            <label
+              htmlFor={inputId}
+              className={cn(
+                "select-none [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] leading-tighter [color:var(--label-color,var(--ink-gray-6))]",
+                disabled
+                  ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+                  : "cursor-pointer",
+              )}
+            >
+              {label}
+              {required ? requiredMark : null}
+            </label>
+          ) : null}
+        </div>
+        {hasDetail ? (
+          <div className={cn("ps-[1.35rem] mt-1", !hasLabel && "ps-0")}>
+            {description && !hasError ? (
+              <p
+                id={descriptionId}
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+              >
+                {description}
+              </p>
+            ) : null}
+            {hasError ? (
+              <p
+                id={errorId}
+                role="alert"
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+              >
+                {error}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+<%= it.componentName %>.displayName = "<%= it.componentName %>";

@@ -1,0 +1,748 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`switch templates > renders React template 1`] = `
+"import { forwardRef, useId, useState } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+const trackSizeClasses = {
+  xs: "h-(--switch-xs-height) w-(--switch-xs-width) border-2",
+  sm: "h-(--switch-sm-height) w-(--switch-sm-width) border-2",
+  md: "h-(--switch-md-height) w-(--switch-md-width) border-[3px]",
+};
+
+const thumbSizeClasses = {
+  xs: "size-(--switch-xs-thumb-size)",
+  sm: "size-(--switch-sm-thumb-size)",
+  md: "size-(--switch-md-thumb-size)",
+};
+
+const thumbTravelClasses = {
+  xs: "translate-x-(--switch-xs-travel)",
+  sm: "translate-x-(--switch-sm-travel)",
+  md: "translate-x-(--switch-md-travel)",
+};
+
+const paddedSizeClasses = {
+  xs: "h-(--switch-xs-height) px-1.5",
+  sm: "h-(--switch-sm-height) px-1.5",
+  md: "h-(--switch-md-height) px-3",
+};
+
+const gapClasses = {
+  xs: "gap-x-2.5",
+  sm: "gap-x-2.5",
+  md: "gap-x-3.5",
+};
+
+const errorIndentClasses = {
+  xs: "ps-8",
+  sm: "ps-9",
+  md: "ps-[42px]",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+type SwitchSize = keyof typeof trackSizeClasses;
+
+export type SwitchProps = Omit<ComponentPropsWithoutRef<"button">, "onChange" | "type"> & {
+  /** Controls the size of the switch. */
+  size?: SwitchSize;
+  /** Checked state. */
+  checked?: boolean;
+  /** Initial checked state for uncontrolled use. */
+  defaultChecked?: boolean;
+  /** Called when the checked state changes. */
+  onCheckedChange?: (checked: boolean) => void;
+  /** Label rendered beside the switch. */
+  label?: ReactNode;
+  /** Helper text rendered below the switch. Hidden when \`error\` is set. */
+  description?: ReactNode;
+  /** Error message; marks the switch invalid. */
+  error?: ReactNode;
+  /** Marks the field as required and renders an asterisk. */
+  required?: boolean;
+  /** Wraps the control and label in a clickable surface. */
+  padded?: boolean;
+  /** Places the control before or after the label. */
+  controlPosition?: "start" | "end";
+  /** Optional icon rendered before the label. */
+  icon?: ReactNode;
+};
+
+export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      checked,
+      defaultChecked = false,
+      onCheckedChange,
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      padded = false,
+      controlPosition = "end",
+      icon,
+      onClick,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = \`\${inputId}-description\`;
+    const errorId = \`\${inputId}-error\`;
+    const hasError = Boolean(error);
+    const hasLabel = Boolean(label);
+    const hasDetail = Boolean(description || error);
+    const isControlled = checked !== undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
+    const isChecked = isControlled ? Boolean(checked) : internalChecked;
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const toggle = () => {
+      if (disabled) return;
+      const next = !isChecked;
+      if (!isControlled) setInternalChecked(next);
+      onCheckedChange?.(next);
+    };
+
+    const control = (
+      <button
+        ref={ref}
+        id={inputId}
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        aria-required={required || undefined}
+        aria-invalid={hasError || undefined}
+        aria-errormessage={hasError ? errorId : undefined}
+        aria-describedby={describedBy}
+        disabled={disabled}
+        data-slot="control"
+        data-size={size}
+        data-state={isChecked ? "checked" : "unchecked"}
+        data-disabled={disabled ? "true" : undefined}
+        data-required={required ? "true" : undefined}
+        className={cn(
+          "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+          trackSizeClasses[size],
+          disabled
+            ? "cursor-not-allowed bg-surface-gray-3"
+            : isChecked
+              ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+              : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+        )}
+        onClick={(event) => {
+          onClick?.(event);
+          if (!event.defaultPrevented) toggle();
+        }}
+        {...props}
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none inline-block transform rounded-full bg-surface-base shadow ring-0 transition duration-100 ease-in-out",
+            thumbSizeClasses[size],
+            isChecked ? thumbTravelClasses[size] : "translate-x-0",
+          )}
+        />
+      </button>
+    );
+
+    return (
+      <div
+        className={cn(
+          "flex flex-col",
+          padded && "group rounded-(--switch-padded-radius) transition-colors",
+          padded &&
+            !disabled &&
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+          padded && disabled && "cursor-not-allowed opacity-70",
+          padded &&
+            (hasDetail
+              ? size === "md"
+                ? "px-3 py-2"
+                : size === "sm"
+                  ? "px-2 py-1.5"
+                  : "px-1.5 py-1.5"
+              : paddedSizeClasses[size]),
+          padded && (controlPosition === "start" ? "w-fit" : "w-full"),
+          className,
+        )}
+        onClick={(event) => {
+          if (!padded || disabled) return;
+          const target = event.target as HTMLElement;
+          if (target.closest('button[role="switch"]') || target.closest("label")) return;
+          toggle();
+        }}
+      >
+        <div
+          className={cn(
+            "flex items-center",
+            controlPosition === "start" ? "flex-row-reverse justify-end" : "justify-between",
+            gapClasses[size],
+            !padded && "py-1.5",
+          )}
+        >
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center">
+              {icon ? (
+                <span className="me-2 inline-flex size-4 shrink-0 items-center justify-center text-ink-gray-6" aria-hidden="true">
+                  {icon}
+                </span>
+              ) : null}
+              {hasLabel ? (
+                <label
+                  htmlFor={inputId}
+                  className={cn(
+                    "select-none leading-tight [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] [color:var(--label-color,var(--ink-gray-6))]",
+                    disabled
+                      ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+                      : "cursor-pointer",
+                  )}
+                >
+                  {label}
+                  {required ? requiredMark : null}
+                </label>
+              ) : null}
+            </div>
+          </div>
+          {control}
+        </div>
+        {hasDetail ? (
+          <div
+            className={cn(
+              "mt-1",
+              controlPosition === "start" ? errorIndentClasses[size] : undefined,
+              !hasLabel && "ps-0",
+            )}
+          >
+            {description && !hasError ? (
+              <p
+                id={descriptionId}
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+              >
+                {description}
+              </p>
+            ) : null}
+            {hasError ? (
+              <p
+                id={errorId}
+                role="alert"
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+              >
+                {error}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+Switch.displayName = "Switch";
+"
+`;
+
+exports[`switch templates > renders React template without TypeScript 1`] = `
+"import { forwardRef, useId, useState } from "react";
+import { cn } from "@/lib/utils";
+
+const trackSizeClasses = {
+  xs: "h-(--switch-xs-height) w-(--switch-xs-width) border-2",
+  sm: "h-(--switch-sm-height) w-(--switch-sm-width) border-2",
+  md: "h-(--switch-md-height) w-(--switch-md-width) border-[3px]",
+};
+
+const thumbSizeClasses = {
+  xs: "size-(--switch-xs-thumb-size)",
+  sm: "size-(--switch-sm-thumb-size)",
+  md: "size-(--switch-md-thumb-size)",
+};
+
+const thumbTravelClasses = {
+  xs: "translate-x-(--switch-xs-travel)",
+  sm: "translate-x-(--switch-sm-travel)",
+  md: "translate-x-(--switch-md-travel)",
+};
+
+const paddedSizeClasses = {
+  xs: "h-(--switch-xs-height) px-1.5",
+  sm: "h-(--switch-sm-height) px-1.5",
+  md: "h-(--switch-md-height) px-3",
+};
+
+const gapClasses = {
+  xs: "gap-x-2.5",
+  sm: "gap-x-2.5",
+  md: "gap-x-3.5",
+};
+
+const errorIndentClasses = {
+  xs: "ps-8",
+  sm: "ps-9",
+  md: "ps-[42px]",
+};
+
+const requiredMark = (
+  <>
+    <span className="select-none [color:var(--label-required-color,var(--ink-red-5))]" aria-hidden="true">
+      *
+    </span>
+    <span className="sr-only">(required)</span>
+  </>
+);
+
+
+export const Switch = forwardRef(
+  (
+    {
+      className,
+      id,
+      size = "sm",
+      checked,
+      defaultChecked = false,
+      onCheckedChange,
+      label,
+      description,
+      error,
+      required,
+      disabled,
+      padded = false,
+      controlPosition = "end",
+      icon,
+      onClick,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = \`\${inputId}-description\`;
+    const errorId = \`\${inputId}-error\`;
+    const hasError = Boolean(error);
+    const hasLabel = Boolean(label);
+    const hasDetail = Boolean(description || error);
+    const isControlled = checked !== undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked);
+    const isChecked = isControlled ? Boolean(checked) : internalChecked;
+    const describedBy =
+      [description && !hasError ? descriptionId : null, hasError ? errorId : null]
+        .filter(Boolean)
+        .join(" ") || ariaDescribedBy;
+
+    const toggle = () => {
+      if (disabled) return;
+      const next = !isChecked;
+      if (!isControlled) setInternalChecked(next);
+      onCheckedChange?.(next);
+    };
+
+    const control = (
+      <button
+        ref={ref}
+        id={inputId}
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        aria-required={required || undefined}
+        aria-invalid={hasError || undefined}
+        aria-errormessage={hasError ? errorId : undefined}
+        aria-describedby={describedBy}
+        disabled={disabled}
+        data-slot="control"
+        data-size={size}
+        data-state={isChecked ? "checked" : "unchecked"}
+        data-disabled={disabled ? "true" : undefined}
+        data-required={required ? "true" : undefined}
+        className={cn(
+          "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+          trackSizeClasses[size],
+          disabled
+            ? "cursor-not-allowed bg-surface-gray-3"
+            : isChecked
+              ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+              : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+        )}
+        onClick={(event) => {
+          onClick?.(event);
+          if (!event.defaultPrevented) toggle();
+        }}
+        {...props}
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none inline-block transform rounded-full bg-surface-base shadow ring-0 transition duration-100 ease-in-out",
+            thumbSizeClasses[size],
+            isChecked ? thumbTravelClasses[size] : "translate-x-0",
+          )}
+        />
+      </button>
+    );
+
+    return (
+      <div
+        className={cn(
+          "flex flex-col",
+          padded && "group rounded-(--switch-padded-radius) transition-colors",
+          padded &&
+            !disabled &&
+            "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+          padded && disabled && "cursor-not-allowed opacity-70",
+          padded &&
+            (hasDetail
+              ? size === "md"
+                ? "px-3 py-2"
+                : size === "sm"
+                  ? "px-2 py-1.5"
+                  : "px-1.5 py-1.5"
+              : paddedSizeClasses[size]),
+          padded && (controlPosition === "start" ? "w-fit" : "w-full"),
+          className,
+        )}
+        onClick={(event) => {
+          if (!padded || disabled) return;
+          const target = event.target as HTMLElement;
+          if (target.closest('button[role="switch"]') || target.closest("label")) return;
+          toggle();
+        }}
+      >
+        <div
+          className={cn(
+            "flex items-center",
+            controlPosition === "start" ? "flex-row-reverse justify-end" : "justify-between",
+            gapClasses[size],
+            !padded && "py-1.5",
+          )}
+        >
+          <div className="flex min-w-0 flex-col gap-1">
+            <div className="flex items-center">
+              {icon ? (
+                <span className="me-2 inline-flex size-4 shrink-0 items-center justify-center text-ink-gray-6" aria-hidden="true">
+                  {icon}
+                </span>
+              ) : null}
+              {hasLabel ? (
+                <label
+                  htmlFor={inputId}
+                  className={cn(
+                    "select-none leading-tight [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] [color:var(--label-color,var(--ink-gray-6))]",
+                    disabled
+                      ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+                      : "cursor-pointer",
+                  )}
+                >
+                  {label}
+                  {required ? requiredMark : null}
+                </label>
+              ) : null}
+            </div>
+          </div>
+          {control}
+        </div>
+        {hasDetail ? (
+          <div
+            className={cn(
+              "mt-1",
+              controlPosition === "start" ? errorIndentClasses[size] : undefined,
+              !hasLabel && "ps-0",
+            )}
+          >
+            {description && !hasError ? (
+              <p
+                id={descriptionId}
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+              >
+                {description}
+              </p>
+            ) : null}
+            {hasError ? (
+              <p
+                id={errorId}
+                role="alert"
+                className="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+              >
+                {error}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    );
+  },
+);
+
+Switch.displayName = "Switch";
+"
+`;
+
+exports[`switch templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, ref, useAttrs, useId, useSlots } from "vue";
+import { cn } from "@/lib/utils";
+
+defineOptions({ inheritAttrs: false });
+
+const trackSizeClasses: Record<string, string> = {
+  xs: "h-(--switch-xs-height) w-(--switch-xs-width) border-2",
+  sm: "h-(--switch-sm-height) w-(--switch-sm-width) border-2",
+  md: "h-(--switch-md-height) w-(--switch-md-width) border-[3px]",
+};
+
+const thumbSizeClasses: Record<string, string> = {
+  xs: "size-(--switch-xs-thumb-size)",
+  sm: "size-(--switch-sm-thumb-size)",
+  md: "size-(--switch-md-thumb-size)",
+};
+
+const thumbTravelClasses: Record<string, string> = {
+  xs: "translate-x-(--switch-xs-travel)",
+  sm: "translate-x-(--switch-sm-travel)",
+  md: "translate-x-(--switch-md-travel)",
+};
+
+const paddedSizeClasses: Record<string, string> = {
+  xs: "h-(--switch-xs-height) px-1.5",
+  sm: "h-(--switch-sm-height) px-1.5",
+  md: "h-(--switch-md-height) px-3",
+};
+
+const gapClasses: Record<string, string> = {
+  xs: "gap-x-2.5",
+  sm: "gap-x-2.5",
+  md: "gap-x-3.5",
+};
+
+const errorIndentClasses: Record<string, string> = {
+  xs: "ps-8",
+  sm: "ps-9",
+  md: "ps-[42px]",
+};
+
+const props = withDefaults(
+  defineProps<{
+    size?: "xs" | "sm" | "md";
+    label?: string;
+    description?: string;
+    error?: string;
+    required?: boolean;
+    disabled?: boolean;
+    padded?: boolean;
+    controlPosition?: "start" | "end";
+    id?: string;
+    class?: string;
+  }>(),
+  {
+    size: "sm",
+    label: "",
+    description: "",
+    error: "",
+    required: false,
+    disabled: false,
+    padded: false,
+    controlPosition: "end",
+  },
+);
+
+const model = defineModel<boolean>({ default: false });
+const attrs = useAttrs();
+const slots = useSlots();
+const fallbackId = useId();
+const switchRef = ref<HTMLButtonElement | null>(null);
+const inputId = computed(() => props.id || fallbackId);
+const descriptionId = computed(() => \`\${inputId.value}-description\`);
+const errorId = computed(() => \`\${inputId.value}-error\`);
+const hasError = computed(() => Boolean(props.error));
+const hasLabel = computed(() => Boolean(props.label || slots.label));
+const hasDescription = computed(() => Boolean(props.description || slots.description));
+const hasDetail = computed(() => Boolean(hasDescription.value || props.error));
+const checked = computed(() => Boolean(model.value));
+const describedBy = computed(
+  () =>
+    [props.description && !hasError.value ? descriptionId.value : null, hasError.value ? errorId.value : null]
+      .filter(Boolean)
+      .join(" ") || undefined,
+);
+
+const controlAttrs = computed(() =>
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "class" && key !== "style")),
+);
+
+const rootClasses = computed(() =>
+  cn(
+    "flex flex-col",
+    props.padded && "group rounded-(--switch-padded-radius) transition-colors",
+    props.padded &&
+      !props.disabled &&
+      "cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-4 [&:has(:focus-visible)]:[outline:var(--focus-outline-default)]",
+    props.padded && props.disabled && "cursor-not-allowed opacity-70",
+    props.padded &&
+      (hasDetail.value
+        ? props.size === "md"
+          ? "px-3 py-2"
+          : props.size === "sm"
+            ? "px-2 py-1.5"
+            : "px-1.5 py-1.5"
+        : paddedSizeClasses[props.size]),
+    props.padded && (props.controlPosition === "start" ? "w-fit" : "w-full"),
+    props.class,
+  ),
+);
+
+const switchClasses = computed(() =>
+  cn(
+    "relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-transparent transition-colors duration-100 ease-in-out focus-visible:[outline:var(--focus-outline-default)]",
+    trackSizeClasses[props.size],
+    props.disabled
+      ? "cursor-not-allowed bg-surface-gray-3"
+      : checked.value
+        ? "bg-surface-gray-10 enabled:hover:bg-surface-gray-9 active:bg-surface-gray-8"
+        : "bg-surface-gray-4 enabled:hover:bg-surface-gray-5 active:bg-surface-gray-6",
+  ),
+);
+
+const thumbClasses = computed(() =>
+  cn(
+    "pointer-events-none inline-block transform rounded-full bg-surface-base shadow ring-0 transition duration-100 ease-in-out",
+    thumbSizeClasses[props.size],
+    checked.value ? thumbTravelClasses[props.size] : "translate-x-0",
+  ),
+);
+
+const labelClasses = computed(() =>
+  cn(
+    "select-none leading-tight [font-size:var(--label-font-size,13px)] [font-weight:var(--label-font-weight,420)] [color:var(--label-color,var(--ink-gray-6))]",
+    props.disabled
+      ? "cursor-not-allowed [color:var(--label-disabled-color,var(--ink-gray-4))]"
+      : "cursor-pointer",
+  ),
+);
+
+function toggle(): void {
+  if (props.disabled) return;
+  model.value = !checked.value;
+}
+
+function onContainerClick(event: MouseEvent): void {
+  if (!props.padded || props.disabled) return;
+  const target = event.target as HTMLElement;
+  if (target.closest('button[role="switch"]') || target.closest("label")) return;
+  toggle();
+}
+
+function focus(options?: FocusOptions): void {
+  switchRef.value?.focus(options);
+}
+
+defineExpose({ focus });
+</script>
+
+<template>
+  <div :class="rootClasses" :style="$attrs.style as any" @click="onContainerClick">
+    <div
+      :class="
+        cn(
+          'flex items-center',
+          props.controlPosition === 'start' ? 'flex-row-reverse justify-end' : 'justify-between',
+          gapClasses[props.size],
+          !props.padded && 'py-1.5',
+        )
+      "
+    >
+      <div class="flex min-w-0 flex-col gap-1">
+        <div class="flex items-center">
+          <span
+            v-if="$slots.icon"
+            class="me-2 inline-flex size-4 shrink-0 items-center justify-center text-ink-gray-6"
+            aria-hidden="true"
+          >
+            <slot name="icon" />
+          </span>
+          <label v-if="hasLabel" :for="inputId" :class="labelClasses">
+            <slot v-if="$slots.label" name="label" :required="props.required" />
+            <template v-else>
+              {{ props.label }}
+              <template v-if="props.required">
+                <span
+                  class="select-none [color:var(--label-required-color,var(--ink-red-5))]"
+                  aria-hidden="true"
+                  >*</span
+                >
+                <span class="sr-only">(required)</span>
+              </template>
+            </template>
+          </label>
+        </div>
+      </div>
+      <button
+        ref="switchRef"
+        :id="inputId"
+        type="button"
+        role="switch"
+        :aria-checked="checked"
+        :aria-required="props.required || undefined"
+        :aria-invalid="hasError || undefined"
+        :aria-errormessage="hasError ? errorId : undefined"
+        :aria-describedby="describedBy"
+        :disabled="props.disabled"
+        data-slot="control"
+        :data-size="props.size"
+        :data-state="checked ? 'checked' : 'unchecked'"
+        :data-disabled="props.disabled ? 'true' : undefined"
+        :data-required="props.required ? 'true' : undefined"
+        :class="switchClasses"
+        v-bind="controlAttrs"
+        @click="toggle"
+      >
+        <span aria-hidden="true" :class="thumbClasses" />
+      </button>
+    </div>
+    <div
+      v-if="hasDetail"
+      :class="
+        cn(
+          'mt-1',
+          props.controlPosition === 'start' ? errorIndentClasses[props.size] : undefined,
+          !hasLabel && 'ps-0',
+        )
+      "
+    >
+      <p
+        v-if="hasDescription && !hasError"
+        :id="descriptionId"
+        class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-gray-5"
+      >
+        <slot name="description">{{ props.description }}</slot>
+      </p>
+      <p
+        v-if="hasError"
+        :id="errorId"
+        role="alert"
+        class="[font-size:var(--input-description-font-size)] leading-tighter text-ink-red-7"
+      >
+        {{ props.error }}
+      </p>
+    </div>
+  </div>
+</template>
+"
+`;
