@@ -1,0 +1,912 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`rating templates > renders React template 1`] = `
+"import {
+  useId,
+  useRef,
+  useState,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+import { ErrorMessage } from "./ErrorMessage";
+import { Label } from "./Label";
+
+export type RatingSize = "xs" | "sm" | "md" | "lg";
+export type RatingStep = 1 | 0.5;
+export type RatingStarState = "filled" | "preview" | "removing" | "empty";
+export type RatingError = string | string[] | (Error & { messages?: string | string[] }) | null;
+
+export type RatingIconProps = {
+  index: number;
+  side: "left" | "right";
+  state: RatingStarState;
+  leftState: RatingStarState;
+  rightState: RatingStarState;
+  value: number;
+  previewValue: number | null;
+  max: number;
+};
+
+export type RatingProps = Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> & {
+  /** Current rating from 0 to \`max\`. Omit for uncontrolled use. */
+  value?: number;
+  /** Initial rating for uncontrolled use. */
+  defaultValue?: number;
+  /** Called when the rating changes. */
+  onValueChange?: (value: number) => void;
+  /** Number of stars. Defaults to 5. */
+  max?: number;
+  /** Whole or half stars. */
+  step?: RatingStep;
+  /** Disables every star. */
+  disabled?: boolean;
+  /** Star size. */
+  size?: RatingSize;
+  /** Label rendered above the stars. */
+  label?: ReactNode;
+  /** Supporting text rendered below the stars. Hidden when \`error\` is set. */
+  description?: ReactNode;
+  /** Error text, lines, or an Error. */
+  error?: RatingError;
+  /** Marks the rating as required. */
+  required?: boolean;
+  /** A class name or custom icon, or a render function called per half. */
+  icon?: ReactNode | ((props: RatingIconProps) => ReactNode);
+};
+
+const sizeClasses = {
+  xs: "size-3.5",
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
+};
+
+const colorClasses = {
+  filled: "text-ink-amber-6",
+  preview: "text-ink-amber-3",
+  removing: "text-ink-amber-4",
+  empty: "text-outline-gray-3",
+};
+
+function errorPresent(error: RatingError | undefined) {
+  if (!error) return false;
+  if (Array.isArray(error)) return error.filter(Boolean).length > 0;
+  if (error instanceof Error) return Boolean(error.message);
+  return Boolean(error);
+}
+
+function StarGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </svg>
+  );
+}
+
+export function Rating({
+  value,
+  defaultValue = 0,
+  onValueChange,
+  max = 5,
+  step = 1,
+  disabled = false,
+  size = "sm",
+  label,
+  description,
+  error,
+  required = false,
+  icon,
+  className,
+  ...props
+}: RatingProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [focused, setFocused] = useState(1);
+  const groupRef = useRef<HTMLDivElement>(null);
+  const baseId = useId();
+  const labelId = \`\${baseId}-label\`;
+  const descriptionId = \`\${baseId}-description\`;
+  const errorId = \`\${baseId}-error\`;
+  const hasError = errorPresent(error);
+  const hasLabeling = Boolean(label || description || hasError);
+  const isSlider = step === 0.5;
+
+  const current = Math.max(0, Math.min(max, value !== undefined ? value : internalValue));
+  const saved = Math.round(current / step) * step;
+
+  function setValue(next: number) {
+    const clamped = Math.max(0, Math.min(max, Math.round(next / step) * step));
+    if (value === undefined) setInternalValue(clamped);
+    onValueChange?.(clamped);
+  }
+
+  function halfState(half: number): RatingStarState {
+    if (hovered === null) return half <= saved ? "filled" : "empty";
+    if (half <= Math.min(saved, hovered)) return "filled";
+    if (half <= hovered) return "preview";
+    if (half <= saved) return "removing";
+    return "empty";
+  }
+
+  function hitValue(event: { currentTarget: HTMLElement; clientX: number }, index: number) {
+    if (step !== 0.5) return index;
+    const rect = event.currentTarget.getBoundingClientRect();
+    return event.clientX - rect.left < rect.width / 2 ? index - 0.5 : index;
+  }
+
+  function commit(next: number) {
+    const candidate = Math.max(0, Math.min(max, Math.round(next / step) * step));
+    setValue(candidate === saved ? 0 : candidate);
+  }
+
+  function focusStar(index: number) {
+    setFocused(index);
+    requestAnimationFrame(() => {
+      groupRef.current?.querySelector<HTMLButtonElement>(\`[data-index="\${index}"]\`)?.focus();
+    });
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (disabled) return;
+    const key = event.key;
+
+    if (isSlider) {
+      let next: number | null = null;
+      if (key === "ArrowRight" || key === "ArrowUp") next = Math.min(max, saved + step);
+      else if (key === "ArrowLeft" || key === "ArrowDown") next = Math.max(0, saved - step);
+      else if (key === "Home") next = 0;
+      else if (key === "End") next = max;
+      else if (key === "PageUp") next = Math.min(max, saved + 1);
+      else if (key === "PageDown") next = Math.max(0, saved - 1);
+      else if (/^[0-9]$/.test(key)) next = Math.min(max, Number(key));
+      if (next !== null) {
+        event.preventDefault();
+        setValue(next);
+      }
+      return;
+    }
+
+    const active = focused || Math.max(1, Math.min(max, Math.ceil(saved) || 1));
+    let next: number | null = null;
+    if (key === "ArrowRight" || key === "ArrowDown") next = Math.min(max, active + 1);
+    else if (key === "ArrowLeft" || key === "ArrowUp") next = Math.max(1, active - 1);
+    else if (key === "Home") next = 1;
+    else if (key === "End") next = max;
+    else if (key === " " || key === "Enter") next = active;
+    else if (/^[0-9]$/.test(key)) {
+      event.preventDefault();
+      setValue(key === "0" ? 0 : Math.min(max, Number(key)));
+      return;
+    }
+    if (next !== null) {
+      event.preventDefault();
+      setValue(next);
+      focusStar(next);
+    }
+  }
+
+  function renderIcon(index: number, side: "left" | "right") {
+    const state = halfState(side === "left" ? index - 0.5 : index);
+    const iconProps = {
+      index,
+      side,
+      state,
+      leftState: halfState(index - 0.5),
+      rightState: halfState(index),
+      value: saved,
+      previewValue: hovered,
+      max,
+    };
+
+    if (typeof icon === "function") return icon(iconProps);
+    if (typeof icon === "string") return <span className={cn(icon, "size-full")} aria-hidden="true" />;
+    if (icon) return icon;
+    return <StarGlyph className="size-full" />;
+  }
+
+  const starCount = Math.max(1, max);
+
+  return (
+    <div
+      data-slot="rating"
+      data-size={size}
+      className={cn(hasLabeling && "space-y-1", className)}
+      {...props}
+    >
+      {label ? (
+        <Label id={labelId} required={required}>
+          {label}
+        </Label>
+      ) : null}
+      <div
+        ref={groupRef}
+        id={\`\${baseId}-control\`}
+        role={isSlider ? "slider" : "radiogroup"}
+        aria-labelledby={label ? labelId : undefined}
+        aria-describedby={
+          [description && !hasError ? descriptionId : undefined, hasError ? errorId : undefined]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
+        aria-errormessage={hasError ? errorId : undefined}
+        aria-invalid={hasError || undefined}
+        aria-required={!isSlider && required ? true : undefined}
+        aria-disabled={disabled || undefined}
+        aria-orientation={isSlider ? "horizontal" : undefined}
+        aria-valuemin={isSlider ? 0 : undefined}
+        aria-valuemax={isSlider ? max : undefined}
+        aria-valuenow={isSlider ? saved : undefined}
+        aria-valuetext={
+          isSlider
+            ? saved === 0
+              ? \`No rating, out of \${max} stars\`
+              : \`\${saved % 1 === 0 ? saved : saved.toFixed(1)} of \${max} stars\`
+            : undefined
+        }
+        tabIndex={isSlider ? (disabled ? -1 : 0) : undefined}
+        data-slot="control"
+        className={cn(
+          "inline-flex shrink-0 items-center gap-0.5 rounded-(--radius-1) leading-none outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
+          disabled ? "cursor-default" : "cursor-pointer",
+        )}
+        onPointerLeave={() => setHovered(null)}
+        onKeyDown={handleKeyDown}
+      >
+        {Array.from({ length: starCount }, (_, i) => i + 1).map((index) => {
+          const selected = index === saved;
+          const tabbable = isSlider ? -1 : disabled ? -1 : index === (Math.ceil(saved) || 1) ? 0 : -1;
+          return (
+            <button
+              key={index}
+              type="button"
+              role={isSlider ? undefined : "radio"}
+              aria-checked={isSlider ? undefined : selected}
+              aria-posinset={isSlider ? undefined : index}
+              aria-setsize={isSlider ? undefined : starCount}
+              aria-label={isSlider ? undefined : \`\${index} of \${starCount}\`}
+              data-slot="star"
+              data-index={index}
+              data-state={halfState(index)}
+              tabIndex={tabbable}
+              disabled={disabled && !isSlider}
+              className={cn(
+                "relative inline-flex shrink-0 rounded-(--radius-1) outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
+                sizeClasses[size],
+                disabled ? "cursor-default" : "cursor-pointer",
+              )}
+              onPointerMove={(event) => !disabled && setHovered(hitValue(event, index))}
+              onClick={(event) => !disabled && commit(hitValue(event, index))}
+              onFocus={() => setFocused(index)}
+            >
+              <span
+                data-slot="half-left"
+                aria-hidden="true"
+                className={cn("absolute inset-0 inline-flex items-center justify-center", colorClasses[halfState(index - 0.5)])}
+              >
+                {renderIcon(index, "left")}
+              </span>
+              <span
+                data-slot="half-right"
+                aria-hidden="true"
+                className={cn("absolute inset-0 inline-flex items-center justify-center", colorClasses[halfState(index)])}
+              >
+                {renderIcon(index, "right")}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {description && !hasError ? (
+        <p id={descriptionId} className="text-sm text-ink-gray-5">
+          {description}
+        </p>
+      ) : null}
+      {hasError ? <ErrorMessage id={errorId} message={error} /> : null}
+    </div>
+  );
+}
+"
+`;
+
+exports[`rating templates > renders React template without TypeScript 1`] = `
+"import { useId, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { ErrorMessage } from "./ErrorMessage";
+import { Label } from "./Label";
+
+
+const sizeClasses = {
+  xs: "size-3.5",
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
+};
+
+const colorClasses = {
+  filled: "text-ink-amber-6",
+  preview: "text-ink-amber-3",
+  removing: "text-ink-amber-4",
+  empty: "text-outline-gray-3",
+};
+
+function errorPresent(error) {
+  if (!error) return false;
+  if (Array.isArray(error)) return error.filter(Boolean).length > 0;
+  if (error instanceof Error) return Boolean(error.message);
+  return Boolean(error);
+}
+
+function StarGlyph({ className }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </svg>
+  );
+}
+
+export function Rating({
+  value,
+  defaultValue = 0,
+  onValueChange,
+  max = 5,
+  step = 1,
+  disabled = false,
+  size = "sm",
+  label,
+  description,
+  error,
+  required = false,
+  icon,
+  className,
+  ...props
+}) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const [hovered, setHovered] = useState(null);
+  const [focused, setFocused] = useState(1);
+  const groupRef = useRef(null);
+  const baseId = useId();
+  const labelId = \`\${baseId}-label\`;
+  const descriptionId = \`\${baseId}-description\`;
+  const errorId = \`\${baseId}-error\`;
+  const hasError = errorPresent(error);
+  const hasLabeling = Boolean(label || description || hasError);
+  const isSlider = step === 0.5;
+
+  const current = Math.max(0, Math.min(max, value !== undefined ? value : internalValue));
+  const saved = Math.round(current / step) * step;
+
+  function setValue(next) {
+    const clamped = Math.max(0, Math.min(max, Math.round(next / step) * step));
+    if (value === undefined) setInternalValue(clamped);
+    onValueChange?.(clamped);
+  }
+
+  function halfState(half) {
+    if (hovered === null) return half <= saved ? "filled" : "empty";
+    if (half <= Math.min(saved, hovered)) return "filled";
+    if (half <= hovered) return "preview";
+    if (half <= saved) return "removing";
+    return "empty";
+  }
+
+  function hitValue(event, index) {
+    if (step !== 0.5) return index;
+    const rect = event.currentTarget.getBoundingClientRect();
+    return event.clientX - rect.left < rect.width / 2 ? index - 0.5 : index;
+  }
+
+  function commit(next) {
+    const candidate = Math.max(0, Math.min(max, Math.round(next / step) * step));
+    setValue(candidate === saved ? 0 : candidate);
+  }
+
+  function focusStar(index) {
+    setFocused(index);
+    requestAnimationFrame(() => {
+      groupRef.current?.querySelector(\`[data-index="\${index}"]\`)?.focus();
+    });
+  }
+
+  function handleKeyDown(event) {
+    if (disabled) return;
+    const key = event.key;
+
+    if (isSlider) {
+      let next = null;
+      if (key === "ArrowRight" || key === "ArrowUp") next = Math.min(max, saved + step);
+      else if (key === "ArrowLeft" || key === "ArrowDown") next = Math.max(0, saved - step);
+      else if (key === "Home") next = 0;
+      else if (key === "End") next = max;
+      else if (key === "PageUp") next = Math.min(max, saved + 1);
+      else if (key === "PageDown") next = Math.max(0, saved - 1);
+      else if (/^[0-9]$/.test(key)) next = Math.min(max, Number(key));
+      if (next !== null) {
+        event.preventDefault();
+        setValue(next);
+      }
+      return;
+    }
+
+    const active = focused || Math.max(1, Math.min(max, Math.ceil(saved) || 1));
+    let next = null;
+    if (key === "ArrowRight" || key === "ArrowDown") next = Math.min(max, active + 1);
+    else if (key === "ArrowLeft" || key === "ArrowUp") next = Math.max(1, active - 1);
+    else if (key === "Home") next = 1;
+    else if (key === "End") next = max;
+    else if (key === " " || key === "Enter") next = active;
+    else if (/^[0-9]$/.test(key)) {
+      event.preventDefault();
+      setValue(key === "0" ? 0 : Math.min(max, Number(key)));
+      return;
+    }
+    if (next !== null) {
+      event.preventDefault();
+      setValue(next);
+      focusStar(next);
+    }
+  }
+
+  function renderIcon(index, side) {
+    const state = halfState(side === "left" ? index - 0.5 : index);
+    const iconProps = {
+      index,
+      side,
+      state,
+      leftState: halfState(index - 0.5),
+      rightState: halfState(index),
+      value: saved,
+      previewValue: hovered,
+      max,
+    };
+
+    if (typeof icon === "function") return icon(iconProps);
+    if (typeof icon === "string") return <span className={cn(icon, "size-full")} aria-hidden="true" />;
+    if (icon) return icon;
+    return <StarGlyph className="size-full" />;
+  }
+
+  const starCount = Math.max(1, max);
+
+  return (
+    <div
+      data-slot="rating"
+      data-size={size}
+      className={cn(hasLabeling && "space-y-1", className)}
+      {...props}
+    >
+      {label ? (
+        <Label id={labelId} required={required}>
+          {label}
+        </Label>
+      ) : null}
+      <div
+        ref={groupRef}
+        id={\`\${baseId}-control\`}
+        role={isSlider ? "slider" : "radiogroup"}
+        aria-labelledby={label ? labelId : undefined}
+        aria-describedby={
+          [description && !hasError ? descriptionId : undefined, hasError ? errorId : undefined]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
+        aria-errormessage={hasError ? errorId : undefined}
+        aria-invalid={hasError || undefined}
+        aria-required={!isSlider && required ? true : undefined}
+        aria-disabled={disabled || undefined}
+        aria-orientation={isSlider ? "horizontal" : undefined}
+        aria-valuemin={isSlider ? 0 : undefined}
+        aria-valuemax={isSlider ? max : undefined}
+        aria-valuenow={isSlider ? saved : undefined}
+        aria-valuetext={
+          isSlider
+            ? saved === 0
+              ? \`No rating, out of \${max} stars\`
+              : \`\${saved % 1 === 0 ? saved : saved.toFixed(1)} of \${max} stars\`
+            : undefined
+        }
+        tabIndex={isSlider ? (disabled ? -1 : 0) : undefined}
+        data-slot="control"
+        className={cn(
+          "inline-flex shrink-0 items-center gap-0.5 rounded-(--radius-1) leading-none outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
+          disabled ? "cursor-default" : "cursor-pointer",
+        )}
+        onPointerLeave={() => setHovered(null)}
+        onKeyDown={handleKeyDown}
+      >
+        {Array.from({ length: starCount }, (_, i) => i + 1).map((index) => {
+          const selected = index === saved;
+          const tabbable = isSlider ? -1 : disabled ? -1 : index === (Math.ceil(saved) || 1) ? 0 : -1;
+          return (
+            <button
+              key={index}
+              type="button"
+              role={isSlider ? undefined : "radio"}
+              aria-checked={isSlider ? undefined : selected}
+              aria-posinset={isSlider ? undefined : index}
+              aria-setsize={isSlider ? undefined : starCount}
+              aria-label={isSlider ? undefined : \`\${index} of \${starCount}\`}
+              data-slot="star"
+              data-index={index}
+              data-state={halfState(index)}
+              tabIndex={tabbable}
+              disabled={disabled && !isSlider}
+              className={cn(
+                "relative inline-flex shrink-0 rounded-(--radius-1) outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
+                sizeClasses[size],
+                disabled ? "cursor-default" : "cursor-pointer",
+              )}
+              onPointerMove={(event) => !disabled && setHovered(hitValue(event, index))}
+              onClick={(event) => !disabled && commit(hitValue(event, index))}
+              onFocus={() => setFocused(index)}
+            >
+              <span
+                data-slot="half-left"
+                aria-hidden="true"
+                className={cn("absolute inset-0 inline-flex items-center justify-center", colorClasses[halfState(index - 0.5)])}
+              >
+                {renderIcon(index, "left")}
+              </span>
+              <span
+                data-slot="half-right"
+                aria-hidden="true"
+                className={cn("absolute inset-0 inline-flex items-center justify-center", colorClasses[halfState(index)])}
+              >
+                {renderIcon(index, "right")}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {description && !hasError ? (
+        <p id={descriptionId} className="text-sm text-ink-gray-5">
+          {description}
+        </p>
+      ) : null}
+      {hasError ? <ErrorMessage id={errorId} message={error} /> : null}
+    </div>
+  );
+}
+"
+`;
+
+exports[`rating templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, nextTick, ref, useId, type Component } from "vue";
+import { cn } from "@/lib/utils";
+import ErrorMessage from "./ErrorMessage.vue";
+import Label from "./Label.vue";
+
+type RatingSize = "xs" | "sm" | "md" | "lg";
+type RatingStep = 1 | 0.5;
+type RatingStarState = "filled" | "preview" | "removing" | "empty";
+type RatingError = string | string[] | (Error & { messages?: string | string[] }) | null;
+
+type RatingIconSlotProps = {
+  index: number;
+  side: "left" | "right";
+  state: RatingStarState;
+  leftState: RatingStarState;
+  rightState: RatingStarState;
+  value: number;
+  previewValue: number | null;
+  max: number;
+};
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: number;
+    defaultValue?: number;
+    max?: number;
+    step?: RatingStep;
+    disabled?: boolean;
+    size?: RatingSize;
+    label?: string;
+    description?: string;
+    error?: RatingError;
+    required?: boolean;
+    icon?: string | Component;
+    class?: string;
+  }>(),
+  {
+    defaultValue: 0,
+    max: 5,
+    step: 1,
+    disabled: false,
+    size: "sm",
+    label: "",
+    description: "",
+    error: null,
+    required: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: number];
+}>();
+
+const slots = defineSlots<{
+  label?: (props: { required: boolean }) => unknown;
+  description?: () => unknown;
+  icon?: (props: RatingIconSlotProps) => unknown;
+}>();
+
+const internalValue = ref(props.defaultValue);
+const hovered = ref<number | null>(null);
+const focused = ref(1);
+const groupRef = ref<HTMLElement | null>(null);
+const baseId = useId().replace(/:/g, "");
+const labelId = \`\${baseId}-label\`;
+const descriptionId = \`\${baseId}-description\`;
+const errorId = \`\${baseId}-error\`;
+const starCount = computed(() => Math.max(1, props.max));
+const isSlider = computed(() => props.step === 0.5);
+
+const current = computed(() =>
+  Math.max(0, Math.min(props.max, props.modelValue ?? internalValue.value)),
+);
+const saved = computed(() => Math.round(current.value / props.step) * props.step);
+
+const hasError = computed(() => {
+  const error = props.error;
+  if (!error) return false;
+  if (Array.isArray(error)) return error.filter(Boolean).length > 0;
+  if (error instanceof Error) return Boolean(error.message);
+  return Boolean(error);
+});
+const hasLabeling = computed(() =>
+  Boolean(props.label || slots.label || props.description || slots.description || hasError.value),
+);
+
+const sizeClasses = {
+  xs: "size-3.5",
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
+};
+
+const colorClasses = {
+  filled: "text-ink-amber-6",
+  preview: "text-ink-amber-3",
+  removing: "text-ink-amber-4",
+  empty: "text-outline-gray-3",
+};
+
+function setValue(next: number) {
+  const clamped = Math.max(0, Math.min(props.max, Math.round(next / props.step) * props.step));
+  if (props.modelValue === undefined) internalValue.value = clamped;
+  emit("update:modelValue", clamped);
+}
+
+function halfState(half: number): RatingStarState {
+  if (hovered.value === null) return half <= saved.value ? "filled" : "empty";
+  if (half <= Math.min(saved.value, hovered.value)) return "filled";
+  if (half <= hovered.value) return "preview";
+  if (half <= saved.value) return "removing";
+  return "empty";
+}
+
+function hitValue(event: MouseEvent, index: number) {
+  if (props.step !== 0.5) return index;
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  return event.clientX - rect.left < rect.width / 2 ? index - 0.5 : index;
+}
+
+function commit(next: number) {
+  const candidate = Math.max(0, Math.min(props.max, Math.round(next / props.step) * props.step));
+  setValue(candidate === saved.value ? 0 : candidate);
+}
+
+function focusStar(index: number) {
+  focused.value = index;
+  nextTick(() => {
+    groupRef.value
+      ?.querySelector<HTMLButtonElement>(\`[data-index="\${index}"]\`)
+      ?.focus();
+  });
+}
+
+function formatValue(value: number) {
+  if (value === 0) return \`No rating, out of \${props.max} stars\`;
+  const display = value % 1 === 0 ? String(value) : value.toFixed(1);
+  return \`\${display} of \${props.max} stars\`;
+}
+
+function iconSlotProps(index: number, side: "left" | "right"): RatingIconSlotProps {
+  return {
+    index,
+    side,
+    state: halfState(side === "left" ? index - 0.5 : index),
+    leftState: halfState(index - 0.5),
+    rightState: halfState(index),
+    value: saved.value,
+    previewValue: hovered.value,
+    max: props.max,
+  };
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (props.disabled) return;
+  const key = event.key;
+
+  if (isSlider.value) {
+    let next: number | null = null;
+    if (key === "ArrowRight" || key === "ArrowUp") next = Math.min(props.max, saved.value + props.step);
+    else if (key === "ArrowLeft" || key === "ArrowDown") next = Math.max(0, saved.value - props.step);
+    else if (key === "Home") next = 0;
+    else if (key === "End") next = props.max;
+    else if (key === "PageUp") next = Math.min(props.max, saved.value + 1);
+    else if (key === "PageDown") next = Math.max(0, saved.value - 1);
+    else if (/^[0-9]$/.test(key)) next = Math.min(props.max, Number(key));
+    if (next !== null) {
+      event.preventDefault();
+      setValue(next);
+    }
+    return;
+  }
+
+  const active = focused.value || Math.max(1, Math.min(props.max, Math.ceil(saved.value) || 1));
+  let next: number | null = null;
+  if (key === "ArrowRight" || key === "ArrowDown") next = Math.min(props.max, active + 1);
+  else if (key === "ArrowLeft" || key === "ArrowUp") next = Math.max(1, active - 1);
+  else if (key === "Home") next = 1;
+  else if (key === "End") next = props.max;
+  else if (key === " " || key === "Enter") next = active;
+  else if (/^[0-9]$/.test(key)) {
+    event.preventDefault();
+    setValue(key === "0" ? 0 : Math.min(props.max, Number(key)));
+    return;
+  }
+  if (next !== null) {
+    event.preventDefault();
+    setValue(next);
+    focusStar(next);
+  }
+}
+</script>
+
+<template>
+  <div
+    data-slot="rating"
+    :data-size="props.size"
+    :class="cn(hasLabeling && 'space-y-1', props.class)"
+  >
+    <Label v-if="props.label || slots.label" :id="labelId" :required="props.required">
+      <slot name="label" :required="props.required">{{ props.label }}</slot>
+    </Label>
+
+    <div
+      ref="groupRef"
+      :id="\`\${baseId}-control\`"
+      :role="isSlider ? 'slider' : 'radiogroup'"
+      :aria-labelledby="props.label || slots.label ? labelId : undefined"
+      :aria-describedby="
+        [props.description || slots.description ? descriptionId : undefined, hasError ? errorId : undefined]
+          .filter(Boolean)
+          .join(' ') || undefined
+      "
+      :aria-errormessage="hasError ? errorId : undefined"
+      :aria-invalid="hasError || undefined"
+      :aria-required="!isSlider && props.required ? true : undefined"
+      :aria-disabled="props.disabled || undefined"
+      :aria-orientation="isSlider ? 'horizontal' : undefined"
+      :aria-valuemin="isSlider ? 0 : undefined"
+      :aria-valuemax="isSlider ? props.max : undefined"
+      :aria-valuenow="isSlider ? saved : undefined"
+      :aria-valuetext="isSlider ? formatValue(saved) : undefined"
+      :tabindex="isSlider ? (props.disabled ? -1 : 0) : undefined"
+      data-slot="control"
+      :class="
+        cn(
+          'inline-flex shrink-0 items-center gap-0.5 rounded-(--radius-1) leading-none outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4',
+          props.disabled ? 'cursor-default' : 'cursor-pointer',
+        )
+      "
+      @pointerleave="hovered = null"
+      @keydown="handleKeydown"
+    >
+      <button
+        v-for="index in starCount"
+        :key="index"
+        type="button"
+        :role="isSlider ? undefined : 'radio'"
+        :aria-checked="isSlider ? undefined : index === saved"
+        :aria-posinset="isSlider ? undefined : index"
+        :aria-setsize="isSlider ? undefined : starCount"
+        :aria-label="isSlider ? undefined : \`\${index} of \${starCount}\`"
+        data-slot="star"
+        :data-index="index"
+        :data-state="halfState(index)"
+        :tabindex="isSlider || props.disabled ? -1 : index === (Math.ceil(saved) || 1) ? 0 : -1"
+        :disabled="props.disabled && !isSlider"
+        :class="
+          cn(
+            'relative inline-flex shrink-0 rounded-(--radius-1) outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4',
+            sizeClasses[props.size],
+            props.disabled ? 'cursor-default' : 'cursor-pointer',
+          )
+        "
+        @pointermove="!props.disabled && (hovered = hitValue($event, index))"
+        @click="!props.disabled && commit(hitValue($event, index))"
+        @focus="focused = index"
+      >
+        <span
+          data-slot="half-left"
+          aria-hidden="true"
+          :class="['absolute inset-0 inline-flex items-center justify-center', colorClasses[halfState(index - 0.5)]]"
+        >
+          <slot name="icon" v-bind="iconSlotProps(index, 'left')">
+            <span v-if="typeof props.icon === 'string'" :class="[props.icon, 'size-full']" />
+            <component v-else-if="props.icon" :is="props.icon" class="size-full" />
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="size-full"
+            >
+              <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+            </svg>
+          </slot>
+        </span>
+        <span
+          data-slot="half-right"
+          aria-hidden="true"
+          :class="['absolute inset-0 inline-flex items-center justify-center', colorClasses[halfState(index)]]"
+        >
+          <slot name="icon" v-bind="iconSlotProps(index, 'right')">
+            <span v-if="typeof props.icon === 'string'" :class="[props.icon, 'size-full']" />
+            <component v-else-if="props.icon" :is="props.icon" class="size-full" />
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="size-full"
+            >
+              <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+            </svg>
+          </slot>
+        </span>
+      </button>
+    </div>
+
+    <p
+      v-if="(props.description || slots.description) && !hasError"
+      :id="descriptionId"
+      class="text-sm text-ink-gray-5"
+    >
+      <slot name="description">{{ props.description }}</slot>
+    </p>
+    <ErrorMessage v-if="hasError" :id="errorId" :message="props.error" />
+  </div>
+</template>
+"
+`;

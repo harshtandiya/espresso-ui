@@ -1,0 +1,14 @@
+/* Each star is drawn twice, clipped at the midline, so half stars work. */
+[data-slot="star"] {
+  background: transparent;
+  padding: 0;
+  border: 0;
+}
+
+[data-slot="half-left"] {
+  clip-path: inset(0 50% 0 0);
+}
+
+[data-slot="half-right"] {
+  clip-path: inset(0 0 0 50%);
+}

@@ -1,0 +1,107 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  RatingBasicDemo,
+  RatingCustomIconDemo,
+  RatingErrorDemo,
+  RatingHalfDemo,
+  RatingSizesDemo,
+} from "@/components/examples/RatingDemo.tsx";
+
+const usage = `import { Rating } from "@/components/ui/Rating";
+
+export default function App() {
+  const [value, setValue] = useState(4);
+
+  return <Rating value={value} onValueChange={setValue} label="Rating" />;
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import { ref } from "vue";
+import Rating from "@/components/ui/Rating.vue";
+
+const value = ref(4);
+\u003C/script>
+
+<template>
+  <Rating v-model="value" label="Rating" />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="rating"
+  num={sectionNumber("rating")}
+  label="Rating"
+  desc="A row of stars for picking a score. Whole stars form a radiogroup with one tab stop; `step=0.5` turns the row into a single slider. Hover previews the value a click will pick, and the selected star clears the rating when clicked again."
+  status="new"
+  code={usage}
+  codeFile="rating.tsx"
+  codeVue={usageVue}
+  codeVueFile="rating.vue"
+>
+  <CanvasToolbar title="Preview" meta="controlled · 4 of 5" />
+  <Canvas class="rating-stack">
+    <RatingBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Half stars" sub="step 0.5 · slider">
+      <Canvas grid={false} class="rating-stack">
+        <RatingHalfDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="xs · sm · md · lg">
+      <Canvas grid={false} class="rating-stack">
+        <RatingSizesDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Icon and disabled" sub="custom · read only">
+      <Canvas grid={false} class="rating-stack">
+        <RatingCustomIconDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Error" sub="required · two lines">
+      <Canvas grid={false} class="rating-stack">
+        <RatingErrorDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.rating-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.rating-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    width: min(100%, 360px);
+  }
+  :global(.rating-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.rating-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>
