@@ -1,0 +1,109 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  AlertBannerDemo,
+  AlertCustomIconDemo,
+  AlertRowsDemo,
+} from "@/components/examples/AlertDemo.tsx";
+
+const usage = `import { Alert } from "@/components/ui/Alert";
+
+export default function App() {
+  return (
+    <Alert
+      title="Your trial ends in 3 days"
+      description="Add a payment method to keep your workspace and all of its data."
+      theme="amber"
+      dismissible
+      onDismiss={() => hideAlert()}
+      primaryAction={{ label: "Upgrade plan" }}
+      secondaryAction={{ label: "Remind me", onClick: ({ dismiss }) => dismiss() }}
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Alert from "@/components/ui/Alert.vue";
+\u003C/script>
+
+<template>
+  <Alert
+    title="Your trial ends in 3 days"
+    description="Add a payment method to keep your workspace and all of its data."
+    theme="amber"
+    dismissible
+    :primary-action="{ label: 'Upgrade plan' }"
+  />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="alert"
+  num={sectionNumber("alert")}
+  label="Alert"
+  desc="An inline status message. Titles stay on one row; a description or a second action switches to the banner layout. Themes color the status icon and row action label; urgent red and amber alerts announce immediately."
+  status="new"
+  code={usage}
+  codeFile="alert.tsx"
+  codeVue={usageVue}
+  codeVueFile="alert.vue"
+>
+  <CanvasToolbar title="Preview" meta="row · status icon · action" />
+  <Canvas class="alert-stack">
+    <AlertRowsDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Banner" sub="description · two actions · dismiss">
+      <Canvas grid={false} class="alert-stack">
+        <AlertBannerDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Icon" sub="custom · hidden">
+      <Canvas grid={false} class="alert-stack">
+        <AlertCustomIconDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.alert-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.alert-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: min(100%, 520px);
+  }
+  :global(.alert-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.alert-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+    :global(.alert-stack .canvas-content) {
+      width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+</style>

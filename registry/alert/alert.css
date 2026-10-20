@@ -1,0 +1,4 @@
+/* Alert component tokens. */
+:root {
+  --alert-radius: var(--radius-6);
+}

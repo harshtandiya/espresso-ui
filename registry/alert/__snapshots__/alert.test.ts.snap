@@ -1,0 +1,933 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`alert templates > renders React template 1`] = `
+"import { useState, type HTMLAttributes, type ReactNode } from "react";
+import { Button } from "./Button";
+import { cn } from "@/lib/utils";
+
+type StatusTheme = "gray" | "blue" | "green" | "amber" | "red";
+
+export type AlertActionContext = {
+  /** Emits the alert's dismiss event. The parent owns hiding the alert. */
+  dismiss: () => void;
+};
+
+export type AlertAction = {
+  label: string;
+  onClick?: (context: AlertActionContext) => void | Promise<void>;
+  theme?: "gray" | "blue" | "green" | "red";
+  variant?: "solid" | "subtle" | "outline" | "ghost" | "link";
+  size?: "xs" | "sm" | "md" | "lg";
+  disabled?: boolean;
+  loading?: boolean;
+  icon?: ReactNode;
+  iconLeft?: ReactNode;
+  iconRight?: ReactNode;
+};
+
+export type AlertProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+  /** Main heading text. */
+  title?: ReactNode;
+  /** Supporting text; switches to the banner layout. */
+  description?: ReactNode;
+  /** Colors the status icon and row action label. */
+  theme?: StatusTheme;
+  /** Auto status icon by default; \`false\` hides it; a node replaces it. */
+  icon?: boolean | ReactNode;
+  primaryAction?: AlertAction;
+  secondaryAction?: AlertAction;
+  /** Shows the dismiss button and emits \`dismiss\`. */
+  dismissible?: boolean;
+  onDismiss?: () => void;
+};
+
+const iconColorClasses = {
+  gray: "text-ink-gray-7",
+  blue: "text-ink-blue-5",
+  green: "text-ink-green-5",
+  amber: "text-ink-amber-5",
+  red: "text-ink-red-5",
+};
+
+const rowActionLabelClasses = {
+  gray: "text-ink-gray-7",
+  blue: "text-ink-blue-6",
+  green: "text-ink-green-6",
+  amber: "text-ink-amber-6",
+  red: "text-ink-red-6",
+};
+
+function StatusIcon({ theme, className }: { theme: StatusTheme; className?: string }) {
+  const shared = {
+    viewBox: "0 0 16 16",
+    fill: "none",
+    "aria-hidden": true,
+    className: cn("size-4", className),
+  };
+
+  if (theme === "green") {
+    return (
+      <svg {...shared}>
+        <circle cx="8" cy="8" r="7" fill="currentColor" />
+        <path
+          d="M4.8 8.2l2.1 2.1 4.3-4.4"
+          stroke="var(--surface-base)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  if (theme === "amber") {
+    return (
+      <svg {...shared}>
+        <path d="M7.1 1.7L1.1 12a1.7 1.7 0 001.5 2.5h10.8a1.7 1.7 0 001.5-2.5L8.9 1.7a1.1 1.1 0 00-1.8 0z" fill="currentColor" />
+        <path d="M8 5.2v3.6" stroke="var(--surface-base)" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="8" cy="11.4" r=".9" fill="var(--surface-base)" />
+      </svg>
+    );
+  }
+
+  if (theme === "red") {
+    return (
+      <svg {...shared}>
+        <circle cx="8" cy="8" r="7" fill="currentColor" />
+        <path
+          d="M5.5 5.5l5 5m0-5l-5 5"
+          stroke="var(--surface-base)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...shared}>
+      <circle cx="8" cy="8" r="7" fill="currentColor" />
+      <path d="M8 7.2v4" stroke="var(--surface-base)" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="8" cy="4.7" r=".9" fill="var(--surface-base)" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4">
+      <path d="M4 4l8 8m0-8l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function Alert({
+  title,
+  description,
+  theme = "gray",
+  icon,
+  primaryAction,
+  secondaryAction,
+  dismissible = false,
+  onDismiss,
+  className,
+  ...props
+}: AlertProps) {
+  const [pending, setPending] = useState({ primary: false, secondary: false });
+  const layout = description || secondaryAction ? "banner" : "row";
+  const role = theme === "red" || theme === "amber" ? "alert" : "status";
+  const showPrefix = icon !== false;
+
+  function dismiss() {
+    onDismiss?.();
+  }
+
+  async function runAction(slot: "primary" | "secondary", action: AlertAction | undefined) {
+    if (!action?.onClick || pending[slot]) return;
+    setPending((current) => ({ ...current, [slot]: true }));
+    try {
+      await action.onClick({ dismiss });
+    } finally {
+      setPending((current) => ({ ...current, [slot]: false }));
+    }
+  }
+
+  function renderIcon() {
+    if (icon === false) return null;
+    if (icon === true || icon === undefined) {
+      return <StatusIcon theme={theme} className={iconColorClasses[theme]} />;
+    }
+    if (typeof icon === "string" && icon.startsWith("lucide-")) {
+      return <span className={cn("size-4", icon, iconColorClasses[theme])} aria-hidden="true" />;
+    }
+    return (
+      <span className={cn("flex size-4 items-center justify-center", iconColorClasses[theme])}>
+        {icon}
+      </span>
+    );
+  }
+
+  function actionButton(slot: "primary" | "secondary", action: AlertAction | undefined) {
+    if (!action) return null;
+    const { label, onClick, ...buttonProps } = action;
+    const isLoading = action.loading ?? pending[slot];
+    const isRow = layout === "row";
+
+    return (
+      <Button
+        {...buttonProps}
+        label={label}
+        theme={action.theme ?? "gray"}
+        variant={action.variant ?? (isRow ? "ghost" : slot === "primary" ? "outline" : "ghost")}
+        size={action.size ?? (isRow ? "sm" : "md")}
+        loading={isLoading}
+        onClick={() => runAction(slot, action)}
+        className={cn(
+          isRow && !action.variant && !action.theme && rowActionLabelClasses[theme],
+          !isRow && slot === "primary" && !action.variant && "border-transparent! shadow-sm",
+          !isRow && slot === "secondary" && !action.variant && !action.theme && "text-ink-gray-7",
+        )}
+      />
+    );
+  }
+
+  const dismissButton = dismissible ? (
+    <Button
+      data-slot="dismiss"
+      variant="ghost"
+      theme="gray"
+      size={layout === "row" ? "sm" : "xs"}
+      aria-label="Dismiss"
+      onClick={dismiss}
+      className={layout === "row" ? "shrink-0" : "absolute right-1.5 top-1.5"}
+    >
+      <XIcon />
+    </Button>
+  ) : null;
+
+  if (layout === "row") {
+    return (
+      <div
+        role={role}
+        data-layout="row"
+        data-color={theme}
+        className={cn(
+          "flex h-10 items-center rounded-(--alert-radius) bg-surface-gray-1 py-1.5 pl-3.5 pr-1.5",
+          className,
+        )}
+        {...props}
+      >
+        {showPrefix ? (
+          <div data-slot="prefix" className="mr-2 flex size-4 shrink-0 items-center justify-center">
+            {renderIcon()}
+          </div>
+        ) : null}
+        <div data-slot="title" className="min-w-0 flex-1 truncate text-sm font-medium text-ink-gray-8">
+          {title}
+        </div>
+        {primaryAction ? (
+          <div data-slot="actions" className="ml-1.5 flex shrink-0 items-center gap-1">
+            {actionButton("primary", primaryAction)}
+          </div>
+        ) : null}
+        {dismissible ? <div className="ml-1 flex shrink-0">{dismissButton}</div> : null}
+      </div>
+    );
+  }
+
+  const showActions = Boolean(primaryAction || secondaryAction);
+
+  return (
+    <div
+      role={role}
+      data-layout="banner"
+      data-color={theme}
+      className={cn("relative rounded-(--alert-radius) bg-surface-gray-1 p-3", className)}
+      {...props}
+    >
+      <div className={cn("flex items-center gap-1.5", dismissible && "pr-8")}>
+        {showPrefix ? (
+          <div data-slot="prefix" className="flex size-4 shrink-0 items-center justify-center">
+            {renderIcon()}
+          </div>
+        ) : null}
+        {title ? (
+          <div data-slot="title" className="min-w-0 text-sm font-medium text-ink-gray-8">
+            {title}
+          </div>
+        ) : null}
+      </div>
+      {description || showActions ? (
+        <div className="mt-1 flex flex-col items-start gap-3">
+          {description ? (
+            <p data-slot="description" className="text-sm text-ink-gray-6">
+              {description}
+            </p>
+          ) : null}
+          {showActions ? (
+            <div data-slot="actions" className="flex items-center gap-1">
+              {actionButton("primary", primaryAction)}
+              {actionButton("secondary", secondaryAction)}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {dismissButton}
+    </div>
+  );
+}
+"
+`;
+
+exports[`alert templates > renders React template without TypeScript 1`] = `
+"import { useState } from "react";
+import { Button } from "./Button";
+import { cn } from "@/lib/utils";
+
+
+const iconColorClasses = {
+  gray: "text-ink-gray-7",
+  blue: "text-ink-blue-5",
+  green: "text-ink-green-5",
+  amber: "text-ink-amber-5",
+  red: "text-ink-red-5",
+};
+
+const rowActionLabelClasses = {
+  gray: "text-ink-gray-7",
+  blue: "text-ink-blue-6",
+  green: "text-ink-green-6",
+  amber: "text-ink-amber-6",
+  red: "text-ink-red-6",
+};
+
+function StatusIcon({ theme, className }) {
+  const shared = {
+    viewBox: "0 0 16 16",
+    fill: "none",
+    "aria-hidden": true,
+    className: cn("size-4", className),
+  };
+
+  if (theme === "green") {
+    return (
+      <svg {...shared}>
+        <circle cx="8" cy="8" r="7" fill="currentColor" />
+        <path
+          d="M4.8 8.2l2.1 2.1 4.3-4.4"
+          stroke="var(--surface-base)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  if (theme === "amber") {
+    return (
+      <svg {...shared}>
+        <path d="M7.1 1.7L1.1 12a1.7 1.7 0 001.5 2.5h10.8a1.7 1.7 0 001.5-2.5L8.9 1.7a1.1 1.1 0 00-1.8 0z" fill="currentColor" />
+        <path d="M8 5.2v3.6" stroke="var(--surface-base)" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="8" cy="11.4" r=".9" fill="var(--surface-base)" />
+      </svg>
+    );
+  }
+
+  if (theme === "red") {
+    return (
+      <svg {...shared}>
+        <circle cx="8" cy="8" r="7" fill="currentColor" />
+        <path
+          d="M5.5 5.5l5 5m0-5l-5 5"
+          stroke="var(--surface-base)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...shared}>
+      <circle cx="8" cy="8" r="7" fill="currentColor" />
+      <path d="M8 7.2v4" stroke="var(--surface-base)" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="8" cy="4.7" r=".9" fill="var(--surface-base)" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-4">
+      <path d="M4 4l8 8m0-8l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function Alert({
+  title,
+  description,
+  theme = "gray",
+  icon,
+  primaryAction,
+  secondaryAction,
+  dismissible = false,
+  onDismiss,
+  className,
+  ...props
+}) {
+  const [pending, setPending] = useState({ primary: false, secondary: false });
+  const layout = description || secondaryAction ? "banner" : "row";
+  const role = theme === "red" || theme === "amber" ? "alert" : "status";
+  const showPrefix = icon !== false;
+
+  function dismiss() {
+    onDismiss?.();
+  }
+
+  async function runAction(slot, action) {
+    if (!action?.onClick || pending[slot]) return;
+    setPending((current) => ({ ...current, [slot]: true }));
+    try {
+      await action.onClick({ dismiss });
+    } finally {
+      setPending((current) => ({ ...current, [slot]: false }));
+    }
+  }
+
+  function renderIcon() {
+    if (icon === false) return null;
+    if (icon === true || icon === undefined) {
+      return <StatusIcon theme={theme} className={iconColorClasses[theme]} />;
+    }
+    if (typeof icon === "string" && icon.startsWith("lucide-")) {
+      return <span className={cn("size-4", icon, iconColorClasses[theme])} aria-hidden="true" />;
+    }
+    return (
+      <span className={cn("flex size-4 items-center justify-center", iconColorClasses[theme])}>
+        {icon}
+      </span>
+    );
+  }
+
+  function actionButton(slot, action) {
+    if (!action) return null;
+    const { label, onClick, ...buttonProps } = action;
+    const isLoading = action.loading ?? pending[slot];
+    const isRow = layout === "row";
+
+    return (
+      <Button
+        {...buttonProps}
+        label={label}
+        theme={action.theme ?? "gray"}
+        variant={action.variant ?? (isRow ? "ghost" : slot === "primary" ? "outline" : "ghost")}
+        size={action.size ?? (isRow ? "sm" : "md")}
+        loading={isLoading}
+        onClick={() => runAction(slot, action)}
+        className={cn(
+          isRow && !action.variant && !action.theme && rowActionLabelClasses[theme],
+          !isRow && slot === "primary" && !action.variant && "border-transparent! shadow-sm",
+          !isRow && slot === "secondary" && !action.variant && !action.theme && "text-ink-gray-7",
+        )}
+      />
+    );
+  }
+
+  const dismissButton = dismissible ? (
+    <Button
+      data-slot="dismiss"
+      variant="ghost"
+      theme="gray"
+      size={layout === "row" ? "sm" : "xs"}
+      aria-label="Dismiss"
+      onClick={dismiss}
+      className={layout === "row" ? "shrink-0" : "absolute right-1.5 top-1.5"}
+    >
+      <XIcon />
+    </Button>
+  ) : null;
+
+  if (layout === "row") {
+    return (
+      <div
+        role={role}
+        data-layout="row"
+        data-color={theme}
+        className={cn(
+          "flex h-10 items-center rounded-(--alert-radius) bg-surface-gray-1 py-1.5 pl-3.5 pr-1.5",
+          className,
+        )}
+        {...props}
+      >
+        {showPrefix ? (
+          <div data-slot="prefix" className="mr-2 flex size-4 shrink-0 items-center justify-center">
+            {renderIcon()}
+          </div>
+        ) : null}
+        <div data-slot="title" className="min-w-0 flex-1 truncate text-sm font-medium text-ink-gray-8">
+          {title}
+        </div>
+        {primaryAction ? (
+          <div data-slot="actions" className="ml-1.5 flex shrink-0 items-center gap-1">
+            {actionButton("primary", primaryAction)}
+          </div>
+        ) : null}
+        {dismissible ? <div className="ml-1 flex shrink-0">{dismissButton}</div> : null}
+      </div>
+    );
+  }
+
+  const showActions = Boolean(primaryAction || secondaryAction);
+
+  return (
+    <div
+      role={role}
+      data-layout="banner"
+      data-color={theme}
+      className={cn("relative rounded-(--alert-radius) bg-surface-gray-1 p-3", className)}
+      {...props}
+    >
+      <div className={cn("flex items-center gap-1.5", dismissible && "pr-8")}>
+        {showPrefix ? (
+          <div data-slot="prefix" className="flex size-4 shrink-0 items-center justify-center">
+            {renderIcon()}
+          </div>
+        ) : null}
+        {title ? (
+          <div data-slot="title" className="min-w-0 text-sm font-medium text-ink-gray-8">
+            {title}
+          </div>
+        ) : null}
+      </div>
+      {description || showActions ? (
+        <div className="mt-1 flex flex-col items-start gap-3">
+          {description ? (
+            <p data-slot="description" className="text-sm text-ink-gray-6">
+              {description}
+            </p>
+          ) : null}
+          {showActions ? (
+            <div data-slot="actions" className="flex items-center gap-1">
+              {actionButton("primary", primaryAction)}
+              {actionButton("secondary", secondaryAction)}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      {dismissButton}
+    </div>
+  );
+}
+"
+`;
+
+exports[`alert templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, reactive, type Component } from "vue";
+import Button from "./Button.vue";
+
+type StatusTheme = "gray" | "blue" | "green" | "amber" | "red";
+
+type AlertActionContext = {
+  dismiss: () => void;
+};
+
+type AlertAction = {
+  label: string;
+  onClick?: (context: AlertActionContext) => void | Promise<void>;
+  theme?: "gray" | "blue" | "green" | "red";
+  variant?: "solid" | "subtle" | "outline" | "ghost" | "link";
+  size?: "xs" | "sm" | "md" | "lg";
+  disabled?: boolean;
+  loading?: boolean;
+  icon?: string | Component;
+  iconLeft?: string | Component;
+  iconRight?: string | Component;
+};
+
+const props = withDefaults(
+  defineProps<{
+    title?: string;
+    description?: string;
+    theme?: StatusTheme;
+    icon?: boolean | string | Component;
+    primaryAction?: AlertAction;
+    secondaryAction?: AlertAction;
+    dismissible?: boolean;
+  }>(),
+  {
+    theme: "gray",
+    dismissible: false,
+  },
+);
+
+const emit = defineEmits<{
+  dismiss: [];
+}>();
+
+const slots = defineSlots<{
+  prefix?: () => unknown;
+  title?: () => unknown;
+  description?: () => unknown;
+  actions?: (props: { dismiss: () => void }) => unknown;
+}>();
+
+const layout = computed(() =>
+  props.description || slots.description || props.secondaryAction ? "banner" : "row",
+);
+const role = computed(() => (props.theme === "red" || props.theme === "amber" ? "alert" : "status"));
+
+const iconColorClass = computed(
+  () =>
+    ({
+      gray: "text-ink-gray-7",
+      blue: "text-ink-blue-5",
+      green: "text-ink-green-5",
+      amber: "text-ink-amber-5",
+      red: "text-ink-red-5",
+    })[props.theme],
+);
+
+const isAutoIcon = computed(() => props.icon === true || props.icon === undefined);
+const isLucideIcon = computed(
+  () => typeof props.icon === "string" && props.icon.startsWith("lucide-"),
+);
+const customComponent = computed(() =>
+  props.icon && typeof props.icon !== "boolean" && typeof props.icon !== "string" ? props.icon : null,
+);
+const customText = computed(() =>
+  typeof props.icon === "string" && !isLucideIcon.value ? props.icon : null,
+);
+
+const showPrefix = computed(() => props.icon !== false);
+const showTitle = computed(() => Boolean(props.title || slots.title));
+const showDescription = computed(() => Boolean(props.description || slots.description));
+const showBannerActions = computed(() =>
+  Boolean(slots.actions || props.primaryAction || props.secondaryAction),
+);
+
+const pending = reactive({ primary: false, secondary: false });
+const primaryLoading = computed(() => props.primaryAction?.loading ?? pending.primary);
+const secondaryLoading = computed(() => props.secondaryAction?.loading ?? pending.secondary);
+
+const rowActionProps = computed(() => {
+  if (!props.primaryAction) return undefined;
+  const { onClick, ...rest } = props.primaryAction;
+  return { variant: "ghost" as const, size: "sm" as const, theme: "gray" as const, ...rest };
+});
+
+const rowActionLabelClass = computed(() => {
+  const action = props.primaryAction;
+  if (!action || action.variant || action.theme) return undefined;
+  return {
+    gray: "text-ink-gray-7",
+    blue: "text-ink-blue-6",
+    green: "text-ink-green-6",
+    amber: "text-ink-amber-6",
+    red: "text-ink-red-6",
+  }[props.theme];
+});
+
+const bannerPrimaryProps = computed(() => {
+  if (!props.primaryAction) return undefined;
+  const { onClick, ...rest } = props.primaryAction;
+  return { variant: "outline" as const, theme: "gray" as const, size: "md" as const, ...rest };
+});
+
+const bannerPrimaryClass = computed(() =>
+  props.primaryAction && !props.primaryAction.variant
+    ? "border-transparent! shadow-sm"
+    : undefined,
+);
+
+const bannerSecondaryProps = computed(() => {
+  if (!props.secondaryAction) return undefined;
+  const { onClick, ...rest } = props.secondaryAction;
+  return { variant: "ghost" as const, theme: "gray" as const, size: "md" as const, ...rest };
+});
+
+const bannerSecondaryClass = computed(() =>
+  props.secondaryAction && !props.secondaryAction.variant && !props.secondaryAction.theme
+    ? "text-ink-gray-7"
+    : undefined,
+);
+
+function dismiss() {
+  emit("dismiss");
+}
+
+async function handleAction(slot: "primary" | "secondary", action?: AlertAction) {
+  if (!action?.onClick || pending[slot]) return;
+  pending[slot] = true;
+  try {
+    await action.onClick({ dismiss });
+  } finally {
+    pending[slot] = false;
+  }
+}
+</script>
+
+<template>
+  <div
+    v-if="layout === 'row'"
+    :role="role"
+    data-layout="row"
+    :data-color="props.theme"
+    class="flex h-10 items-center rounded-(--alert-radius) bg-surface-gray-1 py-1.5 pl-3.5 pr-1.5"
+  >
+    <div
+      v-if="showPrefix"
+      data-slot="prefix"
+      class="mr-2 flex size-4 shrink-0 items-center justify-center"
+    >
+      <slot name="prefix">
+        <svg
+          v-if="isAutoIcon"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+          class="size-4"
+          :class="iconColorClass"
+        >
+          <template v-if="props.theme === 'green'">
+            <circle cx="8" cy="8" r="7" fill="currentColor" />
+            <path
+              d="M4.8 8.2l2.1 2.1 4.3-4.4"
+              stroke="var(--surface-base)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </template>
+          <template v-else-if="props.theme === 'amber'">
+            <path
+              d="M7.1 1.7L1.1 12a1.7 1.7 0 001.5 2.5h10.8a1.7 1.7 0 001.5-2.5L8.9 1.7a1.1 1.1 0 00-1.8 0z"
+              fill="currentColor"
+            />
+            <path
+              d="M8 5.2v3.6"
+              stroke="var(--surface-base)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle cx="8" cy="11.4" r=".9" fill="var(--surface-base)" />
+          </template>
+          <template v-else-if="props.theme === 'red'">
+            <circle cx="8" cy="8" r="7" fill="currentColor" />
+            <path
+              d="M5.5 5.5l5 5m0-5l-5 5"
+              stroke="var(--surface-base)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </template>
+          <template v-else>
+            <circle cx="8" cy="8" r="7" fill="currentColor" />
+            <path
+              d="M8 7.2v4"
+              stroke="var(--surface-base)"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle cx="8" cy="4.7" r=".9" fill="var(--surface-base)" />
+          </template>
+        </svg>
+        <span
+          v-else-if="isLucideIcon"
+          class="size-4"
+          :class="[props.icon, iconColorClass]"
+          aria-hidden="true"
+        />
+        <component
+          v-else-if="customComponent"
+          :is="customComponent"
+          class="size-4"
+          :class="iconColorClass"
+        />
+        <span v-else-if="customText">{{ customText }}</span>
+      </slot>
+    </div>
+
+    <div
+      v-if="showTitle"
+      data-slot="title"
+      class="min-w-0 flex-1 truncate text-sm font-medium text-ink-gray-8"
+    >
+      <slot name="title">{{ props.title }}</slot>
+    </div>
+
+    <div
+      v-if="slots.actions || props.primaryAction"
+      data-slot="actions"
+      class="ml-1.5 flex shrink-0 items-center gap-1"
+    >
+      <slot name="actions" :dismiss="dismiss">
+        <Button
+          v-if="props.primaryAction"
+          v-bind="rowActionProps"
+          :loading="primaryLoading"
+          :class="rowActionLabelClass"
+          @click="handleAction('primary', props.primaryAction)"
+        />
+      </slot>
+    </div>
+
+    <Button
+      v-if="props.dismissible"
+      data-slot="dismiss"
+      class="ml-1.5 shrink-0"
+      variant="ghost"
+      theme="gray"
+      size="sm"
+      aria-label="Dismiss"
+      @click="dismiss"
+    >
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="size-4">
+        <path
+          d="M4 4l8 8m0-8l-8 8"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </Button>
+  </div>
+
+  <div
+    v-else
+    :role="role"
+    data-layout="banner"
+    :data-color="props.theme"
+    class="relative rounded-(--alert-radius) bg-surface-gray-1 p-3"
+  >
+    <div class="flex items-center gap-1.5" :class="props.dismissible ? 'pr-8' : ''">
+      <div
+        v-if="showPrefix"
+        data-slot="prefix"
+        class="flex size-4 shrink-0 items-center justify-center"
+      >
+        <slot name="prefix">
+          <svg
+            v-if="isAutoIcon"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+            class="size-4"
+            :class="iconColorClass"
+          >
+            <template v-if="props.theme === 'green'">
+              <circle cx="8" cy="8" r="7" fill="currentColor" />
+              <path
+                d="M4.8 8.2l2.1 2.1 4.3-4.4"
+                stroke="var(--surface-base)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </template>
+            <template v-else-if="props.theme === 'amber'">
+              <path
+                d="M7.1 1.7L1.1 12a1.7 1.7 0 001.5 2.5h10.8a1.7 1.7 0 001.5-2.5L8.9 1.7a1.1 1.1 0 00-1.8 0z"
+                fill="currentColor"
+              />
+              <path
+                d="M8 5.2v3.6"
+                stroke="var(--surface-base)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="8" cy="11.4" r=".9" fill="var(--surface-base)" />
+            </template>
+            <template v-else-if="props.theme === 'red'">
+              <circle cx="8" cy="8" r="7" fill="currentColor" />
+              <path
+                d="M5.5 5.5l5 5m0-5l-5 5"
+                stroke="var(--surface-base)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </template>
+            <template v-else>
+              <circle cx="8" cy="8" r="7" fill="currentColor" />
+              <path
+                d="M8 7.2v4"
+                stroke="var(--surface-base)"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="8" cy="4.7" r=".9" fill="var(--surface-base)" />
+            </template>
+          </svg>
+          <span
+            v-else-if="isLucideIcon"
+            class="size-4"
+            :class="[props.icon, iconColorClass]"
+            aria-hidden="true"
+          />
+          <component
+            v-else-if="customComponent"
+            :is="customComponent"
+            class="size-4"
+            :class="iconColorClass"
+          />
+          <span v-else-if="customText">{{ customText }}</span>
+        </slot>
+      </div>
+      <div
+        v-if="showTitle"
+        data-slot="title"
+        class="min-w-0 text-sm font-medium text-ink-gray-8"
+      >
+        <slot name="title">{{ props.title }}</slot>
+      </div>
+    </div>
+
+    <div v-if="showDescription || showBannerActions" class="mt-1 flex flex-col items-start gap-3">
+      <p v-if="showDescription" data-slot="description" class="text-sm text-ink-gray-6">
+        <slot name="description">{{ props.description }}</slot>
+      </p>
+      <div v-if="showBannerActions" data-slot="actions" class="flex items-center gap-1">
+        <slot name="actions" :dismiss="dismiss">
+          <Button
+            v-if="props.primaryAction"
+            v-bind="bannerPrimaryProps"
+            :loading="primaryLoading"
+            :class="bannerPrimaryClass"
+            @click="handleAction('primary', props.primaryAction)"
+          />
+          <Button
+            v-if="props.secondaryAction"
+            v-bind="bannerSecondaryProps"
+            :loading="secondaryLoading"
+            :class="bannerSecondaryClass"
+            @click="handleAction('secondary', props.secondaryAction)"
+          />
+        </slot>
+      </div>
+    </div>
+
+    <Button
+      v-if="props.dismissible"
+      data-slot="dismiss"
+      class="absolute right-1.5 top-1.5"
+      variant="ghost"
+      theme="gray"
+      size="xs"
+      aria-label="Dismiss"
+      @click="dismiss"
+    >
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="size-4">
+        <path
+          d="M4 4l8 8m0-8l-8 8"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </Button>
+  </div>
+</template>
+"
+`;
