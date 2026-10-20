@@ -1,0 +1,60 @@
+<script setup lang="ts">
+import { Tooltip as ArkTooltip } from "@ark-ui/vue/tooltip";
+
+type TooltipSide = "top" | "right" | "bottom" | "left";
+
+const props = withDefaults(
+  defineProps<{
+    text?: string;
+    hoverDelay?: number;
+    side?: TooltipSide;
+    offset?: number;
+    bare?: boolean;
+    disabled?: boolean;
+  }>(),
+  {
+    text: "",
+    hoverDelay: 500,
+    side: "top",
+    offset: 4,
+    bare: false,
+    disabled: false,
+  },
+);
+
+const slots = defineSlots<{
+  default?: () => unknown;
+  content?: () => unknown;
+}>();
+</script>
+
+<template>
+  <slot v-if="props.disabled" />
+  <ArkTooltip.Root
+    v-else
+    :open-delay="props.hoverDelay"
+    :close-delay="75"
+    :positioning="{ placement: props.side, gutter: props.offset }"
+  >
+    <ArkTooltip.Trigger as-child data-slot="trigger">
+      <slot />
+    </ArkTooltip.Trigger>
+    <Teleport v-if="props.text || slots.content" to="body">
+      <ArkTooltip.Positioner class="z-[100]">
+        <ArkTooltip.Content data-slot="tooltip-content" class="z-[100]">
+          <slot v-if="props.bare" name="content" />
+          <div
+            v-else
+            data-slot="bubble"
+            class="rounded-(--radius-4) bg-surface-gray-10 px-2 py-1 text-xs text-ink-base shadow-xl"
+          >
+            <slot name="content">{{ props.text }}</slot>
+          </div>
+          <ArkTooltip.Arrow data-slot="tooltip-arrow">
+            <ArkTooltip.ArrowTip data-slot="tooltip-arrow-tip" />
+          </ArkTooltip.Arrow>
+        </ArkTooltip.Content>
+      </ArkTooltip.Positioner>
+    </Teleport>
+  </ArkTooltip.Root>
+</template>

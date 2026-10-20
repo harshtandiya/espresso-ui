@@ -1,0 +1,35 @@
+/* Tooltip enters from its trigger with a short, origin-aware scale. */
+[data-slot="tooltip-content"] {
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity 125ms ease-out,
+    transform 125ms ease-out;
+}
+
+[data-slot="tooltip-content"][data-state="closed"] {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+[data-slot="tooltip-arrow"] {
+  --arrow-size: 8px;
+  --arrow-background: var(--surface-gray-10);
+}
+
+[data-slot="tooltip-arrow-tip"] {
+  width: var(--arrow-size);
+  height: var(--arrow-size);
+  border-radius: 2px;
+  background: var(--arrow-background);
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="tooltip-content"] {
+    transition: opacity 125ms ease;
+  }
+
+  [data-slot="tooltip-content"][data-state="closed"] {
+    transform: none;
+  }
+}

@@ -1,0 +1,112 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  TooltipBareDemo,
+  TooltipContentDemo,
+  TooltipSidesDemo,
+  TooltipToolbarDemo,
+} from "@/components/examples/TooltipDemo.tsx";
+
+const usage = `import { Tooltip } from "@/components/ui/Tooltip";
+
+export default function App() {
+  return (
+    <Tooltip text="Bold">
+      <button type="button">Bold</button>
+    </Tooltip>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Tooltip from "@/components/ui/Tooltip.vue";
+\u003C/script>
+
+<template>
+  <Tooltip text="Bold">
+    <button type="button">Bold</button>
+  </Tooltip>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="tooltip"
+  num={sectionNumber("tooltip")}
+  label="Tooltip"
+  desc="A small label for its trigger, opened on hover after 500ms or immediately on keyboard focus. Positions itself on any side, flips to stay on screen, closes on Escape, and can be disabled without removing the trigger."
+  status="new"
+  code={usage}
+  codeFile="tooltip.tsx"
+  codeVue={usageVue}
+  codeVueFile="tooltip.vue"
+>
+  <CanvasToolbar title="Preview" meta="trigger · 500ms hover delay" />
+  <Canvas class="tooltip-stack">
+    <TooltipToolbarDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sides" sub="top · right · bottom · left">
+      <Canvas grid={false} class="tooltip-stack">
+        <TooltipSidesDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Content" sub="rich content · disabled">
+      <Canvas grid={false} class="tooltip-stack">
+        <TooltipContentDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Bare" sub="no bubble shell">
+      <Canvas grid={false} class="tooltip-stack">
+        <TooltipBareDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.tooltip-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.tooltip-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+    width: min(100%, 440px);
+  }
+  :global(.tooltip-row),
+  :global(.tooltip-sides) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  :global(.tooltip-preview) {
+    display: grid;
+    place-items: center;
+    width: 180px;
+    height: 100px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--surface-blue-2), var(--surface-green-2));
+    color: var(--ink-gray-7);
+    font-size: 12px;
+  }
+
+  @media (max-width: 768px) {
+    :global(.tooltip-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

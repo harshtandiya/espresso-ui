@@ -1,0 +1,72 @@
+<% if (it.typescript) { %>import type { ReactNode } from "react";
+<% } %>import { Tooltip as ArkTooltip } from "@ark-ui/react/tooltip";
+import { Portal } from "@ark-ui/react/portal";
+
+<% if (it.typescript) { %>
+export type TooltipSide = "top" | "right" | "bottom" | "left";
+
+export type TooltipProps = {
+  /** The trigger. It should be one focusable element. */
+  children: ReactNode;
+  /** Text shown inside the tooltip when `content` is not provided. */
+  text?: string;
+  /** Rich content that replaces `text` inside the bubble. */
+  content?: ReactNode;
+  /** Delay before opening on hover, in milliseconds. */
+  hoverDelay?: number;
+  /** Side of the trigger to open on. */
+  side?: TooltipSide;
+  /** Gap between the trigger and the bubble, in pixels. */
+  offset?: number;
+  /** Render content without the dark bubble shell. */
+  bare?: boolean;
+  /** Disable the tooltip while keeping the trigger. */
+  disabled?: boolean;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  children,
+  text = "",
+  content,
+  hoverDelay = 500,
+  side = "top",
+  offset = 4,
+  bare = false,
+  disabled = false,
+}<% if (it.typescript) { %>: TooltipProps<% } %>) {
+  if (disabled) return <>{children}</>;
+
+  return (
+    <ArkTooltip.Root
+      openDelay={hoverDelay}
+      closeDelay={75}
+      positioning={{ placement: side, gutter: offset }}
+    >
+      <ArkTooltip.Trigger asChild data-slot="trigger">
+        {children}
+      </ArkTooltip.Trigger>
+      {text || content ? (
+        <Portal>
+          <ArkTooltip.Positioner className="z-[100]">
+            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100]">
+              {bare ? (
+                content
+              ) : (
+                <div
+                  data-slot="bubble"
+                  className="rounded-(--radius-4) bg-surface-gray-10 px-2 py-1 text-xs text-ink-base shadow-xl"
+                >
+                  {content ?? text}
+                </div>
+              )}
+              <ArkTooltip.Arrow data-slot="tooltip-arrow">
+                <ArkTooltip.ArrowTip data-slot="tooltip-arrow-tip" />
+              </ArkTooltip.Arrow>
+            </ArkTooltip.Content>
+          </ArkTooltip.Positioner>
+        </Portal>
+      ) : null}
+    </ArkTooltip.Root>
+  );
+}
