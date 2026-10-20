@@ -22,12 +22,12 @@ export default function App() {
 }
 `;
 
-const usageVue = `<script setup>
+const usageVue = `\u003Cscript setup>
 import TextInput from "@/components/ui/TextInput.vue";
 import { ref } from "vue";
 
 const email = ref("");
-</script>
+\u003C/script>
 
 <template>
   <TextInput
@@ -54,7 +54,7 @@ const email = ref("");
   codeVueFile="text-input.vue"
 >
   <CanvasToolbar title="Preview" meta="label · description · required" />
-  <Canvas>
+  <Canvas class="input-stack">
     <TextInputReact
       client:load
       label="Workspace name"
@@ -114,12 +114,13 @@ const email = ref("");
 
 <style>
   :global(.input-stack) {
-    display: flex !important;
+    padding: 28px 32px !important;
+  }
+  :global(.input-stack .canvas-content) {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 14px !important;
-    width: 100%;
-    padding: 28px 32px !important;
+    width: min(100%, 420px);
   }
 
   @media (max-width: 768px) {

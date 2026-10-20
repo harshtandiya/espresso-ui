@@ -21,12 +21,12 @@ export default function App() {
 }
 `;
 
-const usageVue = `<script setup>
+const usageVue = `\u003Cscript setup>
 import Textarea from "@/components/ui/Textarea.vue";
 import { ref } from "vue";
 
 const description = ref("");
-</script>
+\u003C/script>
 
 <template>
   <Textarea
@@ -52,7 +52,7 @@ const description = ref("");
   codeVueFile="textarea.vue"
 >
   <CanvasToolbar title="Preview" meta="label · description · rows" />
-  <Canvas>
+  <Canvas class="textarea-stack">
     <TextareaReact
       client:load
       label="Description"
@@ -103,12 +103,13 @@ const description = ref("");
 
 <style>
   :global(.textarea-stack) {
-    display: flex !important;
+    padding: 28px 32px !important;
+  }
+  :global(.textarea-stack .canvas-content) {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 14px !important;
-    width: 100%;
-    padding: 28px 32px !important;
+    width: min(100%, 420px);
   }
 
   @media (max-width: 768px) {
