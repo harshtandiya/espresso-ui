@@ -182,7 +182,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             <span
               ref={suffixRef}
               className={cn(
-                "pointer-events-none absolute inset-y-0 end-0 flex items-center",
+                "absolute inset-y-0 end-0 flex items-center",
                 suffixPadding[size],
                 disabled ? "text-ink-gray-5" : "text-ink-gray-8",
               )}
@@ -377,7 +377,7 @@ export const TextInput = forwardRef(
             <span
               ref={suffixRef}
               className={cn(
-                "pointer-events-none absolute inset-y-0 end-0 flex items-center",
+                "absolute inset-y-0 end-0 flex items-center",
                 suffixPadding[size],
                 disabled ? "text-ink-gray-5" : "text-ink-gray-8",
               )}
@@ -609,7 +609,7 @@ defineExpose({ focus });
         v-if="$slots.suffix"
         ref="suffixRef"
         :class="cn(
-          'pointer-events-none absolute inset-y-0 end-0 flex items-center',
+          'absolute inset-y-0 end-0 flex items-center',
           suffixPadding[props.size],
           props.disabled ? 'text-ink-gray-5' : 'text-ink-gray-8',
         )"
