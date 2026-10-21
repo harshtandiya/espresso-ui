@@ -127,6 +127,18 @@
       "gray-9": "oklch(0 0 0 / 0.78)",
       "gray-10": "oklch(0 0 0 / 0.91)"
     },
+    "overlay": {
+      "black-overlay-50": "oklch(0 0 0 / 0.09)",
+      "black-overlay-100": "oklch(0 0 0 / 0.18)",
+      "black-overlay-200": "oklch(0 0 0 / 0.271)",
+      "black-overlay-300": "oklch(0 0 0 / 0.361)",
+      "black-overlay-400": "oklch(0 0 0 / 0.451)",
+      "black-overlay-500": "oklch(0 0 0 / 0.541)",
+      "black-overlay-600": "oklch(0 0 0 / 0.631)",
+      "black-overlay-700": "oklch(0 0 0 / 0.722)",
+      "black-overlay-800": "oklch(0 0 0 / 0.812)",
+      "black-overlay-900": "oklch(0 0 0 / 0.898)"
+    },
     "ink": {
       "base": "oklch(1 0 0)",
       "blue-link": "oklch(0.641 0.186 251.565)",
@@ -407,6 +419,18 @@
       "gray-8": "oklch(1 0 0 / 0.659)",
       "gray-9": "oklch(1 0 0 / 0.831)",
       "gray-10": "oklch(1 0 0 / 0.969)"
+    },
+    "overlay": {
+      "black-overlay-50": "oklch(0 0 0 / 0.09)",
+      "black-overlay-100": "oklch(0 0 0 / 0.18)",
+      "black-overlay-200": "oklch(0 0 0 / 0.271)",
+      "black-overlay-300": "oklch(0 0 0 / 0.361)",
+      "black-overlay-400": "oklch(0 0 0 / 0.451)",
+      "black-overlay-500": "oklch(0 0 0 / 0.541)",
+      "black-overlay-600": "oklch(0 0 0 / 0.631)",
+      "black-overlay-700": "oklch(0 0 0 / 0.722)",
+      "black-overlay-800": "oklch(0 0 0 / 0.812)",
+      "black-overlay-900": "oklch(0 0 0 / 0.898)"
     },
     "ink": {
       "base": "oklch(0.205 0 0)",

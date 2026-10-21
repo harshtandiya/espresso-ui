@@ -11,6 +11,7 @@ type SemanticSection = {
   color: Section;
   surface: Section;
   surfaceAlpha: Section;
+  overlay: Section;
   ink: Section;
   outline: Section;
   outlineAlpha: Section;
@@ -53,6 +54,7 @@ function renderSection(section: SemanticSection, primitives: Primitives): string
   const color = resolveSection(section.color, primitives);
   const surface = resolveSection(section.surface, primitives);
   const surfaceAlpha = resolveSection(section.surfaceAlpha, primitives);
+  const overlay = resolveSection(section.overlay, primitives);
   const ink = resolveSection(section.ink, primitives);
   const outline = resolveSection(section.outline, primitives);
   const outlineAlpha = resolveSection(section.outlineAlpha, primitives);
@@ -63,6 +65,7 @@ function renderSection(section: SemanticSection, primitives: Primitives): string
     renderVars(color, "color-"),
     renderVars(surface, "surface-"),
     renderVars(surfaceAlpha, "surface-alpha-"),
+    renderVars(overlay, "color-"),
     renderVars(ink, "ink-"),
     renderVars(outline, "outline-"),
     renderVars(outlineAlpha, "outline-alpha-"),
@@ -75,6 +78,7 @@ function renderTailwindVars(light: SemanticSection, radius: Section): string {
   const color = Object.keys(light.color);
   const surface = Object.keys(light.surface);
   const surfaceAlpha = Object.keys(light.surfaceAlpha);
+  const overlay = Object.keys(light.overlay);
   const ink = Object.keys(light.ink);
   const outline = Object.keys(light.outline);
   const outlineAlpha = Object.keys(light.outlineAlpha);
@@ -84,6 +88,7 @@ function renderTailwindVars(light: SemanticSection, radius: Section): string {
     ...color.map((key) => `  --color-${key}: var(--color-${key});`),
     ...surface.map((key) => `  --color-surface-${key}: var(--surface-${key});`),
     ...surfaceAlpha.map((key) => `  --color-surface-alpha-${key}: var(--surface-alpha-${key});`),
+    ...overlay.map((key) => `  --color-${key}: var(--color-${key});`),
     ...ink.map((key) => `  --color-ink-${key}: var(--ink-${key});`),
     ...outline.map((key) => `  --color-outline-${key}: var(--outline-${key});`),
     ...outlineAlpha.map((key) => `  --color-outline-alpha-${key}: var(--outline-alpha-${key});`),

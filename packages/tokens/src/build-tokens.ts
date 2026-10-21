@@ -13,6 +13,7 @@ type SemanticSection = {
   color: Record<string, string>;
   surface: Record<string, string>;
   surfaceAlpha: Record<string, string>;
+  overlay: Record<string, string>;
   ink: Record<string, string>;
   outline: Record<string, string>;
   outlineAlpha: Record<string, string>;
@@ -74,6 +75,7 @@ function build(): void {
   const lightColor = resolveSection(semantic.light.color, primitives);
   const lightSurface = resolveSection(semantic.light.surface, primitives);
   const lightSurfaceAlpha = resolveSection(semantic.light.surfaceAlpha, primitives);
+  const lightOverlay = resolveSection(semantic.light.overlay, primitives);
   const lightInk = resolveSection(semantic.light.ink, primitives);
   const lightOutline = resolveSection(semantic.light.outline, primitives);
   const lightOutlineAlpha = resolveSection(semantic.light.outlineAlpha, primitives);
@@ -83,6 +85,7 @@ function build(): void {
   const darkColor = resolveSection(semantic.dark.color, primitives);
   const darkSurface = resolveSection(semantic.dark.surface, primitives);
   const darkSurfaceAlpha = resolveSection(semantic.dark.surfaceAlpha, primitives);
+  const darkOverlay = resolveSection(semantic.dark.overlay, primitives);
   const darkInk = resolveSection(semantic.dark.ink, primitives);
   const darkOutline = resolveSection(semantic.dark.outline, primitives);
   const darkOutlineAlpha = resolveSection(semantic.dark.outlineAlpha, primitives);
@@ -96,6 +99,7 @@ function build(): void {
     renderVars(lightColor, "color-"),
     renderVars(lightSurface, "surface-"),
     renderVars(lightSurfaceAlpha, "surface-alpha-"),
+    renderVars(lightOverlay, "color-"),
     renderVars(lightInk, "ink-"),
     renderVars(lightOutline, "outline-"),
     renderVars(lightOutlineAlpha, "outline-alpha-"),
@@ -108,6 +112,7 @@ function build(): void {
     renderVars(darkColor, "color-"),
     renderVars(darkSurface, "surface-"),
     renderVars(darkSurfaceAlpha, "surface-alpha-"),
+    renderVars(darkOverlay, "color-"),
     renderVars(darkInk, "ink-"),
     renderVars(darkOutline, "outline-"),
     renderVars(darkOutlineAlpha, "outline-alpha-"),
@@ -126,6 +131,7 @@ function build(): void {
     ...Object.keys(lightSurfaceAlpha).map(
       (k) => `--color-surface-alpha-${k}: var(--surface-alpha-${k});`,
     ),
+    ...Object.keys(lightOverlay).map((k) => `--color-${k}: var(--color-${k});`),
     ...Object.keys(lightInk).map((k) => `--color-ink-${k}: var(--ink-${k});`),
     ...Object.keys(lightOutline).map((k) => `--color-outline-${k}: var(--outline-${k});`),
     ...Object.keys(lightOutlineAlpha).map(
