@@ -80,6 +80,7 @@ export const SECTIONS: readonly Section[] = [
     status: "new",
     sub: "spinner + text",
   },
+  { id: "dialog", label: "Dialog", group: "components", status: "new", sub: "modal" },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */

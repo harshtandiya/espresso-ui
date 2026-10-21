@@ -1,0 +1,241 @@
+<script setup lang="ts">
+import { computed, ref, useId, type Component } from "vue";
+import { Portal } from "@ark-ui/vue/portal";
+import {
+  DialogBackdrop,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogDescription,
+  DialogPositioner,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@ark-ui/vue/dialog";
+import { X } from "@lucide/vue";
+import { cn } from "<%= it.utilsAlias %>/utils";
+import Button from "./Button.vue";
+
+type DialogSize =
+  | "xs"
+  | "sm"
+  | "md"
+  | "lg"
+  | "xl"
+  | "2xl"
+  | "3xl"
+  | "4xl"
+  | "5xl"
+  | "6xl"
+  | "7xl";
+type DialogTheme = "gray" | "blue" | "green" | "amber" | "red";
+type DialogPosition = "center" | "top";
+type DialogAction = {
+  label: string;
+  theme?: "gray" | "blue" | "green" | "red";
+  variant?: "solid" | "subtle" | "outline" | "ghost" | "link";
+  size?: "xs" | "sm" | "md" | "lg";
+  disabled?: boolean;
+  onClick?: () => void | Promise<void>;
+};
+
+const props = withDefaults(
+  defineProps<{
+    open?: boolean;
+    modelValue?: boolean;
+    title?: string;
+    message?: string;
+    icon?: string | Component;
+    theme?: DialogTheme;
+    size?: DialogSize;
+    position?: DialogPosition;
+    dismissible?: boolean;
+    showCloseButton?: boolean;
+    bare?: boolean;
+    actions?: DialogAction[];
+    class?: string;
+  }>(),
+  {
+    theme: "gray",
+    size: "lg",
+    position: "center",
+    dismissible: true,
+    showCloseButton: true,
+    bare: false,
+    actions: () => [],
+  },
+);
+
+const emit = defineEmits<{
+  "update:open": [value: boolean];
+  "update:modelValue": [value: boolean];
+  close: [];
+}>();
+
+const slots = defineSlots<{
+  default?: (props: { close: () => void }) => unknown;
+  title?: (props: { close: () => void }) => unknown;
+  actions?: (props: { close: () => void; actions: DialogAction[] }) => unknown;
+}>();
+
+const internalOpen = ref(false);
+const loadingIndex = ref<number | null>(null);
+const baseId = useId().replace(/:/g, "");
+
+const isOpen = computed(() => {
+  if (props.open !== undefined) return props.open;
+  if (props.modelValue !== undefined) return props.modelValue;
+  return internalOpen.value;
+});
+
+const sizeClasses: Record<DialogSize, string> = {
+  xs: "max-w-xs",
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  "2xl": "max-w-2xl",
+  "3xl": "max-w-3xl",
+  "4xl": "max-w-4xl",
+  "5xl": "max-w-5xl",
+  "6xl": "max-w-6xl",
+  "7xl": "max-w-7xl",
+};
+
+const iconBadgeClasses: Record<DialogTheme, string> = {
+  gray: "bg-surface-gray-2 text-ink-gray-7",
+  blue: "bg-surface-blue-2 text-ink-blue-7",
+  green: "bg-surface-green-2 text-ink-green-7",
+  amber: "bg-surface-amber-2 text-ink-amber-7",
+  red: "bg-surface-red-2 text-ink-red-7",
+};
+
+function setOpen(value: boolean) {
+  if (props.open === undefined && props.modelValue === undefined) internalOpen.value = value;
+  emit("update:open", value);
+  emit("update:modelValue", value);
+  if (!value) emit("close");
+}
+
+function close() {
+  setOpen(false);
+}
+
+async function runAction(action: DialogAction, index: number) {
+  if (!action.onClick) return;
+  const result = action.onClick();
+  if (!result || typeof (result as Promise<void>).then !== "function") return;
+  loadingIndex.value = index;
+  try {
+    await result;
+  } finally {
+    loadingIndex.value = null;
+  }
+}
+</script>
+
+<template>
+  <DialogRoot
+    :open="isOpen"
+    :lazy-mount="true"
+    :unmount-on-exit="true"
+    :close-on-escape="props.dismissible"
+    :close-on-interact-outside="props.dismissible"
+    @open-change="(details: { open: boolean }) => setOpen(details.open)"
+  >
+    <slot name="trigger">
+      <DialogTrigger as-child>
+        <Button label="Open dialog" />
+      </DialogTrigger>
+    </slot>
+
+    <Portal>
+      <DialogBackdrop
+        data-slot="dialog-overlay"
+        class="fixed inset-0 z-50 bg-black-overlay-200 outline-none"
+      />
+      <DialogPositioner
+        data-slot="dialog-positioner"
+        :class="
+          cn(
+            'fixed inset-0 z-50 flex justify-center overflow-y-auto p-4',
+            props.position === 'top' ? 'items-start pt-16' : 'items-center',
+          )
+        "
+      >
+        <DialogContent
+          data-slot="dialog-content"
+          :class="
+            cn(
+              'w-full rounded-7 bg-surface-elevation-1 text-start shadow-xl outline-none',
+              sizeClasses[props.size],
+              props.class,
+            )
+          "
+        >
+          <slot v-if="props.bare" :close="close" />
+          <template v-else>
+            <div class="px-4 pb-6 pt-5 sm:px-6">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-1 items-center gap-2">
+                  <span
+                    v-if="props.icon"
+                    data-slot="dialog-icon"
+                    :class="
+                      cn(
+                        'flex size-7 shrink-0 items-center justify-center rounded-full',
+                        iconBadgeClasses[props.theme],
+                      )
+                    "
+                  >
+                    <span v-if="typeof props.icon === 'string'" :class="[props.icon, 'size-4']" />
+                    <component v-else :is="props.icon" class="size-4" />
+                  </span>
+                  <DialogTitle as-child>
+                    <h3 :id="`${baseId}-title`" class="flex-1 text-lg font-semibold leading-6 text-ink-gray-8">
+                      <slot name="title" :close="close">{{ props.title }}</slot>
+                    </h3>
+                  </DialogTitle>
+                </div>
+                <DialogCloseTrigger v-if="props.showCloseButton" as-child>
+                  <Button variant="ghost" theme="gray" aria-label="Close">
+                    <template #icon>
+                      <X aria-hidden="true" class="size-4 text-ink-gray-9" />
+                    </template>
+                  </Button>
+                </DialogCloseTrigger>
+              </div>
+
+              <DialogDescription v-if="props.message" as-child>
+                <p :id="`${baseId}-description`" class="mt-2 text-sm text-ink-gray-7">
+                  {{ props.message }}
+                </p>
+              </DialogDescription>
+
+              <slot :close="close" />
+            </div>
+
+            <div
+              v-if="props.actions.length || slots.actions"
+              data-slot="dialog-actions"
+              class="flex justify-end gap-2 px-4 pb-7 pt-4 sm:px-6"
+            >
+              <slot name="actions" :close="close" :actions="props.actions">
+                <Button
+                  v-for="(action, index) in props.actions"
+                  :key="action.label"
+                  :theme="action.theme ?? 'gray'"
+                  :variant="action.variant ?? 'subtle'"
+                  :size="action.size ?? 'sm'"
+                  :label="action.label"
+                  :disabled="action.disabled"
+                  :loading="loadingIndex === index"
+                  @click="runAction(action, index)"
+                />
+              </slot>
+            </div>
+          </template>
+        </DialogContent>
+      </DialogPositioner>
+    </Portal>
+  </DialogRoot>
+</template>

@@ -1,0 +1,49 @@
+/* The dialog enters on a short scale-and-lift, and the scrim fades. */
+@keyframes espresso-dialog-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes espresso-dialog-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The scrim is heavier in the dark theme, so the card still reads as the
+   surface in front. */
+[data-theme="dark"] [data-slot="dialog-overlay"] {
+  background-color: var(--color-black-overlay-700);
+}
+
+[data-slot="dialog-overlay"][data-state="open"] {
+  animation: espresso-dialog-overlay-in 150ms ease-out;
+}
+
+[data-slot="dialog-overlay"][data-state="closed"] {
+  animation: espresso-dialog-overlay-in 150ms ease-out reverse;
+}
+
+[data-slot="dialog-content"][data-state="open"] {
+  animation: espresso-dialog-content-in 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+[data-slot="dialog-content"][data-state="closed"] {
+  animation: espresso-dialog-content-in 180ms cubic-bezier(0.23, 1, 0.32, 1) reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"] {
+    animation: none;
+  }
+}

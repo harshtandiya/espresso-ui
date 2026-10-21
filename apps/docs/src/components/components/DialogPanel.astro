@@ -1,0 +1,129 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  DialogBasicDemo,
+  DialogBareDemo,
+  DialogIconDemo,
+  DialogSizesDemo,
+} from "@/components/examples/DialogDemo.tsx";
+
+const usage = `import { useState } from "react";
+import { Dialog } from "@/components/ui/Dialog";
+
+export default function App() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+      title="Share document"
+      message="Anyone with the link can view this document."
+      actions={[
+        { label: "Cancel", variant: "subtle" },
+        { label: "Copy link", variant: "solid", theme: "blue" },
+      ]}
+    >
+      <Button label="Share document" onClick={() => setOpen(true)} />
+    </Dialog>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import { ref } from "vue";
+import Dialog from "@/components/ui/Dialog.vue";
+
+const open = ref(false);
+\u003C/script>
+
+<template>
+  <Dialog
+    v-model:open="open"
+    title="Share document"
+    message="Anyone with the link can view this document."
+    :actions="[
+      { label: 'Cancel', variant: 'subtle' },
+      { label: 'Copy link', variant: 'solid', theme: 'blue' },
+    ]"
+  >
+    <Button label="Share document" @click="open = true" />
+  </Dialog>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="dialog"
+  num={sectionNumber("dialog")}
+  label="Dialog"
+  desc="A window over the page for a message, a form or a decision. Focus moves into the dialog and returns to where it came from, Escape and an outside click close it, and the body behind it stops scrolling. An action that returns a promise keeps its button in a loading state until it settles."
+  status="new"
+  code={usage}
+  codeFile="dialog.tsx"
+  codeVue={usageVue}
+  codeVueFile="dialog.vue"
+>
+  <CanvasToolbar title="Preview" meta="header · message · actions" />
+  <Canvas class="dialog-stack">
+    <DialogBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Icon and theme" sub="red badge">
+      <Canvas grid={false} class="dialog-stack">
+        <DialogIconDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Bare" sub="your own layout">
+      <Canvas grid={false} class="dialog-stack">
+        <DialogBareDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Sizes" sub="sm · md · xl">
+      <Canvas grid={false} class="dialog-stack">
+        <DialogSizesDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.dialog-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.dialog-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    width: min(100%, 320px);
+  }
+  :global(.dialog-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.dialog-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.dialog-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>
