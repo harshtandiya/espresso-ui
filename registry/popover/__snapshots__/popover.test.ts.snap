@@ -1,0 +1,342 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`popover templates > renders React template 1`] = `
+"import { useState } from "react";
+import type { ReactNode } from "react";
+import { Popover as ArkPopover } from "@ark-ui/react/popover";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "@/lib/utils";
+
+export type PopoverSide = "top" | "right" | "bottom" | "left";
+export type PopoverAlign = "start" | "center" | "end";
+
+export type PopoverProps = {
+  /** Whether the panel is open. Omit for uncontrolled use. */
+  open?: boolean;
+  /** Initially open, for uncontrolled use. */
+  defaultOpen?: boolean;
+  /** Called when the panel opens or closes. */
+  onOpenChange?: (open: boolean) => void;
+  /** Edge of the trigger the panel opens on. */
+  side?: PopoverSide;
+  /** Position along that edge. */
+  align?: PopoverAlign;
+  /** Gap between the trigger and the panel, in pixels. */
+  offset?: number;
+  /** Space kept from the viewport edge. */
+  collisionPadding?: number;
+  /** Close on an outside click and on Escape. */
+  dismissible?: boolean;
+  /** Move focus into the panel when it opens. */
+  autoFocus?: boolean;
+  /** Make the panel at least as wide as the trigger. */
+  matchTriggerWidth?: boolean;
+  /** Drop the panel surface, so the content draws its own. */
+  bare?: boolean;
+  /** Draw an arrow pointing back at the trigger. */
+  arrow?: boolean;
+  /** Element that opens the panel. */
+  trigger?: ReactNode;
+  /** Panel content. */
+  children?: ReactNode;
+  /** Class applied to the panel. */
+  className?: string;
+};
+
+export function Popover({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  side = "bottom",
+  align = "center",
+  offset = 8,
+  collisionPadding = 8,
+  dismissible = true,
+  autoFocus = true,
+  matchTriggerWidth = false,
+  bare = false,
+  arrow = false,
+  trigger,
+  children,
+  className,
+}: PopoverProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const placement = (align === "center" ? side : \`\${side}-\${align}\`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  function setOpen(next: boolean) {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  }
+
+  return (
+    <ArkPopover.Root
+      open={isOpen}
+      onOpenChange={(details) => setOpen(details.open)}
+      autoFocus={autoFocus}
+      closeOnInteractOutside={dismissible}
+      closeOnEscape={dismissible}
+      positioning={{ placement, gutter: offset, overflowPadding: collisionPadding }}
+      lazyMount
+      unmountOnExit
+    >
+      {trigger ? <ArkPopover.Trigger asChild>{trigger}</ArkPopover.Trigger> : null}
+      <Portal>
+        <ArkPopover.Positioner
+          data-slot="popover-positioner"
+          className="z-50"
+          style={{ minWidth: matchTriggerWidth ? "var(--reference-width)" : undefined }}
+        >
+          <ArkPopover.Content
+            data-slot="popover-content"
+            className={cn(
+              "rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none",
+              bare && "border-0 bg-transparent p-0 shadow-none",
+              className,
+            )}
+          >
+            {children}
+            {arrow ? (
+              <ArkPopover.Arrow data-slot="popover-arrow" className="text-surface-base">
+                <ArkPopover.ArrowTip
+                  data-slot="popover-arrow-tip"
+                  className="size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base"
+                />
+              </ArkPopover.Arrow>
+            ) : null}
+          </ArkPopover.Content>
+        </ArkPopover.Positioner>
+      </Portal>
+    </ArkPopover.Root>
+  );
+}
+"
+`;
+
+exports[`popover templates > renders React template without TypeScript 1`] = `
+"import { useState } from "react";
+import { Popover as ArkPopover } from "@ark-ui/react/popover";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "@/lib/utils";
+
+
+export function Popover({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  side = "bottom",
+  align = "center",
+  offset = 8,
+  collisionPadding = 8,
+  dismissible = true,
+  autoFocus = true,
+  matchTriggerWidth = false,
+  bare = false,
+  arrow = false,
+  trigger,
+  children,
+  className,
+}) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const placement = (align === "center" ? side : \`\${side}-\${align}\`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  function setOpen(next) {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  }
+
+  return (
+    <ArkPopover.Root
+      open={isOpen}
+      onOpenChange={(details) => setOpen(details.open)}
+      autoFocus={autoFocus}
+      closeOnInteractOutside={dismissible}
+      closeOnEscape={dismissible}
+      positioning={{ placement, gutter: offset, overflowPadding: collisionPadding }}
+      lazyMount
+      unmountOnExit
+    >
+      {trigger ? <ArkPopover.Trigger asChild>{trigger}</ArkPopover.Trigger> : null}
+      <Portal>
+        <ArkPopover.Positioner
+          data-slot="popover-positioner"
+          className="z-50"
+          style={{ minWidth: matchTriggerWidth ? "var(--reference-width)" : undefined }}
+        >
+          <ArkPopover.Content
+            data-slot="popover-content"
+            className={cn(
+              "rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none",
+              bare && "border-0 bg-transparent p-0 shadow-none",
+              className,
+            )}
+          >
+            {children}
+            {arrow ? (
+              <ArkPopover.Arrow data-slot="popover-arrow" className="text-surface-base">
+                <ArkPopover.ArrowTip
+                  data-slot="popover-arrow-tip"
+                  className="size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base"
+                />
+              </ArkPopover.Arrow>
+            ) : null}
+          </ArkPopover.Content>
+        </ArkPopover.Positioner>
+      </Portal>
+    </ArkPopover.Root>
+  );
+}
+"
+`;
+
+exports[`popover templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, ref } from "vue";
+import {
+  PopoverArrow,
+  PopoverArrowTip,
+  PopoverContent,
+  PopoverPositioner,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@ark-ui/vue/popover";
+import { Portal } from "@ark-ui/vue/portal";
+import { cn } from "@/lib/utils";
+
+type PopoverSide = "top" | "right" | "bottom" | "left";
+type PopoverAlign = "start" | "center" | "end";
+
+const props = withDefaults(
+  defineProps<{
+    modelValue?: boolean;
+    defaultOpen?: boolean;
+    side?: PopoverSide;
+    align?: PopoverAlign;
+    offset?: number;
+    collisionPadding?: number;
+    dismissible?: boolean;
+    autoFocus?: boolean;
+    matchTriggerWidth?: boolean;
+    bare?: boolean;
+    arrow?: boolean;
+    class?: string;
+  }>(),
+  {
+    side: "bottom",
+    align: "center",
+    offset: 8,
+    collisionPadding: 8,
+    dismissible: true,
+    autoFocus: true,
+    matchTriggerWidth: false,
+    bare: false,
+    arrow: false,
+  },
+);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  open: [];
+  close: [];
+}>();
+
+const slots = defineSlots<{
+  trigger?: (props: { open: boolean; close: () => void }) => unknown;
+  default?: (props: { open: boolean; close: () => void }) => unknown;
+}>();
+
+const internalOpen = ref(props.defaultOpen ?? false);
+const isOpen = computed(() => props.modelValue ?? internalOpen.value);
+
+const positioning = computed(() => ({
+  placement: props.align === "center" ? props.side : \`\${props.side}-\${props.align}\`,
+  gutter: props.offset,
+  overflowPadding: props.collisionPadding,
+}));
+
+function setOpen(value: boolean) {
+  if (props.modelValue === undefined) internalOpen.value = value;
+  emit("update:modelValue", value);
+  if (value) emit("open");
+  else emit("close");
+}
+</script>
+
+<template>
+  <PopoverRoot
+    :open="isOpen"
+    :auto-focus="props.autoFocus"
+    :close-on-interact-outside="props.dismissible"
+    :close-on-escape="props.dismissible"
+    :positioning="positioning"
+    :lazy-mount="true"
+    :unmount-on-exit="true"
+    @open-change="(details: { open: boolean }) => setOpen(details.open)"
+  >
+    <slot name="trigger" :open="isOpen" :close="() => setOpen(false)">
+      <PopoverTrigger as-child>
+        <button type="button" class="inline-flex items-center gap-1 text-sm text-ink-gray-8">
+          Open
+        </button>
+      </PopoverTrigger>
+    </slot>
+
+    <Portal>
+      <PopoverPositioner
+        data-slot="popover-positioner"
+        class="z-50"
+        :style="props.matchTriggerWidth ? { minWidth: 'var(--reference-width)' } : undefined"
+      >
+        <PopoverContent
+          data-slot="popover-content"
+          :class="
+            cn(
+              'rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none',
+              props.bare && 'border-0 bg-transparent p-0 shadow-none',
+              props.class,
+            )
+          "
+        >
+          <slot :open="isOpen" :close="() => setOpen(false)" />
+          <PopoverArrow v-if="props.arrow" data-slot="popover-arrow" class="text-surface-base">
+            <PopoverArrowTip
+              data-slot="popover-arrow-tip"
+              class="size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base"
+            />
+          </PopoverArrow>
+        </PopoverContent>
+      </PopoverPositioner>
+    </Portal>
+  </PopoverRoot>
+</template>
+"
+`;

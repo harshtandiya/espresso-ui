@@ -1,0 +1,109 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  PopoverArrowDemo,
+  PopoverBasicDemo,
+  PopoverSidesDemo,
+  PopoverWidthDemo,
+} from "@/components/examples/PopoverDemo.tsx";
+
+const usage = `import { Popover } from "@/components/ui/Popover";
+
+export default function App() {
+  return (
+    <Popover trigger={<Button label="Open panel" />}>
+      <p>Anything can go in the panel.</p>
+    </Popover>
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import Popover from "@/components/ui/Popover.vue";
+\u003C/script>
+
+<template>
+  <Popover>
+    <template #trigger>
+      <Button label="Open panel" />
+    </template>
+    <p>Anything can go in the panel.</p>
+  </Popover>
+</template>
+`;
+---
+
+<ComponentPanel
+  id="popover"
+  num={sectionNumber("popover")}
+  label="Popover"
+  desc="A floating panel that opens from a trigger on click. The panel flips and shifts to stay inside the screen, closes on an outside click and on Escape, and moves focus into itself when it opens. Set `dismissible` to false for a panel with its own Save and Cancel buttons."
+  status="new"
+  code={usage}
+  codeFile="popover.tsx"
+  codeVue={usageVue}
+  codeVueFile="popover.vue"
+>
+  <CanvasToolbar title="Preview" meta="click trigger · panel" />
+  <Canvas class="popover-stack">
+    <PopoverBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Sides" sub="bottom · right · top">
+      <Canvas grid={false} class="popover-stack">
+        <PopoverSidesDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Arrow" sub="points at the trigger">
+      <Canvas grid={false} class="popover-stack">
+        <PopoverArrowDemo client:load />
+      </Canvas>
+    </VariantRow>
+
+    <VariantRow label="Match width" sub="as wide as the trigger">
+      <Canvas grid={false} class="popover-stack">
+        <PopoverWidthDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.popover-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.popover-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    width: min(100%, 320px);
+  }
+  :global(.popover-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.popover-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.popover-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

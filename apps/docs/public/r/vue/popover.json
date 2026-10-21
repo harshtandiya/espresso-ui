@@ -1,0 +1,24 @@
+{
+  "name": "popover",
+  "type": "registry:ui",
+  "title": "Popover",
+  "description": "espresso-ui Popover component (Vue)",
+  "dependencies": [
+    "@ark-ui/vue",
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/Popover.vue",
+      "content": "<script setup lang=\"ts\">\nimport { computed, ref } from \"vue\";\nimport {\n  PopoverArrow,\n  PopoverArrowTip,\n  PopoverContent,\n  PopoverPositioner,\n  PopoverRoot,\n  PopoverTrigger,\n} from \"@ark-ui/vue/popover\";\nimport { Portal } from \"@ark-ui/vue/portal\";\nimport { cn } from \"@/lib/utils\";\n\ntype PopoverSide = \"top\" | \"right\" | \"bottom\" | \"left\";\ntype PopoverAlign = \"start\" | \"center\" | \"end\";\n\nconst props = withDefaults(\n  defineProps<{\n    modelValue?: boolean;\n    defaultOpen?: boolean;\n    side?: PopoverSide;\n    align?: PopoverAlign;\n    offset?: number;\n    collisionPadding?: number;\n    dismissible?: boolean;\n    autoFocus?: boolean;\n    matchTriggerWidth?: boolean;\n    bare?: boolean;\n    arrow?: boolean;\n    class?: string;\n  }>(),\n  {\n    side: \"bottom\",\n    align: \"center\",\n    offset: 8,\n    collisionPadding: 8,\n    dismissible: true,\n    autoFocus: true,\n    matchTriggerWidth: false,\n    bare: false,\n    arrow: false,\n  },\n);\n\nconst emit = defineEmits<{\n  \"update:modelValue\": [value: boolean];\n  open: [];\n  close: [];\n}>();\n\nconst slots = defineSlots<{\n  trigger?: (props: { open: boolean; close: () => void }) => unknown;\n  default?: (props: { open: boolean; close: () => void }) => unknown;\n}>();\n\nconst internalOpen = ref(props.defaultOpen ?? false);\nconst isOpen = computed(() => props.modelValue ?? internalOpen.value);\n\nconst positioning = computed(() => ({\n  placement: props.align === \"center\" ? props.side : `${props.side}-${props.align}`,\n  gutter: props.offset,\n  overflowPadding: props.collisionPadding,\n}));\n\nfunction setOpen(value: boolean) {\n  if (props.modelValue === undefined) internalOpen.value = value;\n  emit(\"update:modelValue\", value);\n  if (value) emit(\"open\");\n  else emit(\"close\");\n}\n</script>\n\n<template>\n  <PopoverRoot\n    :open=\"isOpen\"\n    :auto-focus=\"props.autoFocus\"\n    :close-on-interact-outside=\"props.dismissible\"\n    :close-on-escape=\"props.dismissible\"\n    :positioning=\"positioning\"\n    :lazy-mount=\"true\"\n    :unmount-on-exit=\"true\"\n    @open-change=\"(details: { open: boolean }) => setOpen(details.open)\"\n  >\n    <slot name=\"trigger\" :open=\"isOpen\" :close=\"() => setOpen(false)\">\n      <PopoverTrigger as-child>\n        <button type=\"button\" class=\"inline-flex items-center gap-1 text-sm text-ink-gray-8\">\n          Open\n        </button>\n      </PopoverTrigger>\n    </slot>\n\n    <Portal>\n      <PopoverPositioner\n        data-slot=\"popover-positioner\"\n        class=\"z-50\"\n        :style=\"props.matchTriggerWidth ? { minWidth: 'var(--reference-width)' } : undefined\"\n      >\n        <PopoverContent\n          data-slot=\"popover-content\"\n          :class=\"\n            cn(\n              'rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none',\n              props.bare && 'border-0 bg-transparent p-0 shadow-none',\n              props.class,\n            )\n          \"\n        >\n          <slot :open=\"isOpen\" :close=\"() => setOpen(false)\" />\n          <PopoverArrow v-if=\"props.arrow\" data-slot=\"popover-arrow\" class=\"text-surface-base\">\n            <PopoverArrowTip\n              data-slot=\"popover-arrow-tip\"\n              class=\"size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base\"\n            />\n          </PopoverArrow>\n        </PopoverContent>\n      </PopoverPositioner>\n    </Portal>\n  </PopoverRoot>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/ui/popover.css",
+      "content": "/* The panel fades and lifts a little as it opens. */\n@keyframes espresso-popover-in {\n  from {\n    opacity: 0;\n    transform: translateY(-4px) scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n\n[data-slot=\"popover-content\"][data-state=\"open\"] {\n  animation: espresso-popover-in 140ms cubic-bezier(0.23, 1, 0.32, 1);\n  transform-origin: var(--transform-origin);\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"popover-content\"][data-state=\"open\"] {\n    animation: none;\n  }\n}\n",
+      "type": "registry:style"
+    }
+  ]
+}

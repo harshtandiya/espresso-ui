@@ -373,6 +373,30 @@
       ]
     },
     {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "espresso-ui Popover component (React)",
+      "dependencies": [
+        "@ark-ui/react",
+        "clsx",
+        "tailwind-merge"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "components/ui/Popover.tsx",
+          "content": "import { useState } from \"react\";\nimport type { ReactNode } from \"react\";\nimport { Popover as ArkPopover } from \"@ark-ui/react/popover\";\nimport { Portal } from \"@ark-ui/react/portal\";\nimport { cn } from \"@/lib/utils\";\n\nexport type PopoverSide = \"top\" | \"right\" | \"bottom\" | \"left\";\nexport type PopoverAlign = \"start\" | \"center\" | \"end\";\n\nexport type PopoverProps = {\n  /** Whether the panel is open. Omit for uncontrolled use. */\n  open?: boolean;\n  /** Initially open, for uncontrolled use. */\n  defaultOpen?: boolean;\n  /** Called when the panel opens or closes. */\n  onOpenChange?: (open: boolean) => void;\n  /** Edge of the trigger the panel opens on. */\n  side?: PopoverSide;\n  /** Position along that edge. */\n  align?: PopoverAlign;\n  /** Gap between the trigger and the panel, in pixels. */\n  offset?: number;\n  /** Space kept from the viewport edge. */\n  collisionPadding?: number;\n  /** Close on an outside click and on Escape. */\n  dismissible?: boolean;\n  /** Move focus into the panel when it opens. */\n  autoFocus?: boolean;\n  /** Make the panel at least as wide as the trigger. */\n  matchTriggerWidth?: boolean;\n  /** Drop the panel surface, so the content draws its own. */\n  bare?: boolean;\n  /** Draw an arrow pointing back at the trigger. */\n  arrow?: boolean;\n  /** Element that opens the panel. */\n  trigger?: ReactNode;\n  /** Panel content. */\n  children?: ReactNode;\n  /** Class applied to the panel. */\n  className?: string;\n};\n\nexport function Popover({\n  open,\n  defaultOpen = false,\n  onOpenChange,\n  side = \"bottom\",\n  align = \"center\",\n  offset = 8,\n  collisionPadding = 8,\n  dismissible = true,\n  autoFocus = true,\n  matchTriggerWidth = false,\n  bare = false,\n  arrow = false,\n  trigger,\n  children,\n  className,\n}: PopoverProps) {\n  const [internalOpen, setInternalOpen] = useState(defaultOpen);\n  const isControlled = open !== undefined;\n  const isOpen = isControlled ? open : internalOpen;\n\n  const placement = (align === \"center\" ? side : `${side}-${align}`) as\n    | \"top\"\n    | \"right\"\n    | \"bottom\"\n    | \"left\"\n    | \"top-start\"\n    | \"top-end\"\n    | \"right-start\"\n    | \"right-end\"\n    | \"bottom-start\"\n    | \"bottom-end\"\n    | \"left-start\"\n    | \"left-end\";\n\n  function setOpen(next: boolean) {\n    if (!isControlled) setInternalOpen(next);\n    onOpenChange?.(next);\n  }\n\n  return (\n    <ArkPopover.Root\n      open={isOpen}\n      onOpenChange={(details) => setOpen(details.open)}\n      autoFocus={autoFocus}\n      closeOnInteractOutside={dismissible}\n      closeOnEscape={dismissible}\n      positioning={{ placement, gutter: offset, overflowPadding: collisionPadding }}\n      lazyMount\n      unmountOnExit\n    >\n      {trigger ? <ArkPopover.Trigger asChild>{trigger}</ArkPopover.Trigger> : null}\n      <Portal>\n        <ArkPopover.Positioner\n          data-slot=\"popover-positioner\"\n          className=\"z-50\"\n          style={{ minWidth: matchTriggerWidth ? \"var(--reference-width)\" : undefined }}\n        >\n          <ArkPopover.Content\n            data-slot=\"popover-content\"\n            className={cn(\n              \"rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none\",\n              bare && \"border-0 bg-transparent p-0 shadow-none\",\n              className,\n            )}\n          >\n            {children}\n            {arrow ? (\n              <ArkPopover.Arrow data-slot=\"popover-arrow\" className=\"text-surface-base\">\n                <ArkPopover.ArrowTip\n                  data-slot=\"popover-arrow-tip\"\n                  className=\"size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base\"\n                />\n              </ArkPopover.Arrow>\n            ) : null}\n          </ArkPopover.Content>\n        </ArkPopover.Positioner>\n      </Portal>\n    </ArkPopover.Root>\n  );\n}\n",
+          "type": "registry:ui"
+        },
+        {
+          "path": "components/ui/popover.css",
+          "content": "/* The panel fades and lifts a little as it opens. */\n@keyframes espresso-popover-in {\n  from {\n    opacity: 0;\n    transform: translateY(-4px) scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n\n[data-slot=\"popover-content\"][data-state=\"open\"] {\n  animation: espresso-popover-in 140ms cubic-bezier(0.23, 1, 0.32, 1);\n  transform-origin: var(--transform-origin);\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"popover-content\"][data-state=\"open\"] {\n    animation: none;\n  }\n}\n",
+          "type": "registry:style"
+        }
+      ]
+    },
+    {
       "name": "progress",
       "type": "registry:ui",
       "title": "Progress",

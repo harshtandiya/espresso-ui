@@ -1,0 +1,125 @@
+import { useState } from "react";
+<% if (it.typescript) { %>import type { ReactNode } from "react";
+<% } %>import { Popover as ArkPopover } from "@ark-ui/react/popover";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type PopoverSide = "top" | "right" | "bottom" | "left";
+export type PopoverAlign = "start" | "center" | "end";
+
+export type PopoverProps = {
+  /** Whether the panel is open. Omit for uncontrolled use. */
+  open?: boolean;
+  /** Initially open, for uncontrolled use. */
+  defaultOpen?: boolean;
+  /** Called when the panel opens or closes. */
+  onOpenChange?: (open: boolean) => void;
+  /** Edge of the trigger the panel opens on. */
+  side?: PopoverSide;
+  /** Position along that edge. */
+  align?: PopoverAlign;
+  /** Gap between the trigger and the panel, in pixels. */
+  offset?: number;
+  /** Space kept from the viewport edge. */
+  collisionPadding?: number;
+  /** Close on an outside click and on Escape. */
+  dismissible?: boolean;
+  /** Move focus into the panel when it opens. */
+  autoFocus?: boolean;
+  /** Make the panel at least as wide as the trigger. */
+  matchTriggerWidth?: boolean;
+  /** Drop the panel surface, so the content draws its own. */
+  bare?: boolean;
+  /** Draw an arrow pointing back at the trigger. */
+  arrow?: boolean;
+  /** Element that opens the panel. */
+  trigger?: ReactNode;
+  /** Panel content. */
+  children?: ReactNode;
+  /** Class applied to the panel. */
+  className?: string;
+};
+<% } %>
+
+export function <%= it.componentName %>({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  side = "bottom",
+  align = "center",
+  offset = 8,
+  collisionPadding = 8,
+  dismissible = true,
+  autoFocus = true,
+  matchTriggerWidth = false,
+  bare = false,
+  arrow = false,
+  trigger,
+  children,
+  className,
+}<% if (it.typescript) { %>: PopoverProps<% } %>) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const placement = (align === "center" ? side : `${side}-${align}`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  function setOpen(next<% if (it.typescript) { %>: boolean<% } %>) {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  }
+
+  return (
+    <ArkPopover.Root
+      open={isOpen}
+      onOpenChange={(details) => setOpen(details.open)}
+      autoFocus={autoFocus}
+      closeOnInteractOutside={dismissible}
+      closeOnEscape={dismissible}
+      positioning={{ placement, gutter: offset, overflowPadding: collisionPadding }}
+      lazyMount
+      unmountOnExit
+    >
+      {trigger ? <ArkPopover.Trigger asChild>{trigger}</ArkPopover.Trigger> : null}
+      <Portal>
+        <ArkPopover.Positioner
+          data-slot="popover-positioner"
+          className="z-50"
+          style={{ minWidth: matchTriggerWidth ? "var(--reference-width)" : undefined }}
+        >
+          <ArkPopover.Content
+            data-slot="popover-content"
+            className={cn(
+              "rounded-4 border border-outline-gray-2 bg-surface-base p-3 shadow-lg outline-none",
+              bare && "border-0 bg-transparent p-0 shadow-none",
+              className,
+            )}
+          >
+            {children}
+            {arrow ? (
+              <ArkPopover.Arrow data-slot="popover-arrow" className="text-surface-base">
+                <ArkPopover.ArrowTip
+                  data-slot="popover-arrow-tip"
+                  className="size-2 rotate-45 rounded-[2px] border border-outline-gray-2 bg-surface-base"
+                />
+              </ArkPopover.Arrow>
+            ) : null}
+          </ArkPopover.Content>
+        </ArkPopover.Positioner>
+      </Portal>
+    </ArkPopover.Root>
+  );
+}
