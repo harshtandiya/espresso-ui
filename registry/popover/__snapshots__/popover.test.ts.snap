@@ -98,7 +98,7 @@ export function Popover({
       <Portal>
         <ArkPopover.Positioner
           data-slot="popover-positioner"
-          className="z-50"
+          className="[--z-index:50]!"
           style={{ minWidth: matchTriggerWidth ? "var(--reference-width)" : undefined }}
         >
           <ArkPopover.Content
@@ -189,7 +189,7 @@ export function Popover({
       <Portal>
         <ArkPopover.Positioner
           data-slot="popover-positioner"
-          className="z-50"
+          className="[--z-index:50]!"
           style={{ minWidth: matchTriggerWidth ? "var(--reference-width)" : undefined }}
         >
           <ArkPopover.Content
@@ -313,7 +313,7 @@ function setOpen(value: boolean) {
     <Portal>
       <PopoverPositioner
         data-slot="popover-positioner"
-        class="z-50"
+        class="[--z-index:50]!"
         :style="props.matchTriggerWidth ? { minWidth: 'var(--reference-width)' } : undefined"
       >
         <PopoverContent

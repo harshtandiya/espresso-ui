@@ -1,0 +1,180 @@
+import type { ReactNode } from "react";
+import { Menu as ArkMenu } from "@ark-ui/react/menu";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "<%= it.utilsAlias %>/utils";
+
+<% if (it.typescript) { %>
+export type DropdownMenuItem = {
+  /** Row label. */
+  label: string;
+  /** Icon shown before the label. */
+  icon?: ReactNode;
+  /** Shortcut shown at the end of the row. */
+  shortcut?: string;
+  /** Disables the row. */
+  disabled?: boolean;
+  /** Colors the row as a destructive action. */
+  danger?: boolean;
+  /** Runs when the row is chosen. */
+  onSelect?: () => void;
+};
+
+export type DropdownMenuSeparator = {
+  /** Marks a divider between rows. */
+  type: "separator";
+};
+
+export type DropdownMenuGroup = {
+  /** Marks a titled group of rows. */
+  type: "group";
+  /** Group heading. */
+  label?: string;
+  /** Rows in the group. */
+  items: DropdownMenuItem[];
+};
+
+export type DropdownMenuEntry = DropdownMenuItem | DropdownMenuSeparator | DropdownMenuGroup;
+
+export type DropdownMenuProps = {
+  /** Rows to render. */
+  items?: DropdownMenuEntry[];
+  /** Element that opens the menu. */
+  trigger?: ReactNode;
+  /** Edge of the trigger the menu opens on. */
+  side?: "top" | "right" | "bottom" | "left";
+  /** Position along that edge. */
+  align?: "start" | "center" | "end";
+  /** Gap between the trigger and the menu, in pixels. */
+  offset?: number;
+  /** Class applied to the menu panel. */
+  className?: string;
+  /** Called with the label of the row that was chosen. */
+  onSelect?: (label: string) => void;
+  /** Custom rows, used instead of `items`. */
+  children?: ReactNode;
+};
+<% } %>
+
+const itemClasses =
+  "flex cursor-pointer select-none items-center gap-2 rounded-(--radius-3) px-2 py-1.5 text-sm text-ink-gray-7 outline-none transition-colors data-[highlighted]:bg-surface-gray-3 data-[highlighted]:text-ink-gray-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+
+export function <%= it.componentName %>({
+  items = [],
+  trigger,
+  side = "bottom",
+  align = "start",
+  offset = 6,
+  className,
+  onSelect,
+  children,
+}<% if (it.typescript) { %>: DropdownMenuProps<% } %>) {
+  const placement = (align === "center" ? side : `${side}-${align}`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  return (
+    <ArkMenu.Root positioning={{ placement, gutter: offset }} lazyMount unmountOnExit>
+      {trigger ? <ArkMenu.Trigger asChild>{trigger}</ArkMenu.Trigger> : null}
+      <Portal>
+        <ArkMenu.Positioner data-slot="dropdown-positioner" className="[--z-index:50]!">
+          <ArkMenu.Content
+            data-slot="dropdown-content"
+            className={cn(
+              "min-w-[190px] rounded-4 border border-outline-gray-2 bg-surface-base p-1 shadow-lg outline-none",
+              className,
+            )}
+          >
+            {children ??
+              items.map((entry, index) => {
+                if ("type" in entry && entry.type === "separator") {
+                  return (
+                    <ArkMenu.Separator
+                      key={`separator-${index}`}
+                      data-slot="dropdown-separator"
+                      className="my-1 h-px bg-outline-gray-2"
+                    />
+                  );
+                }
+
+                if ("type" in entry && entry.type === "group") {
+                  return (
+                    <ArkMenu.ItemGroup key={`group-${index}`} data-slot="dropdown-group">
+                      {entry.label ? (
+                        <ArkMenu.ItemGroupLabel className="px-2 py-1 text-xs text-ink-gray-5">
+                          {entry.label}
+                        </ArkMenu.ItemGroupLabel>
+                      ) : null}
+                      {entry.items.map((item) => (
+                        <ArkMenu.Item
+                          key={item.label}
+                          value={item.label}
+                          disabled={item.disabled}
+                          className={cn(
+                            itemClasses,
+                            item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                          )}
+                          onSelect={() => {
+                            item.onSelect?.();
+                            onSelect?.(item.label);
+                          }}
+                        >
+                          {item.icon ? (
+                            <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                              {item.icon}
+                            </span>
+                          ) : null}
+                          <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                          {item.shortcut ? (
+                            <span className="ms-auto text-xs text-ink-gray-5">
+                              {item.shortcut}
+                            </span>
+                          ) : null}
+                        </ArkMenu.Item>
+                      ))}
+                    </ArkMenu.ItemGroup>
+                  );
+                }
+
+                const item = entry as { label: string; icon?: ReactNode; shortcut?: string; disabled?: boolean; danger?: boolean; onSelect?: () => void };
+                return (
+                  <ArkMenu.Item
+                    key={item.label}
+                    value={item.label}
+                    disabled={item.disabled}
+                    className={cn(
+                      itemClasses,
+                      item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                    )}
+                    onSelect={() => {
+                      item.onSelect?.();
+                      onSelect?.(item.label);
+                    }}
+                  >
+                    {item.icon ? (
+                      <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                        {item.icon}
+                      </span>
+                    ) : null}
+                    <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                    {item.shortcut ? (
+                      <span className="ms-auto text-xs text-ink-gray-5">{item.shortcut}</span>
+                    ) : null}
+                  </ArkMenu.Item>
+                );
+              })}
+          </ArkMenu.Content>
+        </ArkMenu.Positioner>
+      </Portal>
+    </ArkMenu.Root>
+  );
+}

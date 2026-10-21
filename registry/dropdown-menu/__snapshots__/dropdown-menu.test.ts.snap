@@ -1,0 +1,520 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`dropdown menu templates > renders React template 1`] = `
+"import type { ReactNode } from "react";
+import { Menu as ArkMenu } from "@ark-ui/react/menu";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "@/lib/utils";
+
+export type DropdownMenuItem = {
+  /** Row label. */
+  label: string;
+  /** Icon shown before the label. */
+  icon?: ReactNode;
+  /** Shortcut shown at the end of the row. */
+  shortcut?: string;
+  /** Disables the row. */
+  disabled?: boolean;
+  /** Colors the row as a destructive action. */
+  danger?: boolean;
+  /** Runs when the row is chosen. */
+  onSelect?: () => void;
+};
+
+export type DropdownMenuSeparator = {
+  /** Marks a divider between rows. */
+  type: "separator";
+};
+
+export type DropdownMenuGroup = {
+  /** Marks a titled group of rows. */
+  type: "group";
+  /** Group heading. */
+  label?: string;
+  /** Rows in the group. */
+  items: DropdownMenuItem[];
+};
+
+export type DropdownMenuEntry = DropdownMenuItem | DropdownMenuSeparator | DropdownMenuGroup;
+
+export type DropdownMenuProps = {
+  /** Rows to render. */
+  items?: DropdownMenuEntry[];
+  /** Element that opens the menu. */
+  trigger?: ReactNode;
+  /** Edge of the trigger the menu opens on. */
+  side?: "top" | "right" | "bottom" | "left";
+  /** Position along that edge. */
+  align?: "start" | "center" | "end";
+  /** Gap between the trigger and the menu, in pixels. */
+  offset?: number;
+  /** Class applied to the menu panel. */
+  className?: string;
+  /** Called with the label of the row that was chosen. */
+  onSelect?: (label: string) => void;
+  /** Custom rows, used instead of \`items\`. */
+  children?: ReactNode;
+};
+
+const itemClasses =
+  "flex cursor-pointer select-none items-center gap-2 rounded-(--radius-3) px-2 py-1.5 text-sm text-ink-gray-7 outline-none transition-colors data-[highlighted]:bg-surface-gray-3 data-[highlighted]:text-ink-gray-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+
+export function DropdownMenu({
+  items = [],
+  trigger,
+  side = "bottom",
+  align = "start",
+  offset = 6,
+  className,
+  onSelect,
+  children,
+}: DropdownMenuProps) {
+  const placement = (align === "center" ? side : \`\${side}-\${align}\`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  return (
+    <ArkMenu.Root positioning={{ placement, gutter: offset }} lazyMount unmountOnExit>
+      {trigger ? <ArkMenu.Trigger asChild>{trigger}</ArkMenu.Trigger> : null}
+      <Portal>
+        <ArkMenu.Positioner data-slot="dropdown-positioner" className="[--z-index:50]!">
+          <ArkMenu.Content
+            data-slot="dropdown-content"
+            className={cn(
+              "min-w-[190px] rounded-4 border border-outline-gray-2 bg-surface-base p-1 shadow-lg outline-none",
+              className,
+            )}
+          >
+            {children ??
+              items.map((entry, index) => {
+                if ("type" in entry && entry.type === "separator") {
+                  return (
+                    <ArkMenu.Separator
+                      key={\`separator-\${index}\`}
+                      data-slot="dropdown-separator"
+                      className="my-1 h-px bg-outline-gray-2"
+                    />
+                  );
+                }
+
+                if ("type" in entry && entry.type === "group") {
+                  return (
+                    <ArkMenu.ItemGroup key={\`group-\${index}\`} data-slot="dropdown-group">
+                      {entry.label ? (
+                        <ArkMenu.ItemGroupLabel className="px-2 py-1 text-xs text-ink-gray-5">
+                          {entry.label}
+                        </ArkMenu.ItemGroupLabel>
+                      ) : null}
+                      {entry.items.map((item) => (
+                        <ArkMenu.Item
+                          key={item.label}
+                          value={item.label}
+                          disabled={item.disabled}
+                          className={cn(
+                            itemClasses,
+                            item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                          )}
+                          onSelect={() => {
+                            item.onSelect?.();
+                            onSelect?.(item.label);
+                          }}
+                        >
+                          {item.icon ? (
+                            <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                              {item.icon}
+                            </span>
+                          ) : null}
+                          <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                          {item.shortcut ? (
+                            <span className="ms-auto text-xs text-ink-gray-5">
+                              {item.shortcut}
+                            </span>
+                          ) : null}
+                        </ArkMenu.Item>
+                      ))}
+                    </ArkMenu.ItemGroup>
+                  );
+                }
+
+                const item = entry as { label: string; icon?: ReactNode; shortcut?: string; disabled?: boolean; danger?: boolean; onSelect?: () => void };
+                return (
+                  <ArkMenu.Item
+                    key={item.label}
+                    value={item.label}
+                    disabled={item.disabled}
+                    className={cn(
+                      itemClasses,
+                      item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                    )}
+                    onSelect={() => {
+                      item.onSelect?.();
+                      onSelect?.(item.label);
+                    }}
+                  >
+                    {item.icon ? (
+                      <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                        {item.icon}
+                      </span>
+                    ) : null}
+                    <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                    {item.shortcut ? (
+                      <span className="ms-auto text-xs text-ink-gray-5">{item.shortcut}</span>
+                    ) : null}
+                  </ArkMenu.Item>
+                );
+              })}
+          </ArkMenu.Content>
+        </ArkMenu.Positioner>
+      </Portal>
+    </ArkMenu.Root>
+  );
+}
+"
+`;
+
+exports[`dropdown menu templates > renders React template without TypeScript 1`] = `
+"import type { ReactNode } from "react";
+import { Menu as ArkMenu } from "@ark-ui/react/menu";
+import { Portal } from "@ark-ui/react/portal";
+import { cn } from "@/lib/utils";
+
+
+const itemClasses =
+  "flex cursor-pointer select-none items-center gap-2 rounded-(--radius-3) px-2 py-1.5 text-sm text-ink-gray-7 outline-none transition-colors data-[highlighted]:bg-surface-gray-3 data-[highlighted]:text-ink-gray-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+
+export function DropdownMenu({
+  items = [],
+  trigger,
+  side = "bottom",
+  align = "start",
+  offset = 6,
+  className,
+  onSelect,
+  children,
+}) {
+  const placement = (align === "center" ? side : \`\${side}-\${align}\`) as
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "top-start"
+    | "top-end"
+    | "right-start"
+    | "right-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end";
+
+  return (
+    <ArkMenu.Root positioning={{ placement, gutter: offset }} lazyMount unmountOnExit>
+      {trigger ? <ArkMenu.Trigger asChild>{trigger}</ArkMenu.Trigger> : null}
+      <Portal>
+        <ArkMenu.Positioner data-slot="dropdown-positioner" className="[--z-index:50]!">
+          <ArkMenu.Content
+            data-slot="dropdown-content"
+            className={cn(
+              "min-w-[190px] rounded-4 border border-outline-gray-2 bg-surface-base p-1 shadow-lg outline-none",
+              className,
+            )}
+          >
+            {children ??
+              items.map((entry, index) => {
+                if ("type" in entry && entry.type === "separator") {
+                  return (
+                    <ArkMenu.Separator
+                      key={\`separator-\${index}\`}
+                      data-slot="dropdown-separator"
+                      className="my-1 h-px bg-outline-gray-2"
+                    />
+                  );
+                }
+
+                if ("type" in entry && entry.type === "group") {
+                  return (
+                    <ArkMenu.ItemGroup key={\`group-\${index}\`} data-slot="dropdown-group">
+                      {entry.label ? (
+                        <ArkMenu.ItemGroupLabel className="px-2 py-1 text-xs text-ink-gray-5">
+                          {entry.label}
+                        </ArkMenu.ItemGroupLabel>
+                      ) : null}
+                      {entry.items.map((item) => (
+                        <ArkMenu.Item
+                          key={item.label}
+                          value={item.label}
+                          disabled={item.disabled}
+                          className={cn(
+                            itemClasses,
+                            item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                          )}
+                          onSelect={() => {
+                            item.onSelect?.();
+                            onSelect?.(item.label);
+                          }}
+                        >
+                          {item.icon ? (
+                            <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                              {item.icon}
+                            </span>
+                          ) : null}
+                          <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                          {item.shortcut ? (
+                            <span className="ms-auto text-xs text-ink-gray-5">
+                              {item.shortcut}
+                            </span>
+                          ) : null}
+                        </ArkMenu.Item>
+                      ))}
+                    </ArkMenu.ItemGroup>
+                  );
+                }
+
+                const item = entry as { label: string; icon?: ReactNode; shortcut?: string; disabled?: boolean; danger?: boolean; onSelect?: () => void };
+                return (
+                  <ArkMenu.Item
+                    key={item.label}
+                    value={item.label}
+                    disabled={item.disabled}
+                    className={cn(
+                      itemClasses,
+                      item.danger && "text-ink-red-6 data-[highlighted]:text-ink-red-7",
+                    )}
+                    onSelect={() => {
+                      item.onSelect?.();
+                      onSelect?.(item.label);
+                    }}
+                  >
+                    {item.icon ? (
+                      <span className="flex size-4 items-center justify-center text-ink-gray-6">
+                        {item.icon}
+                      </span>
+                    ) : null}
+                    <ArkMenu.ItemText>{item.label}</ArkMenu.ItemText>
+                    {item.shortcut ? (
+                      <span className="ms-auto text-xs text-ink-gray-5">{item.shortcut}</span>
+                    ) : null}
+                  </ArkMenu.Item>
+                );
+              })}
+          </ArkMenu.Content>
+        </ArkMenu.Positioner>
+      </Portal>
+    </ArkMenu.Root>
+  );
+}
+"
+`;
+
+exports[`dropdown menu templates > renders Vue template 1`] = `
+"<script setup lang="ts">
+import { computed, type Component } from "vue";
+import {
+  MenuContent,
+  MenuItem,
+  MenuItemGroup,
+  MenuItemGroupLabel,
+  MenuItemText,
+  MenuPortal,
+  MenuPositioner,
+  MenuRoot,
+  MenuSeparator,
+  MenuTrigger,
+} from "@ark-ui/vue/menu";
+import { Portal } from "@ark-ui/vue/portal";
+import { cn } from "@/lib/utils";
+
+type DropdownMenuItem = {
+  label: string;
+  icon?: string | Component;
+  shortcut?: string;
+  disabled?: boolean;
+  danger?: boolean;
+  onSelect?: () => void;
+};
+type DropdownMenuSeparator = { type: "separator" };
+type DropdownMenuGroup = { type: "group"; label?: string; items: DropdownMenuItem[] };
+type DropdownMenuEntry = DropdownMenuItem | DropdownMenuSeparator | DropdownMenuGroup;
+
+type DropdownMenuRow =
+  | { kind: "separator"; key: string }
+  | { kind: "group"; key: string; label?: string; items: DropdownMenuItem[] }
+  | { kind: "item"; key: string; item: DropdownMenuItem };
+
+const props = withDefaults(
+  defineProps<{
+    items?: DropdownMenuEntry[];
+    side?: "top" | "right" | "bottom" | "left";
+    align?: "start" | "center" | "end";
+    offset?: number;
+    class?: string;
+  }>(),
+  {
+    items: () => [],
+    side: "bottom",
+    align: "start",
+    offset: 6,
+  },
+);
+
+const emit = defineEmits<{
+  select: [label: string];
+}>();
+
+const slots = defineSlots<{
+  trigger?: () => unknown;
+  default?: () => unknown;
+}>();
+
+const placement = computed(
+  () =>
+    (props.align === "center" ? props.side : \`\${props.side}-\${props.align}\`) as
+      | "top"
+      | "right"
+      | "bottom"
+      | "left"
+      | "top-start"
+      | "top-end"
+      | "right-start"
+      | "right-end"
+      | "bottom-start"
+      | "bottom-end"
+      | "left-start"
+      | "left-end",
+);
+
+const positioning = computed(() => ({
+  placement: placement.value,
+  gutter: props.offset,
+}));
+
+const itemClasses =
+  "flex cursor-pointer select-none items-center gap-2 rounded-(--radius-3) px-2 py-1.5 text-sm text-ink-gray-7 outline-none transition-colors data-[highlighted]:bg-surface-gray-3 data-[highlighted]:text-ink-gray-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+
+function isSeparator(entry: DropdownMenuEntry): entry is DropdownMenuSeparator {
+  return "type" in entry && entry.type === "separator";
+}
+
+function isGroup(entry: DropdownMenuEntry): entry is DropdownMenuGroup {
+  return "type" in entry && entry.type === "group";
+}
+
+const rows = computed<DropdownMenuRow[]>(() =>
+  props.items.map((entry, index) => {
+    if (isSeparator(entry)) return { kind: "separator", key: \`separator-\${index}\` };
+    if (isGroup(entry)) {
+      return { kind: "group", key: \`group-\${index}\`, label: entry.label, items: entry.items };
+    }
+    return { kind: "item", key: \`item-\${index}\`, item: entry as DropdownMenuItem };
+  }),
+);
+
+function onSelect(item: DropdownMenuItem) {
+  item.onSelect?.();
+  emit("select", item.label);
+}
+</script>
+
+<template>
+  <MenuRoot :positioning="positioning" :lazy-mount="true" :unmount-on-exit="true">
+    <slot name="trigger">
+      <MenuTrigger as-child>
+        <button type="button" class="inline-flex items-center gap-1 text-sm text-ink-gray-8">
+          Actions
+        </button>
+      </MenuTrigger>
+    </slot>
+
+    <Portal>
+      <MenuPositioner data-slot="dropdown-positioner" class="[--z-index:50]!">
+        <MenuContent
+          data-slot="dropdown-content"
+          :class="
+            cn(
+              'min-w-[190px] rounded-4 border border-outline-gray-2 bg-surface-base p-1 shadow-lg outline-none',
+              props.class,
+            )
+          "
+        >
+          <slot>
+            <template v-for="row in rows" :key="row.key">
+              <MenuSeparator
+                v-if="row.kind === 'separator'"
+                data-slot="dropdown-separator"
+                class="my-1 h-px bg-outline-gray-2"
+              />
+              <MenuItemGroup v-else-if="row.kind === 'group'" data-slot="dropdown-group">
+                <MenuItemGroupLabel v-if="row.label" class="px-2 py-1 text-xs text-ink-gray-5">
+                  {{ row.label }}
+                </MenuItemGroupLabel>
+                <MenuItem
+                  v-for="item in row.items"
+                  :key="item.label"
+                  :value="item.label"
+                  :disabled="item.disabled"
+                  :class="
+                    cn(
+                      itemClasses,
+                      item.danger && 'text-ink-red-6 data-[highlighted]:text-ink-red-7',
+                    )
+                  "
+                  @select="onSelect(item)"
+                >
+                  <span
+                    v-if="item.icon"
+                    class="flex size-4 items-center justify-center text-ink-gray-6"
+                  >
+                    <span v-if="typeof item.icon === 'string'" :class="item.icon" />
+                    <component v-else :is="item.icon" />
+                  </span>
+                  <MenuItemText>{{ item.label }}</MenuItemText>
+                  <span v-if="item.shortcut" class="ms-auto text-xs text-ink-gray-5">
+                    {{ item.shortcut }}
+                  </span>
+                </MenuItem>
+              </MenuItemGroup>
+              <MenuItem
+                v-else
+                :value="row.item.label"
+                :disabled="row.item.disabled"
+                :class="
+                  cn(
+                    itemClasses,
+                    row.item.danger && 'text-ink-red-6 data-[highlighted]:text-ink-red-7',
+                  )
+                "
+                @select="onSelect(row.item)"
+              >
+                <span
+                  v-if="row.item.icon"
+                  class="flex size-4 items-center justify-center text-ink-gray-6"
+                >
+                  <span
+                    v-if="typeof row.item.icon === 'string'"
+                    :class="row.item.icon"
+                  />
+                  <component v-else :is="row.item.icon" />
+                </span>
+                <MenuItemText>{{ row.item.label }}</MenuItemText>
+                <span v-if="row.item.shortcut" class="ms-auto text-xs text-ink-gray-5">
+                  {{ row.item.shortcut }}
+                </span>
+              </MenuItem>
+            </template>
+          </slot>
+        </MenuContent>
+      </MenuPositioner>
+    </Portal>
+  </MenuRoot>
+</template>
+"
+`;

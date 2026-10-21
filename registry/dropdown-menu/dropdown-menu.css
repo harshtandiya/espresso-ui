@@ -1,0 +1,6 @@
+/* Rows highlight on hover and on keyboard focus, which Zag marks the same
+   way, so pointer and keyboard users see the same row. */
+[data-slot="dropdown-content"] {
+  max-height: min(24rem, var(--radix-menu-content-available-height, 24rem));
+  overflow-y: auto;
+}

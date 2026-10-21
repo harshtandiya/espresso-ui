@@ -49,8 +49,8 @@ export function Tooltip({
       </ArkTooltip.Trigger>
       {text || content ? (
         <Portal>
-          <ArkTooltip.Positioner className="z-[100]">
-            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100]">
+          <ArkTooltip.Positioner className="[--z-index:100]!">
+            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100] [--z-index:100]!">
               {bare ? (
                 content
               ) : (
@@ -102,8 +102,8 @@ export function Tooltip({
       </ArkTooltip.Trigger>
       {text || content ? (
         <Portal>
-          <ArkTooltip.Positioner className="z-[100]">
-            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100]">
+          <ArkTooltip.Positioner className="[--z-index:100]!">
+            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100] [--z-index:100]!">
               {bare ? (
                 content
               ) : (
@@ -170,8 +170,8 @@ const slots = defineSlots<{
       <slot />
     </ArkTooltip.Trigger>
     <Teleport v-if="props.text || slots.content" to="body">
-      <ArkTooltip.Positioner class="z-[100]">
-        <ArkTooltip.Content data-slot="tooltip-content" class="z-[100]">
+      <ArkTooltip.Positioner class="[--z-index:100]!">
+        <ArkTooltip.Content data-slot="tooltip-content" class="z-[100] [--z-index:100]!">
           <slot v-if="props.bare" name="content" />
           <div
             v-else

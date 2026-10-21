@@ -48,8 +48,8 @@ export function <%= it.componentName %>({
       </ArkTooltip.Trigger>
       {text || content ? (
         <Portal>
-          <ArkTooltip.Positioner className="z-[100]">
-            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100]">
+          <ArkTooltip.Positioner className="[--z-index:100]!">
+            <ArkTooltip.Content data-slot="tooltip-content" className="z-[100] [--z-index:100]!">
               {bare ? (
                 content
               ) : (

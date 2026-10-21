@@ -1,0 +1,96 @@
+---
+import ComponentPanel from "@/components/panels/ComponentPanel.astro";
+import CanvasToolbar from "@/components/panels/CanvasToolbar.astro";
+import Canvas from "@/components/panels/Canvas.astro";
+import Variants from "@/components/panels/Variants.astro";
+import VariantRow from "@/components/panels/VariantRow.astro";
+import { sectionNumber } from "@/lib/sections";
+import {
+  DropdownMenuBasicDemo,
+  DropdownMenuGroupDemo,
+} from "@/components/examples/DropdownMenuDemo.tsx";
+
+const usage = `import { DropdownMenu } from "@/components/ui/DropdownMenu";
+
+export default function App() {
+  return (
+    <DropdownMenu
+      trigger={<Button label="Actions" />}
+      items={[
+        { label: "Rename" },
+        { label: "Duplicate" },
+        { type: "separator" },
+        { label: "Delete", danger: true },
+      ]}
+    />
+  );
+}
+`;
+
+const usageVue = `\u003Cscript setup>
+import DropdownMenu from "@/components/ui/DropdownMenu.vue";
+\u003C/script>
+
+<template>
+  <DropdownMenu :items="[{ label: 'Rename' }, { label: 'Delete', danger: true }]" />
+</template>
+`;
+---
+
+<ComponentPanel
+  id="dropdown-menu"
+  num={sectionNumber("dropdown-menu")}
+  label="Dropdown Menu"
+  desc="A menu of actions that opens from a button. Arrow keys walk the rows, Enter picks one, and Escape closes the menu. Rows can carry an icon, a shortcut, a disabled state, or the danger color."
+  status="new"
+  code={usage}
+  codeFile="dropdown-menu.tsx"
+  codeVue={usageVue}
+  codeVueFile="dropdown-menu.vue"
+>
+  <CanvasToolbar title="Preview" meta="rows · separator · danger" />
+  <Canvas class="dropdown-stack">
+    <DropdownMenuBasicDemo client:load />
+  </Canvas>
+
+  <Variants>
+    <VariantRow label="Groups" sub="headings · shortcuts">
+      <Canvas grid={false} class="dropdown-stack">
+        <DropdownMenuGroupDemo client:load />
+      </Canvas>
+    </VariantRow>
+  </Variants>
+</ComponentPanel>
+
+<style>
+  :global(.dropdown-stack) {
+    padding: 28px 32px !important;
+  }
+  :global(.dropdown-stack .canvas-content) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    width: min(100%, 320px);
+  }
+  :global(.dropdown-stack astro-island) {
+    display: block;
+    width: 100%;
+  }
+  :global(.dropdown-demo-stack) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    :global(.dropdown-stack) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      border: none !important;
+      background: transparent !important;
+    }
+  }
+</style>

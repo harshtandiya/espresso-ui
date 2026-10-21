@@ -149,12 +149,12 @@ export function Dialog({
       <Portal>
         <ArkDialog.Backdrop
           data-slot="dialog-overlay"
-          className="fixed inset-0 z-50 bg-black-overlay-200 outline-none"
+          className="fixed inset-0 z-50 [--z-index:50]! bg-black-overlay-200 outline-none"
         />
         <ArkDialog.Positioner
           data-slot="dialog-positioner"
           className={cn(
-            "fixed inset-0 z-50 flex justify-center overflow-y-auto p-4",
+            "fixed inset-0 z-50 [--z-index:50]! flex justify-center overflow-y-auto p-4",
             position === "top" ? "items-start pt-16" : "items-center",
           )}
         >
@@ -322,12 +322,12 @@ export function Dialog({
       <Portal>
         <ArkDialog.Backdrop
           data-slot="dialog-overlay"
-          className="fixed inset-0 z-50 bg-black-overlay-200 outline-none"
+          className="fixed inset-0 z-50 [--z-index:50]! bg-black-overlay-200 outline-none"
         />
         <ArkDialog.Positioner
           data-slot="dialog-positioner"
           className={cn(
-            "fixed inset-0 z-50 flex justify-center overflow-y-auto p-4",
+            "fixed inset-0 z-50 [--z-index:50]! flex justify-center overflow-y-auto p-4",
             position === "top" ? "items-start pt-16" : "items-center",
           )}
         >
@@ -565,13 +565,13 @@ async function runAction(action: DialogAction, index: number) {
     <Portal>
       <DialogBackdrop
         data-slot="dialog-overlay"
-        class="fixed inset-0 z-50 bg-black-overlay-200 outline-none"
+        class="fixed inset-0 z-50 [--z-index:50]! bg-black-overlay-200 outline-none"
       />
       <DialogPositioner
         data-slot="dialog-positioner"
         :class="
           cn(
-            'fixed inset-0 z-50 flex justify-center overflow-y-auto p-4',
+            'fixed inset-0 z-50 [--z-index:50]! flex justify-center overflow-y-auto p-4',
             props.position === 'top' ? 'items-start pt-16' : 'items-center',
           )
         "

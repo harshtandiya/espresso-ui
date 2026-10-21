@@ -92,7 +92,7 @@ function setOpen(value: boolean) {
     <Portal>
       <PopoverPositioner
         data-slot="popover-positioner"
-        class="z-50"
+        class="[--z-index:50]!"
         :style="props.matchTriggerWidth ? { minWidth: 'var(--reference-width)' } : undefined"
       >
         <PopoverContent

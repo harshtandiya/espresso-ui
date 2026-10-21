@@ -82,6 +82,7 @@ export const SECTIONS: readonly Section[] = [
   },
   { id: "dialog", label: "Dialog", group: "components", status: "new", sub: "modal" },
   { id: "popover", label: "Popover", group: "components", status: "new", sub: "floating panel" },
+  { id: "dropdown-menu", label: "Dropdown Menu", group: "components", status: "new", sub: "menu" },
 ] as const;
 
 /** Sections reachable via mobile push-nav (excludes intro — shown on home instead). */
